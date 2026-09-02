@@ -81,7 +81,7 @@
                   </div>
 
                   <div class="mt-2">
-                    <div class="text-caption text-medium-emphasis mb-1">JSON body</div>
+                    <div class="text-caption text-medium-emphasis mb-1">{{ t('requestBody') }}</div>
                     <v-textarea
                       :model-value="stepBody(i)"
                       :color="validStepBody(i) === false ? 'error' : undefined"
@@ -94,7 +94,7 @@
                   </div>
 
                   <div class="mt-2">
-                    <div class="text-caption text-medium-emphasis mb-1">Headers</div>
+                    <div class="text-caption text-medium-emphasis mb-1">{{ t('headers') }}</div>
                     <v-row v-for="(h, hi) in stepHeaders(i)" :key="h.id" dense align="center">
                       <v-col cols="4">
                         <v-text-field
@@ -196,23 +196,23 @@
           <v-card-title>{{ t('passed') }} — {{ ranAt }}</v-card-title>
           <v-card-text>
             <v-chip :color="result.ok ? 'success' : 'error'" size="small">{{
-              result.ok ? 'Passed' : 'Failed'
+              result.ok ? t('passed') : t('failed')
             }}</v-chip>
             <div class="mt-2" v-for="(step, i) in result.steps" :key="step.stepId">
               <div class="font-weight-medium">{{ i + 1 }}. {{ step.requestName }}</div>
               <div class="d-flex align-center mt-1">
                 <v-chip :color="step.ok ? 'success' : 'error'" size="x-small">{{
-                  step.ok ? 'OK' : 'FAILED'
+                  step.ok ? t('ok') : t('failedStep')
                 }}</v-chip>
                 <span v-if="step.status" class="text-caption ml-1">HTTP {{ step.status }}</span>
                 <span v-if="step.error" class="text-error text-caption ml-1">{{ step.error }}</span>
               </div>
               <div v-if="step.requestBody" class="mt-1">
-                <div class="text-caption text-medium-emphasis">Request body</div>
+                <div class="text-caption text-medium-emphasis">{{ t('requestBody') }}</div>
                 <JsonCodeView :value="step.requestBody" />
               </div>
               <div v-if="step.responseBody" class="mt-1">
-                <div class="text-caption text-medium-emphasis">Response body</div>
+                <div class="text-caption text-medium-emphasis">{{ t('responseBody') }}</div>
                 <JsonCodeView :value="step.responseBody" />
               </div>
               <v-list v-if="step.tests?.length" density="compact">
@@ -267,9 +267,6 @@ const t = (key: string) => locale.t(key);
 const runTests = ref(true);
 const ranAt = ref('');
 const collection = computed(() => store.activeCollection);
-const workflow = computed(
-  () => collection.value?.workflows.find((w) => w.id === route.params.workflowId) ?? null,
-);
 const result = computed(() => execution.workflowResult);
 const running = computed(() => execution.running);
 
@@ -302,10 +299,6 @@ const condTypeItems = ['always', 'statusEquals', 'variableEquals'];
 
 function stepName(step: WorkflowStep): string {
   return store.requestById(step.requestId)?.name ?? step.requestId;
-}
-
-function stepResultOf(s: { stepId: string }) {
-  return result.value?.steps.find((x) => x.stepId === s.stepId);
 }
 
 function testIcon(status: TestStatus): string {
