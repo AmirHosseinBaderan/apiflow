@@ -53,10 +53,7 @@ describe('RequestEditor', () => {
     const inputValues = () =>
       wrapper.findAll('input').map((i) => (i.element as HTMLInputElement).value);
 
-    const html = wrapper.html();
-    const idx = html.indexOf('Path params');
-    // eslint-disable-next-line no-console
-    console.log('HTML', idx >= 0 ? html.slice(idx, idx + 600) : 'NO Path params found; inputCount=' + wrapper.findAll('input').length);
+    const v = inputValues();
     expect(wrapper.text()).toContain('Path params');
     expect(v).toContain('id');
     expect(v).toContain('42');
