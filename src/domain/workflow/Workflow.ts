@@ -43,6 +43,9 @@ export interface StepExecutionResult {
   readonly requestName: string;
   readonly ok: boolean;
   readonly error?: string;
+  readonly requestBody?: string;
+  readonly responseBody?: string;
+  readonly responseContentType?: string;
 }
 
 export function buildLinearWorkflowFromRequests(requests: ReadonlyArray<RequestDefinition>): WorkflowStep[] {

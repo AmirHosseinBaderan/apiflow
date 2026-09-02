@@ -12,7 +12,17 @@
           @update:model-value="onKindChange(t.id, $event)"
         />
       </v-col>
-      <v-col>
+      <v-col v-if="t.kind.type === 'script'" cols="12">
+        <v-textarea
+          v-model="t.expression"
+          label="JS script"
+          placeholder="return response.status === 200"
+          density="compact"
+          hide-details
+          class="font-monospace"
+        />
+      </v-col>
+      <v-col v-else>
         <v-text-field v-model="t.expression" placeholder="expression / path / value" density="compact" hide-details />
       </v-col>
       <v-col cols="auto">

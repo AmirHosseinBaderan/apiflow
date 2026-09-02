@@ -1,6 +1,6 @@
-import type { Workflow, WorkflowStep, WorkflowExecutionResult, StepExecutionResult } from '@domain/workflow/Workflow';
+import type { Workflow, WorkflowStep, WorkflowExecutionResult, StepExecutionResult, VariableMapping } from '@domain/workflow/Workflow';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
-import type { VariableBundle } from '@domain/variable/VariableScope';
+import type { VariableEntry, VariableBundle } from '@domain/variable/VariableScope';
 import type { ExecutionResult } from '@domain/test/TestResult';
 import { RequestExecutionService } from '@application/requests/RequestExecutionService';
 
@@ -32,7 +32,7 @@ export class WorkflowEngine {
         cursor += 1;
         continue;
       }
-      bundle = { ...bundle, request: this.requestVariablesFromStep(req) };
+      bundle = { ...bundle, request: this.applyVariableMappings(this.requestVariablesFromStep(req), step, bundle) };
       let execResult: ExecutionResult;
       try {
         execResult = await this.executor.execute({ request: req, bundle });
@@ -42,12 +42,24 @@ export class WorkflowEngine {
         break;
       }
 
+      const requestBody = req.body.type === 'json' ? req.body.content : undefined;
+      const responseBody = execResult.response?.bodyText;
+      const responseContentType = execResult.response?.contentType;
+
       bundle = this.applyExtractions(bundle, execResult.extractedVariables);
       if (execResult.response) {
         bundle = this.applyExtractions(bundle, { __last_status: String(execResult.response.status) });
       }
 
-      stepResults.push({ stepId: step.id, requestName: req.name, ok: execResult.ok, error: execResult.errors.join('; ') || undefined });
+      stepResults.push({
+        stepId: step.id,
+        requestName: req.name,
+        ok: execResult.ok,
+        error: execResult.errors.join('; ') || undefined,
+        requestBody,
+        responseBody,
+        responseContentType,
+      });
       if (!execResult.ok) {
         ok = false;
         break;
@@ -83,6 +95,38 @@ export class WorkflowEngine {
 
   private requestVariablesFromStep(req: RequestDefinition) {
     return req.variableExtractions.map((ve) => ({ key: ve.name, value: '', enabled: true, secret: false }));
+  }
+
+  private resolveVariable(name: string, bundle: VariableBundle): string | undefined {
+    return (
+      bundle.runtime.find((v) => v.key === name)?.value ??
+      bundle.request.find((v) => v.key === name)?.value ??
+      bundle.collection.find((v) => v.key === name)?.value
+    );
+  }
+
+  private applyTransform(value: string, transform?: VariableMapping['transform']): string {
+    if (transform === 'upper') return value.toUpperCase();
+    if (transform === 'lower') return value.toLowerCase();
+    if (transform === 'trim') return value.trim();
+    if (transform === 'number') return String(Number(value));
+    return value;
+  }
+
+  private applyVariableMappings(
+    requestVars: VariableEntry[],
+    mappings: ReadonlyArray<VariableMapping>,
+    bundle: VariableBundle,
+  ): VariableEntry[] {
+    const map = new Map(requestVars.map((v) => [v.key, v]));
+    for (const m of mappings) {
+      const source = this.resolveVariable(m.fromVar, bundle);
+      if (source === undefined) continue;
+      const value = this.applyTransform(source, m.transform);
+      const existing = map.get(m.toVar);
+      map.set(m.toVar, existing ? { ...existing, value, enabled: true } : { key: m.toVar, value, enabled: true, secret: false });
+    }
+    return Array.from(map.values());
   }
 
   private applyExtractions(bundle: VariableBundle, extracted: Readonly<Record<string, string>>): VariableBundle {

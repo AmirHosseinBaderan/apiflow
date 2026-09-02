@@ -117,10 +117,12 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollectionStore';
 import { useNotifier } from '@composables/useNotifier';
 
 const store = useCollectionStore();
+const router = useRouter();
 const { notify } = useNotifier();
 
 const tree = computed(() => store.tree);
@@ -189,8 +191,14 @@ function onActivate(ids: unknown[]) {
   if (typeof id !== 'string') return;
   const node = findNode(treeWithActions.value, id);
   if (!node || node.isAction) return;
-  if (node.kind === 'collection') store.selectCollection(id);
-  else if (node.kind === 'request') store.selectRequest(id);
+  if (node.kind === 'collection') {
+    store.selectCollection(id);
+    router.push({ name: 'collection', params: { collectionId: id } });
+  } else if (node.kind === 'request') {
+    store.selectRequest(id);
+    const cid = activeCollectionId.value;
+    if (cid) router.push({ name: 'collectionRequest', params: { collectionId: cid, requestId: id } });
+  }
 }
 
 async function addRequest() {
