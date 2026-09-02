@@ -28,17 +28,43 @@
           />
           <v-row dense class="mt-1">
             <v-col cols="6">
-              <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click.stop="addRequest">Request</v-btn>
+              <v-btn
+                size="small"
+                variant="tonal"
+                prepend-icon="mdi-plus"
+                block
+                @click.stop="addRequest"
+                >Request</v-btn
+              >
             </v-col>
             <v-col cols="6">
-              <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click.stop="addFolder">Folder</v-btn>
+              <v-btn
+                size="small"
+                variant="tonal"
+                prepend-icon="mdi-folder-plus"
+                block
+                @click.stop="addFolder"
+                >Folder</v-btn
+              >
             </v-col>
           </v-row>
-          <v-alert v-if="activeTree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
+          <v-alert
+            v-if="activeTree.length === 0"
+            type="info"
+            variant="tonal"
+            density="compact"
+            class="mt-2"
+          >
             This collection is empty. Add a request or folder to get started.
           </v-alert>
         </v-sheet>
-        <span v-else :class="{ 'font-weight-bold': isItemActive(item), 'text-body-2': item.kind === 'collection' }">
+        <span
+          v-else
+          :class="{
+            'font-weight-bold': isItemActive(item),
+            'text-body-2': item.kind === 'collection',
+          }"
+        >
           {{ item.name }}
         </span>
       </template>
@@ -95,7 +121,13 @@
       </template>
     </v-treeview>
 
-    <v-alert v-if="treeWithActions.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
+    <v-alert
+      v-if="treeWithActions.length === 0"
+      type="info"
+      variant="tonal"
+      density="compact"
+      class="mx-2 my-2"
+    >
       No collections yet. Create one above.
     </v-alert>
 
@@ -108,7 +140,9 @@
         <v-card-actions>
           <v-spacer />
           <v-btn @click="renameDialog.open = false">Cancel</v-btn>
-          <v-btn color="primary" :disabled="!renameDialog.name.trim()" @click="confirmRename">Save</v-btn>
+          <v-btn color="primary" :disabled="!renameDialog.name.trim()" @click="confirmRename"
+            >Save</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -197,7 +231,8 @@ function onActivate(ids: unknown[]) {
   } else if (node.kind === 'request') {
     store.selectRequest(id);
     const cid = activeCollectionId.value;
-    if (cid) router.push({ name: 'collectionRequest', params: { collectionId: cid, requestId: id } });
+    if (cid)
+      router.push({ name: 'collectionRequest', params: { collectionId: cid, requestId: id } });
   }
 }
 
