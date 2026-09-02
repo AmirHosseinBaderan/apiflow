@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { OpenApiImporter } from '@infrastructure/openapi/OpenApiImporter';
 import { AppError } from '@shared/errors';
+import type { RequestDefinition } from '@domain/request/RequestDefinition';
 
 const sample = JSON.stringify({
   openapi: '3.0.0',
@@ -79,6 +80,29 @@ describe('OpenApiImporter', () => {
     expect(users?.requestIds).toHaveLength(2);
     const untagged = collection.folders.find((f) => f.name === 'Untagged');
     expect(untagged?.requestIds).toHaveLength(1);
+  });
+
+  it('imports path-level parameters and per-operation overrides', () => {
+    const doc = JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Path Params' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/items/{id}': {
+          parameters: [{ name: 'id', in: 'path', required: true }],
+          get: {
+            operationId: 'getItem',
+            parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'fields', in: 'query' }],
+            requestBody: { content: { 'application/json': { example: { name: 'widget', qty: 2 } } } },
+          },
+        },
+      },
+    });
+    const collection = new OpenApiImporter().importFromText(doc).toCollection();
+    const get = collection.requests[0] as RequestDefinition;
+    expect(get?.pathParams.map((p) => p.key).sort()).toEqual(['id']);
+    expect(get?.queryParams.map((p) => p.key)).toEqual(['fields']);
+    expect(JSON.parse(get?.body.type === 'json' ? get.body.content : '{}')).toEqual({ name: 'widget', qty: 2 });
   });
 
   it('rejects non-openapi', () => {
