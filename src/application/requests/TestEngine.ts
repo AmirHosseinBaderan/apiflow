@@ -1,0 +1,111 @@
+import type { HttpResponsePayload } from './httpClientPort';
+import type { TestResult } from '@domain/test/TestResult';
+import type { TestStep, TestKind } from '@domain/request/RequestDefinition';
+
+export class TestEngine {
+  runPostRequest(step: TestStep, response: HttpResponsePayload): TestResult {
+    const start = performance.now();
+    try {
+      return this.runStep(step, response);
+    } catch (e) {
+      return {
+        id: step.id,
+        name: step.name,
+        status: 'error',
+        durationMs: Math.round(performance.now() - start),
+        error: e instanceof Error ? e.message : String(e),
+      };
+    } finally {
+      void start;
+    }
+  }
+
+  private runStep(step: TestStep, response: HttpResponsePayload): TestResult {
+    const kind: TestKind = step.kind;
+    const start = performance.now();
+    switch (kind.type) {
+      case 'statusEquals':
+        return this.makeResult(step, response.status === kind.value, response.status, kind.value, start);
+      case 'statusIn':
+        return this.makeResult(step, kind.values.includes(response.status), response.status, kind.values, start);
+      case 'headerEquals': {
+        const actual = response.headers[kind.header.toLowerCase()] ?? '';
+        return this.makeResult(step, actual === kind.value, actual, kind.value, start);
+      }
+      case 'bodyEquals': {
+        let parsed: unknown;
+        try { parsed = JSON.parse(response.bodyText); } catch { parsed = response.bodyText; }
+        const actual = readPath(parsed, kind.path);
+        return this.makeResult(step, deepEq(actual, kind.expected), actual, kind.expected, start);
+      }
+      case 'bodyExists': {
+        let parsed: unknown;
+        try { parsed = JSON.parse(response.bodyText); } catch { parsed = null; }
+        const actual = readPath(parsed, kind.path);
+        return this.makeResult(step, actual !== undefined, actual, 'defined', start);
+      }
+      case 'durationLessThan':
+      case 'responseTimeLessThan':
+        return this.makeResult(step, response.durationMs < kind.valueMs, response.durationMs, `< ${kind.valueMs}`, start);
+      case 'script':
+        return this.runScript(step, response, start);
+    }
+  }
+
+  private runScript(step: TestStep, response: HttpResponsePayload, start: number): TestResult {
+    try {
+      const source = step.kind.type === 'script' ? step.kind.source : step.expression;
+      const fn = new Function('response', `${source}`);
+      const result = fn({ status: response.status, headers: response.headers, body: safeJson(response.bodyText) });
+      return this.makeResult(step, result === true, result, true, start);
+    } catch (e) {
+      return {
+        id: step.id,
+        name: step.name,
+        status: 'error',
+        durationMs: Math.round(performance.now() - start),
+        error: e instanceof Error ? e.message : String(e),
+      };
+    }
+  }
+
+  private makeResult(step: TestStep, passed: boolean, actual: unknown, expected: unknown, start: number): TestResult {
+    return {
+      id: step.id,
+      name: step.name,
+      status: passed ? 'passed' : 'failed',
+      durationMs: Math.round(performance.now() - start),
+      actualValue: actual,
+      expectedValue: expected,
+    };
+  }
+}
+
+function safeJson(text: string): unknown {
+  try { return JSON.parse(text); } catch { return text; }
+}
+
+function readPath(root: unknown, path: string): unknown {
+  const tokens = path.split('.').filter(Boolean);
+  let cur: unknown = root;
+  for (const t of tokens) {
+    if (cur === null || cur === undefined) return undefined;
+    if (Array.isArray(cur)) {
+      const idx = Number(t);
+      cur = Number.isInteger(idx) ? cur[idx] : undefined;
+    } else if (typeof cur === 'object') {
+      cur = (cur as Record<string, unknown>)[t];
+    }
+  }
+  return cur;
+}
+
+function deepEq(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (typeof a !== typeof b) return false;
+  if (a === null || b === null) return false;
+  if (typeof a === 'object') return JSON.stringify(a) === JSON.stringify(b);
+  return false;
+}
+
+export const testEngine = new TestEngine();
