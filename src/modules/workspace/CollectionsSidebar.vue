@@ -3,10 +3,9 @@
     <v-list-subheader>Collections</v-list-subheader>
 
     <v-treeview
-      v-if="tree.length > 0"
+      v-if="treeWithActions.length > 0"
       v-model:opened="opened"
-      v-model:activated="activeItemId"
-      :items="tree"
+      :items="treeWithActions"
       item-value="id"
       item-title="name"
       item-children="children"
@@ -16,23 +15,38 @@
       @update:activated="onActivate($event as unknown[])"
     >
       <template #prepend="{ item }">
-        <v-icon :icon="iconFor(item.kind)" size="small" />
+        <v-icon v-if="!item.isAction" :icon="iconFor(item.kind)" size="small" />
       </template>
       <template #title="{ item }">
-        <span
-          :class="{
-            'font-weight-bold': isItemActive(item),
-            'text-body-2': item.kind === 'collection',
-          }"
-        >
+        <v-sheet v-if="item.isAction" width="100%" @click.stop>
+          <v-text-field
+            v-model="newRequestName"
+            label="New request name"
+            density="compact"
+            hide-details
+            @keyup.enter="addRequest"
+          />
+          <v-row dense class="mt-1">
+            <v-col cols="6">
+              <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click.stop="addRequest">Request</v-btn>
+            </v-col>
+            <v-col cols="6">
+              <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click.stop="addFolder">Folder</v-btn>
+            </v-col>
+          </v-row>
+          <v-alert v-if="activeTree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
+            This collection is empty. Add a request or folder to get started.
+          </v-alert>
+        </v-sheet>
+        <span v-else :class="{ 'font-weight-bold': isItemActive(item), 'text-body-2': item.kind === 'collection' }">
           {{ item.name }}
         </span>
       </template>
       <template #append="{ item }">
-        <v-menu>
-          <template #activator="{ props }">
+        <v-menu v-if="!item.isAction">
+          <template #activator="{ props: act }">
             <v-btn
-              v-bind="props"
+              v-bind="act"
               size="x-small"
               variant="text"
               icon="mdi-dots-vertical"
@@ -81,36 +95,9 @@
       </template>
     </v-treeview>
 
-    <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
+    <v-alert v-if="treeWithActions.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
       No collections yet. Create one above.
     </v-alert>
-
-    <v-divider v-if="hasActive" />
-    <div v-if="hasActive" class="pa-2">
-      <v-row dense>
-        <v-col>
-          <v-text-field
-            v-model="newRequestName"
-            label="New request name"
-            density="compact"
-            hide-details
-            @keyup.enter="addRequest"
-          />
-        </v-col>
-      </v-row>
-      <v-row dense class="mt-1">
-        <v-col cols="6">
-          <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click="addRequest">Request</v-btn>
-        </v-col>
-        <v-col cols="6">
-          <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click="addFolder">Folder</v-btn>
-        </v-col>
-      </v-row>
-
-      <v-alert v-if="activeTree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
-        This collection is empty. Use the buttons above to add a request or folder.
-      </v-alert>
-    </div>
 
     <v-dialog v-model="renameDialog.open" max-width="400">
       <v-card>
@@ -138,16 +125,31 @@ const { notify } = useNotifier();
 
 const tree = computed(() => store.tree);
 const activeTree = computed(() => store.treeForActive);
-const activeItemId = ref<string | null>(null);
 const activeCollectionId = computed(() => store.activeCollectionId);
 const activeRequestId = computed(() => store.activeRequestId);
-const hasActive = computed(() => Boolean(store.activeCollection));
 
 const opened = ref<string[]>([]);
-
 const newRequestName = ref('');
-
 const renameDialog = reactive({ open: false, id: null as string | null, name: '' });
+
+const actionId = (collectionId: string) => `__action_${collectionId}`;
+
+const treeWithActions = computed(() => {
+  const activeId = activeCollectionId.value;
+  if (!activeId) return tree.value;
+  return tree.value.map((c) => {
+    if (c.id !== activeId) return c;
+    const action: CollectionTreeNode = {
+      kind: 'request',
+      id: actionId(activeId),
+      name: '',
+      parentId: activeId,
+      children: [],
+      isAction: true,
+    };
+    return { ...c, children: [action, ...c.children] };
+  });
+});
 
 watch(
   () => store.activeCollectionId,
@@ -185,13 +187,10 @@ function findNode(nodes: readonly CollectionTreeNode[], id: string): CollectionT
 function onActivate(ids: unknown[]) {
   const id = Array.isArray(ids) ? ids[0] : undefined;
   if (typeof id !== 'string') return;
-  const node = findNode(tree.value, id);
-  if (!node) return;
-  if (node.kind === 'collection') {
-    store.selectCollection(id);
-  } else if (node.kind === 'request') {
-    store.selectRequest(id);
-  }
+  const node = findNode(treeWithActions.value, id);
+  if (!node || node.isAction) return;
+  if (node.kind === 'collection') store.selectCollection(id);
+  else if (node.kind === 'request') store.selectRequest(id);
 }
 
 async function addRequest() {

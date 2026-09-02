@@ -11,6 +11,7 @@ export interface CollectionTreeNode {
   readonly name: string;
   readonly parentId: string | null;
   readonly children: CollectionTreeNode[];
+  readonly isAction?: boolean;
 }
 
 function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
