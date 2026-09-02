@@ -1,17 +1,28 @@
 import { describe, expect, it, beforeAll } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { defineComponent } from 'vue';
+import { defineComponent, h, nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { VTreeview } from 'vuetify/labs/VTreeview';
+import { createRouter, createMemoryHistory } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { CollectionService } from '@application/collections/CollectionService';
 import type { Collection } from '@domain/collection/Collection';
 import CollectionsSidebar from '@modules/workspace/CollectionsSidebar.vue';
 
 const vuetify = createVuetify({ components: { ...components, VTreeview }, directives });
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: '/', name: 'home', component: { render: () => h('div', 'home') } },
+    { path: '/collections/:collectionId', name: 'collection', component: { render: () => h('div', 'collection') } },
+    { path: '/collections/:collectionId/folders/:folderId', name: 'node', component: { render: () => h('div', 'node') } },
+    { path: '/collections/:collectionId/requests/:requestId', name: 'request', component: { render: () => h('div', 'request') } },
+  ],
+});
 
 class MemoryRepo {
   data: Map<string, Collection> = new Map();
@@ -70,5 +81,32 @@ g.IntersectionObserver = RO;
     expect(text).toContain('Demo');
     expect(text).toContain('Users');
     expect(text).toContain('Get User');
+  });
+
+  it('navigates to the request page when a tree item is activated', async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useCollectionStore();
+    const repo = new MemoryRepo();
+    store.bindService(new CollectionService(repo as never));
+    await store.createCollection('Demo');
+    await store.createFolder('Users');
+    await store.createRequest('Get User');
+
+    const wrapper = mount(Wrapper, {
+      global: { plugins: [pinia, vuetify, router] },
+    });
+    await router.isReady();
+    await wrapper.vm.$nextTick();
+
+    const tree = wrapper.findComponent(VTreeview);
+    const reqId = store.activeRequestId as string;
+    await tree.vm.$emit('update:activated', reqId);
+    await new Promise((r) => setTimeout(r));
+    await nextTick();
+    // eslint-disable-next-line no-console
+    console.log('DBG', 'tv', tree.exists(), 'reqId', reqId, 'owner', store.ownerCollectionId(reqId!));
+    expect(router.currentRoute.value.name).toBe('request');
+    expect(router.currentRoute.value.params.requestId).toBe(reqId);
   });
 });
