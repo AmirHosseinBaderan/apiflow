@@ -76,7 +76,7 @@
                       density="compact"
                       hide-details
                       class="ml-2"
-                      @update:model-value="(e) => setCondValue(i, e)"
+                      @update:model-value="(e: string) => setCondValue(i, e)"
                     />
                   </div>
 
