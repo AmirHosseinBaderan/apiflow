@@ -34,6 +34,7 @@ export class WorkflowEngine {
     let bundle: VariableBundle = initialBundle;
     let cursor = 0;
     let ok = true;
+    const collectionMutations = new Map<string, string>();
 
     while (cursor < workflow.steps.length) {
       const step = workflow.steps[cursor]!;
@@ -84,6 +85,9 @@ export class WorkflowEngine {
       const status = execResult.response?.status;
 
       bundle = this.applyExtractions(bundle, execResult.extractedVariables);
+      for (const [k, v] of Object.entries(execResult.collectionVariables ?? {})) {
+        collectionMutations.set(k, v);
+      }
       if (execResult.response) {
         bundle = this.applyExtractions(bundle, {
           __last_status: String(execResult.response.status),
@@ -122,7 +126,12 @@ export class WorkflowEngine {
       cursor += 1;
     }
 
-    return { workflowId: workflow.id, ok, steps: stepResults };
+    return {
+      workflowId: workflow.id,
+      ok,
+      steps: stepResults,
+      collectionVariables: Object.fromEntries(collectionMutations),
+    };
   }
 
   private conditionMatches(step: WorkflowStep, bundle: VariableBundle): boolean {

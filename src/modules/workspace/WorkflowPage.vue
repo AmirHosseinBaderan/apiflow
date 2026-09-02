@@ -51,7 +51,7 @@
                     density="compact"
                     hide-details
                     class="mt-2"
-                    @update:model-value="(e) => setCondType(i, e)"
+                    @update:model-value="(e: string) => setCondType(i, e)"
                   />
                   <v-text-field
                     v-if="condType(i) === 'statusEquals'"
@@ -60,7 +60,7 @@
                     density="compact"
                     hide-details
                     class="mt-1"
-                    @update:model-value="(e) => setCondValue(i, e)"
+                    @update:model-value="(e: string) => setCondValue(i, e)"
                   />
                   <div v-else-if="condType(i) === 'variableEquals'" class="d-flex mt-1">
                     <v-text-field
@@ -68,7 +68,7 @@
                       label="Variable name"
                       density="compact"
                       hide-details
-                      @update:model-value="(e) => setCondName(i, e)"
+                      @update:model-value="(e: string) => setCondName(i, e)"
                     />
                     <v-text-field
                       :model-value="condValue(i)"
@@ -89,7 +89,7 @@
                       density="compact"
                       hide-details
                       placeholder="Enter valid JSON"
-                      @update:model-value="(e) => setStepBody(i, e)"
+                      @update:model-value="(e: string) => setStepBody(i, e)"
                     />
                   </div>
 
@@ -102,7 +102,7 @@
                           label="Name"
                           density="compact"
                           hide-details
-                          @update:model-value="(e) => setStepHeaderField(i, hi, 'key', e)"
+                          @update:model-value="(e: string) => setStepHeaderField(i, hi, 'key', e)"
                         />
                       </v-col>
                       <v-col cols="7">
@@ -111,7 +111,7 @@
                           label="Value"
                           density="compact"
                           hide-details
-                          @update:model-value="(e) => setStepHeaderField(i, hi, 'value', e)"
+                          @update:model-value="(e: string) => setStepHeaderField(i, hi, 'value', e)"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -516,11 +516,14 @@ async function save() {
 async function runAll() {
   if (!local.value || !collection.value || local.value.steps.length < 1) return;
   ranAt.value = toShamsi(new Date());
-  await execution.runWorkflow(
+  const res = await execution.runWorkflow(
     local.value,
     collection.value.requests,
     collection.value.variables,
     runTests.value,
   );
+  if (res && Object.keys(res.collectionVariables).length > 0) {
+    await store.mergeCollectionVariables(res.collectionVariables);
+  }
 }
 </script>

@@ -46,6 +46,7 @@ export interface WorkflowExecutionResult {
   readonly workflowId: string;
   readonly ok: boolean;
   readonly steps: ReadonlyArray<StepExecutionResult>;
+  readonly collectionVariables: Readonly<Record<string, string>>;
 }
 
 export interface StepExecutionResult {

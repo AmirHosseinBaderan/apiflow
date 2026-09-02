@@ -218,6 +218,16 @@ export const useCollectionStore = defineStore('collections', {
       const updated = await this.service.setCollectionVariables(this.activeCollectionId, variables);
       this.replaceCollection(updated);
     },
+    async mergeCollectionVariables(updates: Record<string, string>) {
+      const c = this.activeCollection;
+      if (!c) return;
+      const existing = new Map(c.variables.map((v) => [v.key, v]));
+      for (const [key, value] of Object.entries(updates)) {
+        const prev = existing.get(key);
+        existing.set(key, prev ? { ...prev, value } : { key, value, enabled: true, secret: false });
+      }
+      await this.setCollectionVariables(Array.from(existing.values()));
+    },
     async saveWorkflows(workflows: Workflow[]) {
       if (!this.service || !this.activeCollectionId) return;
       const updated = await this.service.setWorkflows(this.activeCollectionId, workflows);

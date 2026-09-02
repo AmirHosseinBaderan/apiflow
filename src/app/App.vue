@@ -19,7 +19,7 @@ const settings = useSettingsStore();
 const locale = useLocaleStore();
 
 function applyTheme() {
-  (theme.global as { name: string }).name = settings.theme;
+  (theme.global as unknown as { name: { value: string } }).name.value = settings.theme;
 }
 
 function applyLocale() {

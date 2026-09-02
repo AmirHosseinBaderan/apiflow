@@ -5,6 +5,7 @@ import { responseExtractor } from '@domain/execution/ResponseExtractor';
 import { requestBuilder } from './RequestBuilder';
 import { retryPolicyEngine } from './RetryPolicyEngine';
 import { testEngine } from './TestEngine';
+import type { ScriptContext } from './TestEngine';
 import type { HttpClient, HttpResponsePayload } from './httpClientPort';
 
 export interface ExecuteRequestInput {
@@ -22,6 +23,7 @@ export class RequestExecutionService {
     let response: ExecutionResponse | undefined;
     const extracted: Record<string, string> = {};
     const runtimeMutations = new Map<string, string>();
+    const collectionMutations = new Map<string, string>();
 
     const applyMutations = (b: VariableBundle): VariableBundle => {
       if (runtimeMutations.size === 0) return b;
@@ -30,14 +32,17 @@ export class RequestExecutionService {
       return { ...b, runtime: Array.from(map.values()) };
     };
 
+    const buildScriptCtx = (b: VariableBundle): ScriptContext => ({
+      variables: b,
+      request: { id: request.id, name: request.name, url: request.url, method: request.method },
+      setRuntimeVariable: (name, value) => runtimeMutations.set(name, value),
+      setCollectionVariable: (name, value) => collectionMutations.set(name, value),
+    });
+
     let currentBundle: VariableBundle = applyMutations(bundle);
 
     for (const step of request.preRequest) {
-      const result = testEngine.runPreRequest(step, {
-        variables: currentBundle,
-        request: { id: request.id, name: request.name, url: request.url, method: request.method },
-        setRuntimeVariable: (name, value) => runtimeMutations.set(name, value),
-      });
+      const result = testEngine.runPreRequest(step, buildScriptCtx(currentBundle));
       tests.push(result);
       if (result.status === 'error') {
         errors.push(`Pre-request '${step.name}' errored: ${result.error ?? 'unknown'}`);
@@ -54,7 +59,7 @@ export class RequestExecutionService {
         const payload: HttpResponsePayload = result.value;
         response = this.toExecutionResponse(payload);
         for (const step of request.postRequest) {
-          tests.push(testEngine.runPostRequest(step, payload));
+          tests.push(testEngine.runPostRequest(step, payload, buildScriptCtx(currentBundle)));
         }
         for (const extraction of request.variableExtractions) {
           const v = responseExtractor.extract(payload.bodyText, extraction.path);
@@ -90,6 +95,7 @@ export class RequestExecutionService {
       response,
       tests,
       extractedVariables: extracted,
+      collectionVariables: Object.fromEntries(collectionMutations),
       errors,
     };
   }

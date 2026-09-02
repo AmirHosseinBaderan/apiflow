@@ -13,7 +13,10 @@ class FakeExecutor {
   lastBundle: VariableBundle | null = null;
   capturedRequest: RequestDefinition | null = null;
   constructor(private readonly responder: () => HttpResponsePayload) {}
-  async execute(input: { request: RequestDefinition; bundle: VariableBundle }): Promise<ExecutionResult> {
+  async execute(input: {
+    request: RequestDefinition;
+    bundle: VariableBundle;
+  }): Promise<ExecutionResult> {
     this.capturedRequest = input.request;
     this.lastBundle = input.bundle;
     const p = this.responder();
@@ -33,6 +36,7 @@ class FakeExecutor {
       },
       tests: [],
       extractedVariables: {},
+      collectionVariables: {},
       errors: [],
     };
   }
@@ -42,9 +46,20 @@ describe('WorkflowEngine', () => {
   it('chains requests sequentially', async () => {
     const requests = [emptyRequest('a', 'A'), emptyRequest('b', 'B')];
     const wf = { id: 'w', name: 'W', steps: buildLinearWorkflowFromRequests(requests) };
-    const fake = new FakeExecutor(() => ({ status: 200, statusText: 'OK', headers: {}, bodyText: '{}', contentType: 'application/json', durationMs: 1 }));
+    const fake = new FakeExecutor(() => ({
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      bodyText: '{}',
+      contentType: 'application/json',
+      durationMs: 1,
+    }));
     const engine = new WorkflowEngine(fake as unknown as RequestExecutionService);
-    const result = await engine.run({ workflow: wf, requests, initialBundle: { collection: [], request: [], runtime: [] } });
+    const result = await engine.run({
+      workflow: wf,
+      requests,
+      initialBundle: { collection: [], request: [], runtime: [] },
+    });
     expect(result.ok).toBe(true);
     expect(result.steps).toHaveLength(2);
   });
@@ -52,21 +67,33 @@ describe('WorkflowEngine', () => {
   it('skips step when statusEquals condition fails', async () => {
     const requests = [emptyRequest('a', 'A'), emptyRequest('b', 'B')];
     const steps = buildLinearWorkflowFromRequests(requests).map((s, idx) =>
-      idx === 0
-        ? { ...s, condition: { type: 'statusEquals' as const, value: 999 } }
-        : s,
+      idx === 0 ? { ...s, condition: { type: 'statusEquals' as const, value: 999 } } : s,
     );
     const wf = { id: 'w', name: 'W', steps };
-    const fake = new FakeExecutor(() => ({ status: 200, statusText: 'OK', headers: {}, bodyText: '{}', contentType: 'application/json', durationMs: 1 }));
+    const fake = new FakeExecutor(() => ({
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      bodyText: '{}',
+      contentType: 'application/json',
+      durationMs: 1,
+    }));
     const engine = new WorkflowEngine(fake as unknown as RequestExecutionService);
-    const result = await engine.run({ workflow: wf, requests, initialBundle: { collection: [], request: [], runtime: [] } });
+    const result = await engine.run({
+      workflow: wf,
+      requests,
+      initialBundle: { collection: [], request: [], runtime: [] },
+    });
     // First step ran (it executed since condition was on the next step), but actually condition is on step 0 which checks __last_status (none yet) so it skips step 0.
     // Verify that ok=true and no failure.
     expect(result.steps.length).toBeGreaterThan(0);
   });
 
   it('captures request and response JSON for each step', async () => {
-    const request = { ...emptyRequest('a', 'A'), body: { type: 'json' as const, content: '{"a":1}' } };
+    const request = {
+      ...emptyRequest('a', 'A'),
+      body: { type: 'json' as const, content: '{"a":1}' },
+    };
     const wf = { id: 'w', name: 'W', steps: buildLinearWorkflowFromRequests([request]) };
     const fake = new FakeExecutor(() => ({
       status: 200,
@@ -89,8 +116,12 @@ describe('WorkflowEngine', () => {
 
   it('applies per-step variable mappings as request parameters', async () => {
     const request = emptyRequest('a', 'A');
-    const mappings: VariableMapping[] = [{ fromVar: 'authToken', toVar: 'token', transform: undefined }];
-    const steps = [{ ...buildLinearWorkflowFromRequests([request])[0]!, variableMappings: mappings }];
+    const mappings: VariableMapping[] = [
+      { fromVar: 'authToken', toVar: 'token', transform: undefined },
+    ];
+    const steps = [
+      { ...buildLinearWorkflowFromRequests([request])[0]!, variableMappings: mappings },
+    ];
     const wf = { id: 'w', name: 'W', steps };
     const fake = new FakeExecutor(() => ({
       status: 200,
@@ -118,8 +149,12 @@ describe('WorkflowEngine', () => {
 
   it('applies transform when mapping variables', async () => {
     const request = emptyRequest('a', 'A');
-    const mappings: VariableMapping[] = [{ fromVar: 'name', toVar: 'upperName', transform: 'upper' }];
-    const steps = [{ ...buildLinearWorkflowFromRequests([request])[0]!, variableMappings: mappings }];
+    const mappings: VariableMapping[] = [
+      { fromVar: 'name', toVar: 'upperName', transform: 'upper' },
+    ];
+    const steps = [
+      { ...buildLinearWorkflowFromRequests([request])[0]!, variableMappings: mappings },
+    ];
     const wf = { id: 'w', name: 'W', steps };
     const fake = new FakeExecutor(() => ({
       status: 200,
@@ -163,12 +198,17 @@ describe('WorkflowEngine', () => {
           },
           tests: [{ id: 't1', name: 'status 200', status: 'passed', durationMs: 0 }],
           extractedVariables: {},
+          collectionVariables: {},
           errors: [],
         };
       },
     };
     const engine = new WorkflowEngine(executor as unknown as RequestExecutionService);
-    const result = await engine.run({ workflow: wf, requests: [request], initialBundle: { collection: [], request: [], runtime: [] } });
+    const result = await engine.run({
+      workflow: wf,
+      requests: [request],
+      initialBundle: { collection: [], request: [], runtime: [] },
+    });
     expect(result.steps[0]?.tests).toHaveLength(1);
     expect(result.steps[0]?.tests[0]?.status).toBe('passed');
     expect(result.ok).toBe(true);
@@ -184,15 +224,29 @@ describe('WorkflowEngine', () => {
           requestName: 'A',
           ok: false,
           attempts: 1,
-          response: { status: 200, statusText: 'OK', headers: [], bodyText: '{}', contentType: 'application/json', durationMs: 1, size: 2 },
+          response: {
+            status: 200,
+            statusText: 'OK',
+            headers: [],
+            bodyText: '{}',
+            contentType: 'application/json',
+            durationMs: 1,
+            size: 2,
+          },
           tests: [{ id: 't1', name: 'status 200', status: 'failed', durationMs: 0, error: 'boom' }],
           extractedVariables: {},
+          collectionVariables: {},
           errors: [],
         };
       },
     };
     const engine = new WorkflowEngine(executor as unknown as RequestExecutionService);
-    const result = await engine.run({ workflow: wf, requests: [request], initialBundle: { collection: [], request: [], runtime: [] }, runTests: true });
+    const result = await engine.run({
+      workflow: wf,
+      requests: [request],
+      initialBundle: { collection: [], request: [], runtime: [] },
+      runTests: true,
+    });
     expect(result.ok).toBe(false);
   });
 
@@ -206,15 +260,29 @@ describe('WorkflowEngine', () => {
           requestName: 'A',
           ok: true,
           attempts: 1,
-          response: { status: 200, statusText: 'OK', headers: [], bodyText: '{}', contentType: 'application/json', durationMs: 1, size: 2 },
+          response: {
+            status: 200,
+            statusText: 'OK',
+            headers: [],
+            bodyText: '{}',
+            contentType: 'application/json',
+            durationMs: 1,
+            size: 2,
+          },
           tests: [{ id: 't1', name: 'status 200', status: 'failed', durationMs: 0, error: 'boom' }],
           extractedVariables: {},
+          collectionVariables: {},
           errors: [],
         };
       },
     };
     const engine = new WorkflowEngine(executor as unknown as RequestExecutionService);
-    const result = await engine.run({ workflow: wf, requests: [request], initialBundle: { collection: [], request: [], runtime: [] }, runTests: false });
+    const result = await engine.run({
+      workflow: wf,
+      requests: [request],
+      initialBundle: { collection: [], request: [], runtime: [] },
+      runTests: false,
+    });
     expect(result.ok).toBe(true);
     expect(result.steps[0]?.tests).toHaveLength(1);
   });

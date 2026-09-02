@@ -28,6 +28,7 @@ export interface ExecutionResult {
   readonly response?: ExecutionResponse;
   readonly tests: ReadonlyArray<TestResult>;
   readonly extractedVariables: Readonly<Record<string, string>>;
+  readonly collectionVariables: Readonly<Record<string, string>>;
   readonly errors: ReadonlyArray<string>;
 }
 

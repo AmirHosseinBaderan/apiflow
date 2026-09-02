@@ -188,8 +188,10 @@
               <v-tabs-window-item value="pre">
                 <TestEditor :model-value="request.preRequest" @update:model-value="onPreChange" />
                 <v-alert class="mt-2" type="info" variant="tonal" density="compact">
-                  Pre-request scripts run before the HTTP call. Use <code>pm.variables.set('k','v')</code> to set runtime variables.
-                </v-alert>
+                   Pre-request scripts run before the HTTP call. Use <code>pm.variables.set('k','v')</code> for runtime
+                   variables or <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
+                   Read any with <code>pm.variables.get('k')</code>.
+                 </v-alert>
               </v-tabs-window-item>
               <v-tabs-window-item value="tests">
                 <TestEditor :model-value="request.postRequest" @update:model-value="onTestsChange" />
@@ -530,6 +532,10 @@ async function run() {
     return;
   }
   await execution.run(props.request, collection?.variables ?? []);
+  const r = execution.lastResult;
+  if (r && Object.keys(r.collectionVariables).length > 0) {
+    await store.mergeCollectionVariables(r.collectionVariables);
+  }
 }
 
 function isValidUrl(value: string): boolean {

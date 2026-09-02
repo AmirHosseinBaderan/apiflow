@@ -3,17 +3,22 @@ import type { TestResult } from '@domain/test/TestResult';
 import type { TestStep, TestKind } from '@domain/request/RequestDefinition';
 import type { VariableBundle } from '@domain/variable/VariableScope';
 
-export interface PreRequestContext {
+export interface ScriptContext {
   readonly variables: VariableBundle;
   readonly request: { id: string; name: string; url: string; method: string };
   setRuntimeVariable(name: string, value: string): void;
+  setCollectionVariable(name: string, value: string): void;
+}
+
+export interface PreRequestContext extends ScriptContext {
+  readonly request: { id: string; name: string; url: string; method: string };
 }
 
 export class TestEngine {
-  runPostRequest(step: TestStep, response: HttpResponsePayload): TestResult {
+  runPostRequest(step: TestStep, response: HttpResponsePayload, ctx: ScriptContext): TestResult {
     const start = performance.now();
     try {
-      return this.runStep(step, response);
+      return this.runStep(step, response, ctx);
     } catch (e) {
       return {
         id: step.id,
@@ -36,21 +41,8 @@ export class TestEngine {
           durationMs: 0,
         };
       }
-      const fn = new Function(
-        'pm',
-        'request',
-        'variables',
-        `${step.kind.source}`,
-      );
-      const pm = {
-        variables: {
-          set: (name: string, value: string) => ctx.setRuntimeVariable(name, value),
-          get: (name: string) =>
-            ctx.variables.runtime.find((v) => v.key === name)?.value ??
-            ctx.variables.request.find((v) => v.key === name)?.value ??
-            ctx.variables.collection.find((v) => v.key === name)?.value,
-        },
-      };
+      const pm = this.buildPm(ctx);
+      const fn = new Function('pm', 'request', 'variables', `${step.kind.source}`);
       const result = fn(pm, ctx.request, ctx.variables);
       return this.makeResult(step, result !== false, result, true, start);
     } catch (e) {
@@ -64,7 +56,24 @@ export class TestEngine {
     }
   }
 
-  private runStep(step: TestStep, response: HttpResponsePayload): TestResult {
+  private buildPm(ctx: {
+    variables: VariableBundle;
+    setRuntimeVariable(name: string, value: string): void;
+    setCollectionVariable(name: string, value: string): void;
+  }) {
+    return {
+      variables: {
+        set: (name: string, value: string) => ctx.setRuntimeVariable(name, value),
+        setCollection: (name: string, value: string) => ctx.setCollectionVariable(name, value),
+        get: (name: string): string | undefined =>
+          ctx.variables.runtime.find((v) => v.key === name)?.value ??
+          ctx.variables.request.find((v) => v.key === name)?.value ??
+          ctx.variables.collection.find((v) => v.key === name)?.value,
+      },
+    };
+  }
+
+  private runStep(step: TestStep, response: HttpResponsePayload, ctx: ScriptContext): TestResult {
     const kind: TestKind = step.kind;
     const start = performance.now();
     switch (kind.type) {
@@ -92,15 +101,16 @@ export class TestEngine {
       case 'responseTimeLessThan':
         return this.makeResult(step, response.durationMs < kind.valueMs, response.durationMs, `< ${kind.valueMs}`, start);
       case 'script':
-        return this.runScript(step, response, start);
+        return this.runScript(step, response, ctx, start);
     }
   }
 
-  private runScript(step: TestStep, response: HttpResponsePayload, start: number): TestResult {
+  private runScript(step: TestStep, response: HttpResponsePayload, ctx: ScriptContext, start: number): TestResult {
     try {
       const source = step.kind.type === 'script' ? step.kind.source : step.expression;
-      const fn = new Function('response', `${source}`);
-      const result = fn({ status: response.status, headers: response.headers, body: safeJson(response.bodyText) });
+      const pm = this.buildPm(ctx);
+      const fn = new Function('pm', 'response', `${source}`);
+      const result = fn(pm, { status: response.status, headers: response.headers, body: safeJson(response.bodyText) });
       return this.makeResult(step, result === true, result, true, start);
     } catch (e) {
       return {

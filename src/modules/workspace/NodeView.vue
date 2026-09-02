@@ -25,59 +25,91 @@
         </div>
       </v-col>
 
-      <v-col cols="12">
+      <v-col cols="12" v-if="node?.kind === 'collection'">
         <v-card>
-          <v-card-title>{{ t('items') }}</v-card-title>
+          <v-card-title>{{ t('collectionDetails') }}</v-card-title>
           <v-card-text>
-            <v-list density="compact">
-              <v-list-item
-                v-for="sub in node?.children ?? []"
-                :key="sub.id"
-                :title="sub.name"
-                :value="sub.id"
-                @click="openNode(sub)"
-              >
-                <template #prepend>
-                  <v-icon :icon="iconFor(sub.kind)" size="small" />
-                </template>
-                <template #append v-if="sub.kind === 'folder'">
-                  <v-icon icon="mdi-chevron-right" size="small" />
-                </template>
-              </v-list-item>
-              <v-list-item
-                v-if="(node?.children ?? []).length === 0"
-                :title="t('empty')"
-                value=""
-              />
-            </v-list>
+            <div class="text-h6">{{ activeCollection.name }}</div>
+            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">
+              {{ activeCollection.description }}
+            </div>
+            <div class="text-caption text-medium-emphasis mt-1">
+              {{ t('updated') }} {{ formatDateValue(activeCollection?.updatedAt) }}
+            </div>
+            <v-btn
+              class="mt-2"
+              color="primary"
+              size="small"
+              prepend-icon="mdi-pencil"
+              @click="renameCollection"
+              >{{ t('rename') }}</v-btn
+            >
           </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" v-if="node?.kind === 'collection'">
         <v-card>
-          <v-card-title>{{ t('collectionDetails') }}</v-card-title>
-          <v-card-text>
-            <div class="text-h6">{{ node?.name }}</div>
-            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">
-              {{ activeCollection?.description }}
-            </div>
-            <div class="text-caption text-medium-emphasis mt-1">
-              {{ t('updated') }} {{ formatDateValue(activeCollection?.updatedAt) }}
-            </div>
-            <div v-if="activeCollection?.variables.length" class="mt-2">
-              <div class="text-caption text-medium-emphasis">{{ t('variables') }}</div>
-              <v-list density="compact" class="py-0">
-                <v-list-item
-                  v-for="v in activeCollection?.variables"
-                  :key="v.key"
-                  :title="v.key"
-                  :subtitle="v.value"
-                  density="compact"
-                />
-              </v-list>
-            </div>
+          <v-card-title class="text-h6">{{ t('variables') }}</v-card-title>
+          <v-card-text class="pa-0">
+            <v-list density="compact">
+              <v-list-item v-for="(v, i) in mutableVariables" :key="v.key || i" class="align-top">
+                <v-row dense align="center">
+                  <v-col cols="3">
+                    <v-text-field
+                      v-model="mutableVariables[i].key"
+                      :label="t('name')"
+                      density="compact"
+                      hide-details
+                    />
+                  </v-col>
+                  <v-col cols="7">
+                    <v-text-field
+                      v-model="mutableVariables[i].value"
+                      :type="v.secret ? 'password' : 'text'"
+                      :label="t('value')"
+                      density="compact"
+                      hide-details
+                    />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-checkbox-btn
+                      v-model="mutableVariables[i].enabled"
+                      density="compact"
+                      hide-details
+                    />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-switch
+                      v-model="mutableVariables[i].secret"
+                      inset
+                      density="compact"
+                      hide-details
+                      class="mt-1"
+                    />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn
+                      icon="mdi-delete"
+                      size="small"
+                      variant="text"
+                      color="error"
+                      @click="removeCollectionVar(i)"
+                    />
+                  </v-col>
+                </v-row>
+              </v-list-item>
+            </v-list>
+            <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addCollectionVar">{{
+              t('addVariable')
+            }}</v-btn>
           </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="primary" size="small" @click="saveCollectionVariables">{{
+              t('save')
+            }}</v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
 
@@ -129,24 +161,86 @@
           {{ t('noWorkflows') }}
         </v-alert>
       </v-col>
+
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>{{ t('items') }}</v-card-title>
+          <v-card-text>
+            <v-list density="compact">
+              <v-list-item
+                v-for="sub in node?.children ?? []"
+                :key="sub.id"
+                :title="sub.name"
+                :value="sub.id"
+                @click="openNode(sub)"
+              >
+                <template #prepend>
+                  <v-icon :icon="iconFor(sub.kind)" size="small" />
+                </template>
+                <template #append v-if="sub.kind === 'folder'">
+                  <v-icon icon="mdi-chevron-right" size="small" />
+                </template>
+              </v-list-item>
+              <v-list-item
+                v-if="(node?.children ?? []).length === 0"
+                :title="t('empty')"
+                value=""
+              />
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" v-if="runtimeVariables.length">
+        <v-card>
+          <v-card-title class="text-h6">{{ t('runtimeVariables') }}</v-card-title>
+          <v-card-text>
+            <v-list density="compact">
+              <v-list-item
+                v-for="rv in runtimeVariables"
+                :key="rv.key"
+                :title="rv.key"
+                :subtitle="rv.value"
+                density="compact"
+              />
+            </v-list>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="primary" size="small" variant="text" @click="clearRuntime">{{
+              t('clearRuntime')
+            }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </template>
   </v-row>
 </template>
 
 <script setup lang="ts">
-import { computed,  defineAsyncComponent } from 'vue';
+import { computed, ref, watch, defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useExecutionStore } from '@stores/useExecutionStore';
 import type { CollectionTreeNode } from '@stores/useCollectionStore';
+import type { VariableEntry } from '@domain/variable/VariableScope';
 import type { Workflow } from '@domain/workflow/Workflow';
 import { formatDate } from '../../i18n/date';
 import { useLocaleStore } from '../../i18n/store';
+
+interface EditableVar {
+  key: string;
+  value: string;
+  enabled: boolean;
+  secret: boolean;
+}
 
 const store = useCollectionStore();
 const router = useRouter();
 const route = useRoute();
 const dialog = useDialogStore();
+const execution = useExecutionStore();
 const locale = useLocaleStore();
 const t = (key: string) => locale.t(key);
 
@@ -154,6 +248,23 @@ const activeCollection = computed(() => store.activeCollection);
 const folderId = computed(() => route.params.folderId as string | undefined);
 const node = computed(() => store.activeTreeNode(folderId.value ?? null));
 const savedWorkflows = computed(() => activeCollection.value?.workflows ?? []);
+
+const mutableVariables = ref<EditableVar[]>([]);
+
+watch(
+  () => activeCollection.value?.variables,
+  (vars) => {
+    mutableVariables.value = (vars ?? []).map((v: VariableEntry): EditableVar => ({
+      key: v.key,
+      value: v.value,
+      enabled: v.enabled,
+      secret: v.secret,
+    }));
+  },
+  { immediate: true },
+);
+
+const runtimeVariables = computed(() => execution.runtimeVariables);
 
 function iconFor(kind: CollectionTreeNode['kind']) {
   if (kind === 'request') return 'mdi-file-document';
@@ -189,6 +300,44 @@ function addWorkflow() {
 async function deleteWorkflow(wf: Workflow) {
   if (!confirm(`Delete workflow "${wf.name}"?`)) return;
   await store.saveWorkflows(savedWorkflows.value.filter((w) => w.id !== wf.id));
+}
+
+function renameCollection() {
+  const cid = activeCollection.value?.id;
+  if (!cid) return;
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('./dialogs/RenameCollectionDialog.vue')),
+    title: t('renameCollection'),
+    props: { id: cid, currentName: activeCollection.value?.name },
+  });
+}
+
+function addCollectionVar() {
+  mutableVariables.value = [
+    ...mutableVariables.value,
+    { key: '', value: '', enabled: true, secret: false },
+  ];
+}
+
+function removeCollectionVar(i: number) {
+  mutableVariables.value = mutableVariables.value.filter((_, idx) => idx !== i);
+}
+
+async function saveCollectionVariables() {
+  if (!activeCollection.value) return;
+  const cleaned = mutableVariables.value
+    .filter((v) => v.key.trim())
+    .map((v) => ({
+      key: v.key,
+      value: v.value,
+      enabled: v.enabled,
+      secret: v.secret,
+    }));
+  await store.setCollectionVariables(cleaned);
+}
+
+function clearRuntime() {
+  execution.clearRuntime();
 }
 
 function formatDateValue(value: string | undefined): string {
