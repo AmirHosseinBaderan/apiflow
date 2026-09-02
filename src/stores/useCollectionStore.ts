@@ -119,6 +119,14 @@ export const useCollectionStore = defineStore('collections', {
         return findNodeInTree(buildCollectionChildren(c), folderId);
       };
     },
+    ownerCollectionId() {
+      return (itemId: string): string | null => {
+        for (const c of this.collections) {
+          if (c.folders.some((f) => f.id === itemId) || c.requests.some((r) => r.id === itemId)) return c.id;
+        }
+        return null;
+      };
+    },
   },
 
   actions: {
