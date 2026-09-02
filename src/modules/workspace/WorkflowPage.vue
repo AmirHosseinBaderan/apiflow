@@ -97,14 +97,21 @@
                     <div class="text-caption text-medium-emphasis mb-1">Headers</div>
                     <v-row v-for="(h, hi) in stepHeaders(i)" :key="h.id" dense align="center">
                       <v-col cols="4">
-                        <v-text-field v-model="h.key" label="Name" density="compact" hide-details />
+                        <v-text-field
+                          :model-value="h.key"
+                          label="Name"
+                          density="compact"
+                          hide-details
+                          @update:model-value="(e) => setStepHeaderField(i, hi, 'key', e)"
+                        />
                       </v-col>
                       <v-col cols="7">
                         <v-text-field
-                          v-model="h.value"
+                          :model-value="h.value"
                           label="Value"
                           density="compact"
                           hide-details
+                          @update:model-value="(e) => setStepHeaderField(i, hi, 'value', e)"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -244,8 +251,8 @@ import type {
   StepOverrides,
   VariableMapping,
 } from '@domain/workflow/Workflow';
-import type { TestStatus } from '@domain/test/TestResult';
 import type { KeyValue } from '@domain/request/RequestDefinition';
+import type { TestStatus } from '@domain/test/TestResult';
 import { createId } from '@shared/id';
 import { useLocaleStore } from '@i18n/store';
 import { toShamsi } from '@i18n/date';
@@ -266,8 +273,7 @@ const workflow = computed(
 const result = computed(() => execution.workflowResult);
 const running = computed(() => execution.running);
 
-interface MutableStep
-  extends Omit<WorkflowStep, 'variableMappings' | 'overrides'> {
+interface MutableStep extends Omit<WorkflowStep, 'variableMappings' | 'overrides'> {
   variableMappings: VariableMapping[];
   overrides?: StepOverrides;
 }
@@ -315,7 +321,10 @@ function testClass(status: TestStatus): string {
 }
 
 function replaceSteps(steps: MutableStep[]) {
-  local.value = { ...(local.value ?? { id: createId('wf'), name: '', steps: [] }), steps };
+  local.value = {
+    ...(local.value ?? { id: createId('wf'), name: '', steps: [] }),
+    steps: [...steps],
+  };
 }
 
 function stepBody(i: number): string {
@@ -361,6 +370,12 @@ function setStepHeaders(i: number, headers: KeyValue[]) {
   replaceSteps(local.value!.steps);
 }
 
+function setStepHeaderField(i: number, hi: number, field: 'key' | 'value', value: string) {
+  const headers = stepHeaders(i);
+  headers[hi] = { ...headers[hi]!, [field]: value };
+  setStepHeaders(i, headers);
+}
+
 function addStepHeader(i: number) {
   const headers = stepHeaders(i);
   headers.push({ id: createId('kv'), key: '', value: '', enabled: true });
@@ -403,7 +418,7 @@ function condName(i: number): string {
   return '';
 }
 
-function stepMutate(i: number, patch: Partial<WorkflowStep>) {
+function stepMutate(i: number, patch: Partial<MutableStep>) {
   const step = local.value!.steps[i]!;
   local.value!.steps[i] = { ...step, ...patch };
   replaceSteps(local.value!.steps);
@@ -450,7 +465,7 @@ function addStep() {
     notify('No requests in collection', 'warning');
     return;
   }
-  const step = { ...buildStepFromRequest(first), id: createId('s') };
+  const step = { ...buildStepFromRequest(first), id: createId('s') } as MutableStep;
   replaceSteps([...(local.value?.steps ?? []), step]);
 }
 
@@ -502,7 +517,7 @@ async function save() {
     wf,
   ]);
   notify('Workflow saved', 'success');
-  local.value = wf;
+  local.value = JSON.parse(JSON.stringify(wf)) as MutableWorkflow;
 }
 
 async function runAll() {
