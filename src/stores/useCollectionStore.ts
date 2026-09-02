@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import type { Collection } from '@domain/collection/Collection';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry } from '@domain/variable/VariableScope';
+import type { Workflow } from '@domain/workflow/Workflow';
 import { CollectionService } from '@application/collections/CollectionService';
 import { createId } from '@shared/id';
 
@@ -55,7 +56,10 @@ function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
   return roots;
 }
 
-function findNodeInTree(nodes: readonly CollectionTreeNode[], id: string): CollectionTreeNode | null {
+function findNodeInTree(
+  nodes: readonly CollectionTreeNode[],
+  id: string,
+): CollectionTreeNode | null {
   for (const n of nodes) {
     if (n.id === id) return n;
     const child = findNodeInTree(n.children, id);
@@ -92,6 +96,9 @@ export const useCollectionStore = defineStore('collections', {
         return null;
       };
     },
+    workflows(state) {
+      return state.collections.find((c) => c.id === state.activeCollectionId)?.workflows ?? [];
+    },
     treeForActive(): CollectionTreeNode[] {
       const c = this.activeCollection;
       if (!c) return [];
@@ -114,7 +121,13 @@ export const useCollectionStore = defineStore('collections', {
         const c = this.activeCollection;
         if (!c) return null;
         if (!folderId) {
-          return { kind: 'collection', id: c.id, name: c.name, parentId: null, children: buildCollectionChildren(c) };
+          return {
+            kind: 'collection',
+            id: c.id,
+            name: c.name,
+            parentId: null,
+            children: buildCollectionChildren(c),
+          };
         }
         return findNodeInTree(buildCollectionChildren(c), folderId);
       };
@@ -122,7 +135,8 @@ export const useCollectionStore = defineStore('collections', {
     ownerCollectionId() {
       return (itemId: string): string | null => {
         for (const c of this.collections) {
-          if (c.folders.some((f) => f.id === itemId) || c.requests.some((r) => r.id === itemId)) return c.id;
+          if (c.folders.some((f) => f.id === itemId) || c.requests.some((r) => r.id === itemId))
+            return c.id;
         }
         return null;
       };
@@ -202,6 +216,11 @@ export const useCollectionStore = defineStore('collections', {
     async setCollectionVariables(variables: VariableEntry[]) {
       if (!this.service || !this.activeCollectionId) return;
       const updated = await this.service.setCollectionVariables(this.activeCollectionId, variables);
+      this.replaceCollection(updated);
+    },
+    async saveWorkflows(workflows: Workflow[]) {
+      if (!this.service || !this.activeCollectionId) return;
+      const updated = await this.service.setWorkflows(this.activeCollectionId, workflows);
       this.replaceCollection(updated);
     },
     selectCollection(id: string) {
