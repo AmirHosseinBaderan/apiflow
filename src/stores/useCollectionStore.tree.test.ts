@@ -36,3 +36,32 @@ describe('treeForActive with OpenAPI-style data', () => {
     expect(tree[0]?.children[0]?.kind).toBe('request');
   });
 });
+
+describe('tree with OpenAPI-style data', () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it('nests collections -> folders -> requests, plus unfiled requests', async () => {
+    const store = useCollectionStore();
+    const repo = new MemoryRepo();
+    const folderId = 'f1';
+    const reqId = 'r1';
+    const unfiledId = 'r2';
+    repo.data.set('c1', {
+      id: 'c1',
+      name: 'Demo',
+      folders: [{ id: folderId, name: 'Users', parentId: null, requestIds: [reqId], childFolderIds: [] }],
+      requests: [{ id: reqId, name: 'Get User' }, { id: unfiledId, name: 'Unfiled' }],
+    });
+    store.bindService(new CollectionService(repo as never));
+    await store.refresh();
+    const tree = store.tree;
+    expect(tree).toHaveLength(1);
+    const col = tree[0]!;
+    expect(col.kind).toBe('collection');
+    expect(col.id).toBe('c1');
+    expect(col.children).toHaveLength(2);
+    expect(col.children[0]?.kind).toBe('folder');
+    expect(col.children[0]?.children[0]?.kind).toBe('request');
+    expect(col.children[1]?.kind).toBe('request');
+  });
+});
