@@ -1,6 +1,6 @@
 <template>
   <v-app-bar density="comfortable" elevation="1">
-    <v-app-bar-title>
+    <v-app-bar-title @click="goHome" style="cursor: pointer">
       <v-icon icon="mdi-api" class="mr-2" />
       API Flow
       <span v-if="activeCollection?.name" class="text-subtitle-2 ml-2"> — {{ activeCollection.name }}</span>
@@ -15,13 +15,19 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import { useDialogStore } from '@stores/useDialogStore';
 import type { Collection } from '@domain/collection/Collection';
 
 defineProps<{ activeCollection: Collection | null }>();
 const emit = defineEmits<{ (e: 'export'): void }>();
 
+const router = useRouter();
 const dialog = useDialogStore();
+
+function goHome() {
+  router.push({ name: 'home' });
+}
 
 function openNew() {
   dialog.openDialog({

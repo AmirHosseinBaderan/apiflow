@@ -155,8 +155,8 @@ function findNode(nodes: readonly CollectionTreeNode[], id: string): CollectionT
   return null;
 }
 
-function onActivate(ids: unknown[]) {
-  const id = Array.isArray(ids) ? ids[0] : undefined;
+function onActivate(ids: string | string[]) {
+  const id = Array.isArray(ids) ? ids.at(-1) : ids;
   if (typeof id !== 'string') return;
   const node = findNode(tree.value, id);
   if (!node) return;
