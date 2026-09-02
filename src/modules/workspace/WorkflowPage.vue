@@ -122,7 +122,7 @@
                       variant="text"
                       prepend-icon="mdi-plus"
                       @click="addStepHeader(i)"
-                      >Add header</v-btn
+                      >{{ t('addHeader') }}</v-btn
                     >
                   </div>
                   <v-divider class="my-1" />
@@ -159,11 +159,11 @@
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-card-title>Run</v-card-title>
+          <v-card-title>{{ t('runWorkflow') }}</v-card-title>
           <v-card-text class="d-flex align-center">
             <v-switch
               v-model="runTests"
-              label="Run tests"
+              :label="t('runTests')"
               inset
               class="mt-0 mb-0"
               density="compact"
@@ -176,7 +176,7 @@
               :disabled="running"
               @click="runAll"
             >
-              Run workflow
+              {{ t('runWorkflow') }}
             </v-btn>
           </v-card-text>
         </v-card>
@@ -186,7 +186,7 @@
     <v-row v-if="result">
       <v-col cols="12">
         <v-card>
-          <v-card-title>Run results</v-card-title>
+          <v-card-title>{{ t('passed') }} — {{ ranAt }}</v-card-title>
           <v-card-text>
             <v-chip :color="result.ok ? 'success' : 'error'" size="small">{{
               result.ok ? 'Passed' : 'Failed'
@@ -242,11 +242,13 @@ import type {
   WorkflowStep,
   WorkflowCondition,
   StepOverrides,
+  VariableMapping,
 } from '@domain/workflow/Workflow';
 import type { TestStatus } from '@domain/test/TestResult';
 import type { KeyValue } from '@domain/request/RequestDefinition';
 import { createId } from '@shared/id';
-import { useLocaleStore } from '../../i18n/store';
+import { useLocaleStore } from '@i18n/store';
+import { toShamsi } from '@i18n/date';
 
 const route = useRoute();
 const store = useCollectionStore();
@@ -256,6 +258,7 @@ const { notify } = useNotifier();
 const t = (key: string) => locale.t(key);
 
 const runTests = ref(true);
+const ranAt = ref('');
 const collection = computed(() => store.activeCollection);
 const workflow = computed(
   () => collection.value?.workflows.find((w) => w.id === route.params.workflowId) ?? null,
@@ -263,7 +266,19 @@ const workflow = computed(
 const result = computed(() => execution.workflowResult);
 const running = computed(() => execution.running);
 
-const local = ref<Workflow | null>(null);
+interface MutableStep
+  extends Omit<WorkflowStep, 'variableMappings' | 'overrides'> {
+  variableMappings: VariableMapping[];
+  overrides?: StepOverrides;
+}
+interface MutableWorkflow {
+  id: string;
+  name: string;
+  description?: string;
+  steps: MutableStep[];
+}
+
+const local = ref<MutableWorkflow | null>(null);
 
 watch(
   () => route.params.workflowId,
@@ -299,7 +314,7 @@ function testClass(status: TestStatus): string {
   return 'text-grey';
 }
 
-function replaceSteps(steps: WorkflowStep[]) {
+function replaceSteps(steps: MutableStep[]) {
   local.value = { ...(local.value ?? { id: createId('wf'), name: '', steps: [] }), steps };
 }
 
@@ -328,7 +343,7 @@ function setStepBody(i: number, value: string) {
 function stepHeaders(i: number): KeyValue[] {
   const step = local.value?.steps[i];
   if (!step) return [];
-  return step.overrides?.headers ?? store.requestById(step.requestId)?.headers ?? [];
+  return [...(step.overrides?.headers ?? store.requestById(step.requestId)?.headers ?? [])];
 }
 
 function setStepHeaders(i: number, headers: KeyValue[]) {
@@ -492,6 +507,7 @@ async function save() {
 
 async function runAll() {
   if (!local.value || !collection.value || local.value.steps.length < 1) return;
+  ranAt.value = toShamsi(new Date());
   await execution.runWorkflow(
     local.value,
     collection.value.requests,
