@@ -50,6 +50,31 @@
 
       <v-col cols="12" v-if="node?.kind === 'collection'">
         <v-card>
+          <v-card-title>Collection details</v-card-title>
+          <v-card-text>
+            <div class="text-h6">{{ node?.name }}</div>
+            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">{{ activeCollection?.description }}</div>
+            <div class="text-caption text-medium-emphasis mt-1">
+              Updated {{ activeCollection?.updatedAt }}
+            </div>
+            <div v-if="activeCollection?.variables.length" class="mt-2">
+              <div class="text-caption text-medium-emphasis">Variables</div>
+              <v-list density="compact" class="py-0">
+                <v-list-item
+                  v-for="v in activeCollection?.variables"
+                  :key="v.key"
+                  :title="v.key"
+                  :subtitle="v.value"
+                  density="compact"
+                />
+              </v-list>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" v-if="node?.kind === 'collection'">
+        <v-card>
           <v-card-title>Workflow</v-card-title>
           <v-card-text>
             <v-select

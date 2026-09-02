@@ -14,11 +14,9 @@
 </template>
 
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue';
 import { useDialogStore } from '@stores/useDialogStore';
 import type { Collection } from '@domain/collection/Collection';
-import NewCollectionDialog from './dialogs/NewCollectionDialog.vue';
-import ImportCollectionDialog from './dialogs/ImportCollectionDialog.vue';
-import OpenApiImportDialog from './dialogs/OpenApiImportDialog.vue';
 
 defineProps<{ activeCollection: Collection | null }>();
 const emit = defineEmits<{ (e: 'export'): void }>();
@@ -26,14 +24,26 @@ const emit = defineEmits<{ (e: 'export'): void }>();
 const dialog = useDialogStore();
 
 function openNew() {
-  dialog.openDialog({ component: NewCollectionDialog, title: 'New Collection', props: { noCloseButton: true } });
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('./dialogs/NewCollectionDialog.vue')),
+    title: 'New Collection',
+    props: { noCloseButton: true },
+  });
 }
 
 function openImport() {
-  dialog.openDialog({ component: ImportCollectionDialog, title: 'Import Collection JSON', props: { noCloseButton: true } });
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('./dialogs/ImportCollectionDialog.vue')),
+    title: 'Import Collection JSON',
+    props: { noCloseButton: true },
+  });
 }
 
 function openOpenApi() {
-  dialog.openDialog({ component: OpenApiImportDialog, title: 'Import from OpenAPI', props: { noCloseButton: true } });
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('./dialogs/OpenApiImportDialog.vue')),
+    title: 'Import from OpenAPI',
+    props: { noCloseButton: true },
+  });
 }
 </script>

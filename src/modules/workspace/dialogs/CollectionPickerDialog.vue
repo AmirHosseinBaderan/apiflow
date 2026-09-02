@@ -26,18 +26,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
-import NewCollectionDialog from './NewCollectionDialog.vue';
 
 const props = defineProps<{ itemType: 'request' | 'folder'; name: string }>();
 const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
+
+const NewCollectionDialog = defineAsyncComponent(() => import('./NewCollectionDialog.vue'));
 
 const collections = computed(() => store.collections);
 
@@ -64,7 +65,11 @@ function pick(id: string) {
 
 function pickNewCollection() {
   dialog.closeDialog();
-  dialog.openDialog({ component: NewCollectionDialog, title: 'New Collection', props: { noCloseButton: true } });
+  dialog.openDialog({
+    component: NewCollectionDialog,
+    title: 'New Collection',
+    props: { noCloseButton: true },
+  });
   notify('Pick or create a collection, then use New Request/Folder again.', 'info');
 }
 </script>

@@ -96,8 +96,14 @@
                   class="mb-3"
                   @update:model-value="onBodyTypeChange"
                 />
+                <JsonEditor
+                  v-if="bodyType === 'json'"
+                  v-model="bodyContent"
+                  :rows="8"
+                  @update:model-value="onBodyContentChange"
+                />
                 <v-textarea
-                  v-if="['json','raw','text'].includes(bodyType)"
+                  v-else-if="['raw', 'text'].includes(bodyType)"
                   v-model="bodyContent"
                   :rows="8"
                   density="compact"
@@ -226,19 +232,21 @@ import type {
 } from '@domain/request/RequestDefinition';
 import { HTTP_METHODS } from '@domain/request/RequestDefinition';
 import { createId } from '@shared/id';
-import KeyValueEditor from '@components/KeyValueEditor.vue';
+import JsonEditor from '@components/JsonEditor.vue';
 import ResponsePanel from '@components/ResponsePanel.vue';
 import RetryPolicyEditor from '@components/RetryPolicyEditor.vue';
 import TestEditor from '@components/TestEditor.vue';
 import VariableExtractorEditor from '@components/VariableExtractorEditor.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
+import { useNotifier } from '@composables/useNotifier';
 
 const props = defineProps<{ request: RequestDefinition }>();
 const emit = defineEmits<{ (e: 'update:request', v: RequestDefinition): void }>();
 
 const store = useCollectionStore();
 const execution = useExecutionStore();
+const { notify } = useNotifier();
 
 const reqTab = ref('params');
 const methods = HTTP_METHODS;
@@ -501,7 +509,32 @@ const lastResult = computed(() => {
 
 async function run() {
   const collection = store.activeCollection;
+  if (!isValidUrl(props.request.url)) {
+    notify('Provide a valid URL (e.g. https://example.com/path).', 'error');
+    return;
+  }
+  const dups = duplicateHeaderKeys(props.request.headers);
+  if (dups.length) {
+    notify(`Duplicate header keys: ${dups.join(', ')}`, 'warning');
+    return;
+  }
   await execution.run(props.request, collection?.variables ?? []);
+}
+
+function isValidUrl(value: string): boolean {
+  return /^https?:\/\/.+/.test(value.trim());
+}
+
+function duplicateHeaderKeys(headers: ReadonlyArray<KeyValue>): string[] {
+  const seen = new Map<string, number>();
+  for (const h of headers) {
+    if (!h.enabled) continue;
+    const k = h.key.toLowerCase();
+    seen.set(k, (seen.get(k) ?? 0) + 1);
+  }
+  return [...seen.entries()]
+    .filter(([, n]) => n > 1)
+    .map(([k]) => k);
 }
 
 async function save() {

@@ -104,13 +104,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
-import RenameRequestDialog from './dialogs/RenameRequestDialog.vue';
-import CollectionPickerDialog from './dialogs/CollectionPickerDialog.vue';
 
 const store = useCollectionStore();
 const router = useRouter();
@@ -184,7 +182,7 @@ function onActivate(ids: unknown[]) {
 function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
   if (store.activeCollectionId) return store.activeCollectionId;
   dialog.openDialog({
-    component: CollectionPickerDialog,
+    component: defineAsyncComponent(() => import('./dialogs/CollectionPickerDialog.vue')),
     title: 'Pick a collection',
     props: { itemType, name: newItemName.value, noCloseButton: true },
   });
@@ -225,7 +223,7 @@ async function deleteFolder(id: string) {
 
 function renameRequest(id: string, currentName: string) {
   dialog.openDialog({
-    component: RenameRequestDialog,
+    component: defineAsyncComponent(() => import('./dialogs/RenameRequestDialog.vue')),
     title: 'Rename Request',
     props: { id, currentName },
   });
