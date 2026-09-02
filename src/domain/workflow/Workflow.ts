@@ -48,7 +48,9 @@ export interface StepExecutionResult {
   readonly responseContentType?: string;
 }
 
-export function buildLinearWorkflowFromRequests(requests: ReadonlyArray<RequestDefinition>): WorkflowStep[] {
+export function buildLinearWorkflowFromRequests(
+  requests: ReadonlyArray<RequestDefinition>,
+): WorkflowStep[] {
   return requests.map((req, index) => {
     const isLast = index === requests.length - 1;
     return {
