@@ -37,6 +37,35 @@
     </v-row>
 
     <v-row>
+      <v-col cols="12">
+        <div class="d-flex align-start">
+          <v-text-field
+            v-model="nameLocal"
+            label="Request name"
+            density="compact"
+            hide-details
+            variant="plain"
+            class="text-h6"
+            style="max-width: 480px"
+            @update:model-value="onNameChange"
+          />
+          <v-spacer />
+          <v-chip v-if="props.request.method" size="small" color="primary" label class="mt-3">{{ props.request.method }}</v-chip>
+        </div>
+        <v-text-field
+          v-model="descLocal"
+          label="Description"
+          placeholder="What does this request do?"
+          density="compact"
+          hide-details
+          variant="outlined"
+          class="mt-1"
+          @update:model-value="onDescChange"
+        />
+      </v-col>
+    </v-row>
+
+    <v-row>
       <v-col cols="12" md="6">
         <v-card>
           <v-tabs v-model="reqTab" color="primary" density="comfortable">
@@ -216,6 +245,8 @@ const methods = HTTP_METHODS;
 
 const localMethod = ref(props.request.method);
 const localUrl = ref(props.request.url);
+const nameLocal = ref(props.request.name);
+const descLocal = ref(props.request.description ?? '');
 const queryParamsLocal = ref<KeyValue[]>([...props.request.queryParams]);
 const headersLocal = ref<KeyValue[]>([...props.request.headers]);
 const timeoutLocal = ref(props.request.timeoutMs);
@@ -239,6 +270,8 @@ watch(() => props.request, (r) => syncFromProps(r), { immediate: true });
 function syncFromProps(r: RequestDefinition) {
   localMethod.value = r.method;
   localUrl.value = r.url;
+  nameLocal.value = r.name;
+  descLocal.value = r.description ?? '';
   queryParamsLocal.value = [...r.queryParams];
   headersLocal.value = [...r.headers];
   timeoutLocal.value = r.timeoutMs;
@@ -289,6 +322,16 @@ function commit() {
   emitUpdate({ method: localMethod.value, url: localUrl.value });
 }
 
+function onNameChange() {
+  const next = nameLocal.value.trim();
+  if (next) emitUpdate({ name: next });
+}
+
+function onDescChange() {
+  const v = descLocal.value.trim();
+  emitUpdate({ description: v ? v : undefined });
+}
+
 function onParamChange(v: KeyValue[]) {
   queryParamsLocal.value = v;
   emitUpdate({ queryParams: v });
@@ -310,13 +353,51 @@ function onRetryChange(v: RequestDefinition['retry']) {
 
 function onBodyTypeChange() {
   const t = bodyType.value;
-  if (t === 'json') emitUpdate({ body: { type: 'json', content: bodyContent.value } });
-  else if (t === 'raw') emitUpdate({ body: { type: 'raw', contentType: 'text/plain', content: bodyContent.value } });
-  else if (t === 'text') emitUpdate({ body: { type: 'text', content: bodyContent.value } });
-  else if (t === 'form') emitUpdate({ body: { type: 'formUrlEncoded', fields: formFields.value } });
-  else if (t === 'multipart') emitUpdate({ body: { type: 'multipart', fields: multipartFields.value } });
-  else if (t === 'binary') emitUpdate({ body: { type: 'binary', fileRef: { id: '0', name: '', size: 0, contentType: '', origin: { kind: 'browser', lastModified: 0 } } } });
-  else emitUpdate({ body: { type: 'none' } });
+  if (t === 'json') {
+    applyDefaultContentType('application/json');
+    emitUpdate({ body: { type: 'json', content: bodyContent.value } });
+  } else if (t === 'raw') {
+    applyDefaultContentType('text/plain');
+    emitUpdate({ body: { type: 'raw', contentType: 'text/plain', content: bodyContent.value } });
+  } else if (t === 'text') {
+    applyDefaultContentType('text/plain');
+    emitUpdate({ body: { type: 'text', content: bodyContent.value } });
+  } else if (t === 'form') {
+    applyDefaultContentType('application/x-www-form-urlencoded');
+    emitUpdate({ body: { type: 'formUrlEncoded', fields: formFields.value } });
+  } else if (t === 'multipart') {
+    // No default Content-Type for multipart; browser sets the boundary.
+    emitUpdate({ body: { type: 'multipart', fields: multipartFields.value } });
+  } else if (t === 'binary') {
+    emitUpdate({ body: { type: 'binary', fileRef: { id: '0', name: '', size: 0, contentType: '', origin: { kind: 'browser', lastModified: 0 } } } });
+  } else {
+    removeContentType();
+    emitUpdate({ body: { type: 'none' } });
+  }
+}
+
+function applyDefaultContentType(value: string): void {
+  const existing = headersLocal.value.find((h) => h.key.toLowerCase() === 'content-type');
+  if (existing) {
+    if (existing.value === value) return;
+    headersLocal.value = headersLocal.value.map((h) =>
+      h.id === existing.id ? { ...h, value, enabled: true } : h,
+    );
+  } else {
+    headersLocal.value = [
+      ...headersLocal.value,
+      { id: createId('kv'), key: 'Content-Type', value, enabled: true },
+    ];
+  }
+  emitUpdate({ headers: headersLocal.value });
+}
+
+function removeContentType(): void {
+  const next = headersLocal.value.filter((h) => h.key.toLowerCase() !== 'content-type');
+  if (next.length !== headersLocal.value.length) {
+    headersLocal.value = next;
+    emitUpdate({ headers: next });
+  }
 }
 
 function onBodyContentChange() {

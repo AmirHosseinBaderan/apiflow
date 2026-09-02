@@ -1,8 +1,9 @@
 import { AppError } from '@shared/errors';
-import type { Collection } from '@domain/collection/Collection';
-import { emptyCollection } from '@domain/collection/Collection';
+import type { Collection, CollectionFolder } from '@domain/collection/Collection';
+import { emptyCollection, emptyFolder } from '@domain/collection/Collection';
 import type { KeyValue, HttpMethod, RequestDefinition } from '@domain/request/RequestDefinition';
 import { emptyRequest } from '@domain/request/RequestDefinition';
+import { createId } from '@shared/id';
 
 export interface NormalizedApiModel {
   readonly title: string;
@@ -95,34 +96,61 @@ export class CollectionGenerator {
 
   toCollection(name?: string): Collection {
     const coll = emptyCollection(name ?? this.model.title);
-    const requests = this.model.operations.map((op) => {
-      const req = emptyRequest(crypto.randomUUID(), op.summary ?? op.operationId);
-      const url = this.model.baseUrl.replace(/\/$/, '') + op.path;
-      const headers: KeyValue[] = [];
-      const queryParams: KeyValue[] = [];
-      const pathParams: KeyValue[] = [];
-      for (const p of op.parameters) {
-        const entry: KeyValue = { id: crypto.randomUUID(), key: p.name, value: '', enabled: p.required, description: p.description };
-        if (p.in === 'header') headers.push(entry);
-        else if (p.in === 'path') pathParams.push(entry);
-        else queryParams.push(entry);
+
+    const byTag = new Map<string, NormalizedOperation[]>();
+    for (const op of this.model.operations) {
+      const tag = op.tags[0] ?? 'Untagged';
+      const list = byTag.get(tag) ?? [];
+      list.push(op);
+      byTag.set(tag, list);
+    }
+
+    const folders: CollectionFolder[] = [];
+    const requests: RequestDefinition[] = [];
+
+    for (const [tag, ops] of byTag) {
+      const folder: CollectionFolder = emptyFolder(tag, null);
+      folders.push(folder);
+      const folderIdx = folders.length - 1;
+      for (const op of ops) {
+        const req = emptyRequest(crypto.randomUUID(), op.summary ?? op.operationId);
+        const url = this.model.baseUrl.replace(/\/$/, '') + op.path;
+        const headers: KeyValue[] = [];
+        const queryParams: KeyValue[] = [];
+        const pathParams: KeyValue[] = [];
+        for (const p of op.parameters) {
+          const entry: KeyValue = {
+            id: createId('kv'),
+            key: p.name,
+            value: '',
+            enabled: p.required,
+            description: p.description,
+          };
+          if (p.in === 'header') headers.push(entry);
+          else if (p.in === 'path') pathParams.push(entry);
+          else queryParams.push(entry);
+        }
+        if (op.requestBody) {
+          headers.push({ id: createId('kv'), key: 'Content-Type', value: 'application/json', enabled: true });
+        }
+        const body: RequestDefinition['body'] = op.requestBody
+          ? { type: 'json', content: '{}' }
+          : { type: 'none' };
+        const built: RequestDefinition = {
+          ...req,
+          method: op.method,
+          url,
+          headers,
+          queryParams,
+          pathParams,
+          body,
+          description: op.summary && op.operationId !== op.summary ? op.summary : undefined,
+        };
+        requests.push(built);
+        folders[folderIdx] = { ...folder, requestIds: [...folders[folderIdx]!.requestIds, built.id] };
       }
-      if (op.requestBody) {
-        headers.push({ id: crypto.randomUUID(), key: 'Content-Type', value: 'application/json', enabled: true });
-      }
-      const body: RequestDefinition['body'] = op.requestBody
-        ? { type: 'json', content: '{}' }
-        : { type: 'none' };
-      return {
-        ...req,
-        method: op.method,
-        url,
-        headers,
-        queryParams,
-        pathParams,
-        body,
-      };
-    });
-    return { ...coll, requests };
+    }
+
+    return { ...coll, folders, requests };
   }
 }

@@ -83,6 +83,7 @@ export interface RetryPolicyWithCodes extends RetryPolicy {
 export interface RequestDefinition {
   readonly id: string;
   readonly name: string;
+  readonly description?: string;
   readonly method: HttpMethod;
   readonly url: string;
   readonly headers: ReadonlyArray<KeyValue>;

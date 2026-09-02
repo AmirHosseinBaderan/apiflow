@@ -35,13 +35,21 @@
         </v-col>
       </v-row>
 
+      <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
+        This collection is empty. Use the buttons above to add a request or folder.
+      </v-alert>
+
       <v-treeview
+        v-if="tree.length > 0"
         v-model:opened="openedFolders"
         :items="tree"
         item-value="id"
+        item-title="name"
+        item-children="children"
         density="compact"
         class="mt-2"
         activatable
+        open-on-click
         @update:activated="onTreeActivate($event as unknown[])"
       >
         <template #prepend="{ item }">
@@ -118,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollectionStore';
 import { useNotifier } from '@composables/useNotifier';
 
@@ -132,6 +140,15 @@ const hasActive = computed(() => Boolean(store.activeCollection));
 const tree = computed(() => store.treeForActive);
 
 const openedFolders = ref<string[]>([]);
+
+watch(
+  () => store.activeCollectionId,
+  () => {
+    const c = store.activeCollection;
+    if (c) openedFolders.value = c.folders.map((f) => f.id);
+  },
+  { immediate: true },
+);
 const newRequestName = ref('');
 
 const collectionMenu = reactive({ open: false, x: 0, y: 0, targetId: null as string | null });

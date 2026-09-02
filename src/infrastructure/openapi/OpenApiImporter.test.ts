@@ -40,6 +40,25 @@ describe('OpenApiImporter', () => {
     expect(get?.pathParams[0]?.key).toBe('id');
   });
 
+  it('groups operations into folders by tag', () => {
+    const tagged = JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Tag Demo' },
+      paths: {
+        '/a': { get: { operationId: 'aGet', tags: ['Users'] } },
+        '/b': { post: { operationId: 'bPost', tags: ['Posts'] } },
+        '/c': { get: { operationId: 'cGet', tags: ['Users'] } },
+        '/d': { get: { operationId: 'dGet' } },
+      },
+    });
+    const collection = new OpenApiImporter().importFromText(tagged).toCollection();
+    expect(collection.folders.map((f) => f.name).sort()).toEqual(['Posts', 'Untagged', 'Users']);
+    const users = collection.folders.find((f) => f.name === 'Users');
+    expect(users?.requestIds).toHaveLength(2);
+    const untagged = collection.folders.find((f) => f.name === 'Untagged');
+    expect(untagged?.requestIds).toHaveLength(1);
+  });
+
   it('rejects non-openapi', () => {
     expect(() => new OpenApiImporter().importFromText(JSON.stringify({ foo: 1 }))).toThrow(AppError);
   });
