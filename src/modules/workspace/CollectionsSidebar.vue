@@ -185,7 +185,7 @@ function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
   dialog.openDialog({
     component: defineAsyncComponent(() => import('./dialogs/CollectionPickerDialog.vue')),
     title: 'Pick a collection',
-    props: { itemType, name: newItemName.value, noCloseButton: true },
+    props: { itemType, name: newItemName.value },
   });
   return null;
 }
