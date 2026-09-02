@@ -63,7 +63,10 @@ export class TestEngine {
   }) {
     return {
       variables: {
-        set: (name: string, value: string) => ctx.setRuntimeVariable(name, value),
+        set: (name: string, value: string) => {
+          ctx.setRuntimeVariable(name, value);
+          ctx.setCollectionVariable(name, value);
+        },
         setCollection: (name: string, value: string) => ctx.setCollectionVariable(name, value),
         get: (name: string): string | undefined =>
           ctx.variables.runtime.find((v) => v.key === name)?.value ??
@@ -78,39 +81,74 @@ export class TestEngine {
     const start = performance.now();
     switch (kind.type) {
       case 'statusEquals':
-        return this.makeResult(step, response.status === kind.value, response.status, kind.value, start);
+        return this.makeResult(
+          step,
+          response.status === kind.value,
+          response.status,
+          kind.value,
+          start,
+        );
       case 'statusIn':
-        return this.makeResult(step, kind.values.includes(response.status), response.status, kind.values, start);
+        return this.makeResult(
+          step,
+          kind.values.includes(response.status),
+          response.status,
+          kind.values,
+          start,
+        );
       case 'headerEquals': {
         const actual = response.headers[kind.header.toLowerCase()] ?? '';
         return this.makeResult(step, actual === kind.value, actual, kind.value, start);
       }
       case 'bodyEquals': {
         let parsed: unknown;
-        try { parsed = JSON.parse(response.bodyText); } catch { parsed = response.bodyText; }
+        try {
+          parsed = JSON.parse(response.bodyText);
+        } catch {
+          parsed = response.bodyText;
+        }
         const actual = readPath(parsed, kind.path);
         return this.makeResult(step, deepEq(actual, kind.expected), actual, kind.expected, start);
       }
       case 'bodyExists': {
         let parsed: unknown;
-        try { parsed = JSON.parse(response.bodyText); } catch { parsed = null; }
+        try {
+          parsed = JSON.parse(response.bodyText);
+        } catch {
+          parsed = null;
+        }
         const actual = readPath(parsed, kind.path);
         return this.makeResult(step, actual !== undefined, actual, 'defined', start);
       }
       case 'durationLessThan':
       case 'responseTimeLessThan':
-        return this.makeResult(step, response.durationMs < kind.valueMs, response.durationMs, `< ${kind.valueMs}`, start);
+        return this.makeResult(
+          step,
+          response.durationMs < kind.valueMs,
+          response.durationMs,
+          `< ${kind.valueMs}`,
+          start,
+        );
       case 'script':
         return this.runScript(step, response, ctx, start);
     }
   }
 
-  private runScript(step: TestStep, response: HttpResponsePayload, ctx: ScriptContext, start: number): TestResult {
+  private runScript(
+    step: TestStep,
+    response: HttpResponsePayload,
+    ctx: ScriptContext,
+    start: number,
+  ): TestResult {
     try {
       const source = step.kind.type === 'script' ? step.kind.source : step.expression;
       const pm = this.buildPm(ctx);
       const fn = new Function('pm', 'response', `${source}`);
-      const result = fn(pm, { status: response.status, headers: response.headers, body: safeJson(response.bodyText) });
+      const result = fn(pm, {
+        status: response.status,
+        headers: response.headers,
+        body: safeJson(response.bodyText),
+      });
       return this.makeResult(step, result === true, result, true, start);
     } catch (e) {
       return {
@@ -123,7 +161,13 @@ export class TestEngine {
     }
   }
 
-  private makeResult(step: TestStep, passed: boolean, actual: unknown, expected: unknown, start: number): TestResult {
+  private makeResult(
+    step: TestStep,
+    passed: boolean,
+    actual: unknown,
+    expected: unknown,
+    start: number,
+  ): TestResult {
     return {
       id: step.id,
       name: step.name,
@@ -136,7 +180,11 @@ export class TestEngine {
 }
 
 function safeJson(text: string): unknown {
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 function readPath(root: unknown, path: string): unknown {

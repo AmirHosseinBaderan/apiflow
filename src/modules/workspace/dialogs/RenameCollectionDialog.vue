@@ -10,8 +10,19 @@
     />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn text @click="close">{{ t('cancel') }}</v-btn>
-      <v-btn color="primary" :disabled="!name.trim()" @click="save">{{ t('save') }}</v-btn>
+      <v-btn
+        text
+        @click="close"
+      >
+        {{ t('cancel') }}
+      </v-btn>
+      <v-btn
+        color="primary"
+        :disabled="!name.trim()"
+        @click="save"
+      >
+        {{ t('save') }}
+      </v-btn>
     </v-card-actions>
   </div>
 </template>

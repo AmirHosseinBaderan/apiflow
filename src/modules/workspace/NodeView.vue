@@ -1,7 +1,14 @@
 <template>
   <v-row>
-    <v-col cols="12" v-if="!activeCollection">
-      <v-alert type="info" variant="tonal" density="compact">
+    <v-col
+      v-if="!activeCollection"
+      cols="12"
+    >
+      <v-alert
+        type="info"
+        variant="tonal"
+        density="compact"
+      >
         {{ t('selectCollection') }}
       </v-alert>
     </v-col>
@@ -10,10 +17,22 @@
       <v-col cols="12">
         <div class="d-flex align-center mb-2">
           <span class="text-h6">{{ node?.name ?? activeCollection.name }}</span>
-          <v-chip v-if="node?.kind === 'folder'" size="small" class="ml-2">{{
-            t('folder')
-          }}</v-chip>
-          <v-chip v-else size="small" class="ml-2">{{ t('collection') }}</v-chip>
+          <v-chip
+            v-if="node?.kind === 'folder'"
+            size="small"
+            class="ml-2"
+          >
+            {{
+              t('folder')
+            }}
+          </v-chip>
+          <v-chip
+            v-else
+            size="small"
+            class="ml-2"
+          >
+            {{ t('collection') }}
+          </v-chip>
           <v-spacer />
           <v-btn
             v-if="node?.kind === 'folder'"
@@ -25,12 +44,20 @@
         </div>
       </v-col>
 
-      <v-col cols="12" v-if="node?.kind === 'collection'">
+      <v-col
+        v-if="node?.kind === 'collection'"
+        cols="12"
+      >
         <v-card>
           <v-card-title>{{ t('collectionDetails') }}</v-card-title>
           <v-card-text>
-            <div class="text-h6">{{ activeCollection.name }}</div>
-            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">
+            <div class="text-h6">
+              {{ activeCollection.name }}
+            </div>
+            <div
+              v-if="activeCollection?.description"
+              class="text-body-2 text-medium-emphasis mt-1"
+            >
               {{ activeCollection.description }}
             </div>
             <div class="text-caption text-medium-emphasis mt-1">
@@ -42,19 +69,32 @@
               size="small"
               prepend-icon="mdi-pencil"
               @click="renameCollection"
-              >{{ t('rename') }}</v-btn
             >
+              {{ t('rename') }}
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-if="node?.kind === 'collection'">
+      <v-col
+        v-if="node?.kind === 'collection'"
+        cols="12"
+      >
         <v-card>
-          <v-card-title class="text-h6">{{ t('variables') }}</v-card-title>
+          <v-card-title class="text-h6">
+            {{ t('variables') }}
+          </v-card-title>
           <v-card-text class="pa-0">
             <v-list density="compact">
-              <v-list-item v-for="(v, i) in mutableVariables" :key="v.key || i" class="align-top">
-                <v-row dense align="center">
+              <v-list-item
+                v-for="(v, i) in mutableVariables"
+                :key="v.key || i"
+                class="align-top"
+              >
+                <v-row
+                  dense
+                  align="center"
+                >
                   <v-col cols="3">
                     <v-text-field
                       v-model="mutableVariables[i].key"
@@ -100,22 +140,40 @@
                 </v-row>
               </v-list-item>
             </v-list>
-            <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addCollectionVar">{{
-              t('addVariable')
-            }}</v-btn>
+            <v-btn
+              size="small"
+              variant="text"
+              prepend-icon="mdi-plus"
+              @click="addCollectionVar"
+            >
+              {{
+                t('addVariable')
+              }}
+            </v-btn>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" size="small" @click="saveCollectionVariables">{{
-              t('save')
-            }}</v-btn>
+            <v-btn
+              color="primary"
+              size="small"
+              @click="saveCollectionVariables"
+            >
+              {{
+                t('save')
+              }}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-if="node?.kind === 'collection'">
+      <v-col
+        v-if="node?.kind === 'collection'"
+        cols="12"
+      >
         <v-card>
-          <v-card-title class="text-h6">{{ t('workflows') }}</v-card-title>
+          <v-card-title class="text-h6">
+            {{ t('workflows') }}
+          </v-card-title>
           <v-card-text class="pa-0">
             <v-list density="compact">
               <v-list-item
@@ -125,13 +183,19 @@
                 :subtitle="wf.description ?? `${wf.steps.length} ${t('steps')}`"
                 @click="gotoWorkflow(wf)"
               >
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-play-box-outline" size="small" />
+                <template #prepend>
+                  <v-icon
+                    icon="mdi-play-box-outline"
+                    size="small"
+                  />
                 </template>
-                <template v-slot:append>
-                  <v-chip size="small" variant="text"
-                    >{{ wf.steps.length }} {{ t('steps') }}</v-chip
+                <template #append>
+                  <v-chip
+                    size="small"
+                    variant="text"
                   >
+                    {{ wf.steps.length }} {{ t('steps') }}
+                  </v-chip>
                   <v-btn
                     icon="mdi-delete"
                     size="small"
@@ -145,9 +209,15 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" prepend-icon="mdi-plus" @click="addWorkflow">{{
-              t('addWorkflow')
-            }}</v-btn>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-plus"
+              @click="addWorkflow"
+            >
+              {{
+                t('addWorkflow')
+              }}
+            </v-btn>
           </v-card-actions>
         </v-card>
 
@@ -175,10 +245,19 @@
                 @click="openNode(sub)"
               >
                 <template #prepend>
-                  <v-icon :icon="iconFor(sub.kind)" size="small" />
+                  <v-icon
+                    :icon="iconFor(sub.kind)"
+                    size="small"
+                  />
                 </template>
-                <template #append v-if="sub.kind === 'folder'">
-                  <v-icon icon="mdi-chevron-right" size="small" />
+                <template
+                  v-if="sub.kind === 'folder'"
+                  #append
+                >
+                  <v-icon
+                    icon="mdi-chevron-right"
+                    size="small"
+                  />
                 </template>
               </v-list-item>
               <v-list-item
@@ -191,9 +270,14 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-if="runtimeVariables.length">
+      <v-col
+        v-if="runtimeVariables.length"
+        cols="12"
+      >
         <v-card>
-          <v-card-title class="text-h6">{{ t('runtimeVariables') }}</v-card-title>
+          <v-card-title class="text-h6">
+            {{ t('runtimeVariables') }}
+          </v-card-title>
           <v-card-text>
             <v-list density="compact">
               <v-list-item
@@ -207,9 +291,16 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" size="small" variant="text" @click="clearRuntime">{{
-              t('clearRuntime')
-            }}</v-btn>
+            <v-btn
+              color="primary"
+              size="small"
+              variant="text"
+              @click="clearRuntime"
+            >
+              {{
+                t('clearRuntime')
+              }}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

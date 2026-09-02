@@ -47,7 +47,7 @@ describe('WorkflowPage', () => {
     await nextTick();
     await nextTick();
 
-    expect(wrapper.text()).toContain('My workflow');
+    expect(wrapper.find('input').element.value).toBe('My workflow');
     expect(wrapper.text()).toContain('Run workflow');
     expect(wrapper.text()).toContain('Steps (2)');
   });

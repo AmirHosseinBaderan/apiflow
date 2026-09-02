@@ -1,7 +1,13 @@
 <template>
-  <v-container fluid v-if="local">
+  <v-container
+    v-if="local"
+    fluid
+  >
     <v-row>
-      <v-col cols="12" sm="6">
+      <v-col
+        cols="12"
+        sm="6"
+      >
         <v-text-field
           v-model="local.name"
           :label="t('workflowTitle')"
@@ -9,7 +15,10 @@
           hide-details
         />
       </v-col>
-      <v-col cols="12" sm="6">
+      <v-col
+        cols="12"
+        sm="6"
+      >
         <v-text-field
           v-model="local.description"
           :label="t('workflowDescription')"
@@ -62,7 +71,10 @@
                     class="mt-1"
                     @update:model-value="(e: string) => setCondValue(i, e)"
                   />
-                  <div v-else-if="condType(i) === 'variableEquals'" class="d-flex mt-1">
+                  <div
+                    v-else-if="condType(i) === 'variableEquals'"
+                    class="d-flex mt-1"
+                  >
                     <v-text-field
                       :model-value="condName(i)"
                       label="Variable name"
@@ -81,7 +93,9 @@
                   </div>
 
                   <div class="mt-2">
-                    <div class="text-caption text-medium-emphasis mb-1">{{ t('requestBody') }}</div>
+                    <div class="text-caption text-medium-emphasis mb-1">
+                      {{ t('requestBody') }}
+                    </div>
                     <v-textarea
                       :model-value="stepBody(i)"
                       :color="validStepBody(i) === false ? 'error' : undefined"
@@ -94,8 +108,15 @@
                   </div>
 
                   <div class="mt-2">
-                    <div class="text-caption text-medium-emphasis mb-1">{{ t('headers') }}</div>
-                    <v-row v-for="(h, hi) in stepHeaders(i)" :key="h.id" dense align="center">
+                    <div class="text-caption text-medium-emphasis mb-1">
+                      {{ t('headers') }}
+                    </div>
+                    <v-row
+                      v-for="(h, hi) in stepHeaders(i)"
+                      :key="h.id"
+                      dense
+                      align="center"
+                    >
                       <v-col cols="4">
                         <v-text-field
                           :model-value="h.key"
@@ -129,12 +150,18 @@
                       variant="text"
                       prepend-icon="mdi-plus"
                       @click="addStepHeader(i)"
-                      >{{ t('addHeader') }}</v-btn
                     >
+                      {{ t('addHeader') }}
+                    </v-btn>
                   </div>
                   <v-divider class="my-1" />
                   <div class="d-flex justify-end">
-                    <v-btn icon="mdi-chevron-up" size="small" variant="text" @click="moveUp(i)" />
+                    <v-btn
+                      icon="mdi-chevron-up"
+                      size="small"
+                      variant="text"
+                      @click="moveUp(i)"
+                    />
                     <v-btn
                       icon="mdi-chevron-down"
                       size="small"
@@ -154,9 +181,20 @@
             </v-expansion-panels>
 
             <div class="d-flex align-center mt-2">
-              <v-btn color="primary" prepend-icon="mdi-plus" @click="addStep">Add step</v-btn>
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                @click="addStep"
+              >
+                Add step
+              </v-btn>
               <v-spacer />
-              <v-btn variant="outlined" @click="save">{{ t('saveWorkflow') }}</v-btn>
+              <v-btn
+                variant="outlined"
+                @click="save"
+              >
+                {{ t('saveWorkflow') }}
+              </v-btn>
             </div>
           </v-card-text>
         </v-card>
@@ -195,34 +233,69 @@
         <v-card>
           <v-card-title>{{ t('passed') }} — {{ ranAt }}</v-card-title>
           <v-card-text>
-            <v-chip :color="result.ok ? 'success' : 'error'" size="small">{{
-              result.ok ? t('passed') : t('failed')
-            }}</v-chip>
-            <div class="mt-2" v-for="(step, i) in result.steps" :key="step.stepId">
-              <div class="font-weight-medium">{{ i + 1 }}. {{ step.requestName }}</div>
-              <div class="d-flex align-center mt-1">
-                <v-chip :color="step.ok ? 'success' : 'error'" size="x-small">{{
-                  step.ok ? t('ok') : t('failedStep')
-                }}</v-chip>
-                <span v-if="step.status" class="text-caption ml-1">HTTP {{ step.status }}</span>
-                <span v-if="step.error" class="text-error text-caption ml-1">{{ step.error }}</span>
+            <v-chip
+              :color="result.ok ? 'success' : 'error'"
+              size="small"
+            >
+              {{
+                result.ok ? t('passed') : t('failed')
+              }}
+            </v-chip>
+            <div
+              v-for="(step, i) in result.steps"
+              :key="step.stepId"
+              class="mt-2"
+            >
+              <div class="font-weight-medium">
+                {{ i + 1 }}. {{ step.requestName }}
               </div>
-              <div v-if="step.requestBody" class="mt-1">
-                <div class="text-caption text-medium-emphasis">{{ t('requestBody') }}</div>
+              <div class="d-flex align-center mt-1">
+                <v-chip
+                  :color="step.ok ? 'success' : 'error'"
+                  size="x-small"
+                >
+                  {{
+                    step.ok ? t('ok') : t('failedStep')
+                  }}
+                </v-chip>
+                <span
+                  v-if="step.status"
+                  class="text-caption ml-1"
+                >HTTP {{ step.status }}</span>
+                <span
+                  v-if="step.error"
+                  class="text-error text-caption ml-1"
+                >{{ step.error }}</span>
+              </div>
+              <div
+                v-if="step.requestBody"
+                class="mt-1"
+              >
+                <div class="text-caption text-medium-emphasis">
+                  {{ t('requestBody') }}
+                </div>
                 <JsonCodeView :value="step.requestBody" />
               </div>
-              <div v-if="step.responseBody" class="mt-1">
-                <div class="text-caption text-medium-emphasis">{{ t('responseBody') }}</div>
+              <div
+                v-if="step.responseBody"
+                class="mt-1"
+              >
+                <div class="text-caption text-medium-emphasis">
+                  {{ t('responseBody') }}
+                </div>
                 <JsonCodeView :value="step.responseBody" />
               </div>
-              <v-list v-if="step.tests?.length" density="compact">
+              <v-list
+                v-if="step.tests?.length"
+                density="compact"
+              >
                 <v-list-item
                   v-for="t in step.tests"
                   :key="t.id"
                   :prepend-icon="testIcon(t.status)"
                   :title="t.name"
                 >
-                  <template v-slot:subtitle>
+                  <template #subtitle>
                     <span :class="testClass(t.status)">{{ t.status }}</span>
                   </template>
                 </v-list-item>
@@ -233,7 +306,14 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-alert v-else type="info" variant="tonal" density="compact">No workflow selected.</v-alert>
+  <v-alert
+    v-else
+    type="info"
+    variant="tonal"
+    density="compact"
+  >
+    No workflow selected.
+  </v-alert>
 </template>
 
 <script setup lang="ts">
@@ -522,7 +602,7 @@ async function runAll() {
     collection.value.variables,
     runTests.value,
   );
-  if (res && Object.keys(res.collectionVariables).length > 0) {
+  if (res?.ok && Object.keys(res.collectionVariables).length > 0) {
     await store.mergeCollectionVariables(res.collectionVariables);
   }
 }

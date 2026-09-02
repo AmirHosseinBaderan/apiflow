@@ -27,8 +27,22 @@
                 />
               </v-col>
               <v-col cols="auto">
-                <v-btn color="primary" prepend-icon="mdi-send" :loading="running" @click="run">Send</v-btn>
-                <v-btn class="ml-2" variant="tonal" prepend-icon="mdi-content-save" @click="save">Save</v-btn>
+                <v-btn
+                  color="primary"
+                  prepend-icon="mdi-send"
+                  :loading="running"
+                  @click="run"
+                >
+                  Send
+                </v-btn>
+                <v-btn
+                  class="ml-2"
+                  variant="tonal"
+                  prepend-icon="mdi-content-save"
+                  @click="save"
+                >
+                  Save
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -50,7 +64,17 @@
             @update:model-value="onNameChange"
           />
           <v-spacer />
-          <v-chip v-if="props.request.method" size="small" color="primary" label class="mt-3">{{ props.request.method }}</v-chip>
+          <v-chip
+            v-if="props.request.method"
+            size="small"
+            color="primary"
+            label
+            class="mt-3"
+          >
+            {{
+              props.request.method
+            }}
+          </v-chip>
         </div>
         <v-text-field
           v-model="descLocal"
@@ -66,28 +90,68 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
-          <v-tabs v-model="reqTab" color="primary" density="comfortable">
-            <v-tab value="params">Params</v-tab>
-            <v-tab value="headers">Headers</v-tab>
-            <v-tab value="body">Body</v-tab>
-            <v-tab value="auth">Auth</v-tab>
-            <v-tab value="pre">Pre-req</v-tab>
-            <v-tab value="tests">Tests</v-tab>
-            <v-tab value="extract">Extract</v-tab>
-            <v-tab value="settings">Settings</v-tab>
+          <v-tabs
+            v-model="reqTab"
+            color="primary"
+            density="comfortable"
+          >
+            <v-tab value="params">
+              Params
+            </v-tab>
+            <v-tab value="headers">
+              Headers
+            </v-tab>
+            <v-tab value="body">
+              Body
+            </v-tab>
+            <v-tab value="auth">
+              Auth
+            </v-tab>
+            <v-tab value="pre">
+              Pre-req
+            </v-tab>
+            <v-tab value="tests">
+              Tests
+            </v-tab>
+            <v-tab value="extract">
+              Extract
+            </v-tab>
+            <v-tab value="settings">
+              Settings
+            </v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="reqTab">
-                <v-tabs-window-item value="params">
-                  <div v-if="pathParamsLocal.length" class="text-caption text-medium-emphasis mb-1">Path params</div>
-                  <KeyValueEditor v-if="pathParamsLocal.length" v-model="pathParamsLocal" @update:model-value="onPathParamChange" />
-                  <div class="text-caption text-medium-emphasis mb-1 mt-2">Query params</div>
-                  <KeyValueEditor v-model="queryParamsLocal" @update:model-value="onParamChange" />
-                </v-tabs-window-item>
+              <v-tabs-window-item value="params">
+                <div
+                  v-if="pathParamsLocal.length"
+                  class="text-caption text-medium-emphasis mb-1"
+                >
+                  Path params
+                </div>
+                <KeyValueEditor
+                  v-if="pathParamsLocal.length"
+                  v-model="pathParamsLocal"
+                  @update:model-value="onPathParamChange"
+                />
+                <div class="text-caption text-medium-emphasis mb-1 mt-2">
+                  Query params
+                </div>
+                <KeyValueEditor
+                  v-model="queryParamsLocal"
+                  @update:model-value="onParamChange"
+                />
+              </v-tabs-window-item>
               <v-tabs-window-item value="headers">
-                <KeyValueEditor v-model="headersLocal" @update:model-value="onHeaderChange" />
+                <KeyValueEditor
+                  v-model="headersLocal"
+                  @update:model-value="onHeaderChange"
+                />
               </v-tabs-window-item>
               <v-tabs-window-item value="body">
                 <v-select
@@ -126,8 +190,20 @@
                     align="center"
                     class="mb-1"
                   >
-                    <v-col cols="auto"><v-checkbox-btn v-model="f.enabled" density="compact" /></v-col>
-                    <v-col><v-text-field v-model="f.key" placeholder="key" density="compact" hide-details /></v-col>
+                    <v-col cols="auto">
+                      <v-checkbox-btn
+                        v-model="f.enabled"
+                        density="compact"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-text-field
+                        v-model="f.key"
+                        placeholder="key"
+                        density="compact"
+                        hide-details
+                      />
+                    </v-col>
                     <v-col>
                       <v-text-field
                         v-if="f.value.kind === 'text'"
@@ -147,20 +223,42 @@
                       />
                     </v-col>
                     <v-col cols="auto">
-                      <v-btn icon="mdi-swap-horizontal" size="small" variant="text" @click="toggleMultipartKind(i)" />
-                      <v-btn icon="mdi-delete" size="small" variant="text" @click="removeMultipart(i)" />
+                      <v-btn
+                        icon="mdi-swap-horizontal"
+                        size="small"
+                        variant="text"
+                        @click="toggleMultipartKind(i)"
+                      />
+                      <v-btn
+                        icon="mdi-delete"
+                        size="small"
+                        variant="text"
+                        @click="removeMultipart(i)"
+                      />
                     </v-col>
                   </v-row>
-                  <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addMultipartText">Add field</v-btn>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    prepend-icon="mdi-plus"
+                    @click="addMultipartText"
+                  >
+                    Add field
+                  </v-btn>
                 </div>
                 <div v-if="bodyType === 'binary'">
-                  <v-file-input label="Select file" density="compact" hide-details @update:model-value="onBinaryFile" />
+                  <v-file-input
+                    label="Select file"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onBinaryFile"
+                  />
                 </div>
               </v-tabs-window-item>
               <v-tabs-window-item value="auth">
                 <v-select
                   v-model="authType"
-                  :items="['none','bearer','basic','apiKey']"
+                  :items="['none', 'bearer', 'basic', 'apiKey']"
                   label="Auth type"
                   density="compact"
                   hide-details
@@ -176,25 +274,69 @@
                   @update:model-value="onAuthChange"
                 />
                 <template v-if="authType === 'basic'">
-                  <v-text-field v-model="basicUser" label="Username" density="compact" hide-details @update:model-value="onAuthChange" />
-                  <v-text-field v-model="basicPass" label="Password" type="password" density="compact" hide-details @update:model-value="onAuthChange" />
+                  <v-text-field
+                    v-model="basicUser"
+                    label="Username"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onAuthChange"
+                  />
+                  <v-text-field
+                    v-model="basicPass"
+                    label="Password"
+                    type="password"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onAuthChange"
+                  />
                 </template>
                 <template v-if="authType === 'apiKey'">
-                  <v-text-field v-model="apiKeyName" label="Header / Query name" density="compact" hide-details @update:model-value="onAuthChange" />
-                  <v-text-field v-model="apiKeyValue" label="Value" density="compact" hide-details @update:model-value="onAuthChange" />
-                  <v-select v-model="apiKeyIn" :items="['header','query']" label="Add to" density="compact" hide-details @update:model-value="onAuthChange" />
+                  <v-text-field
+                    v-model="apiKeyName"
+                    label="Header / Query name"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onAuthChange"
+                  />
+                  <v-text-field
+                    v-model="apiKeyValue"
+                    label="Value"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onAuthChange"
+                  />
+                  <v-select
+                    v-model="apiKeyIn"
+                    :items="['header', 'query']"
+                    label="Add to"
+                    density="compact"
+                    hide-details
+                    @update:model-value="onAuthChange"
+                  />
                 </template>
               </v-tabs-window-item>
               <v-tabs-window-item value="pre">
-                <TestEditor :model-value="request.preRequest" @update:model-value="onPreChange" />
-                <v-alert class="mt-2" type="info" variant="tonal" density="compact">
-                   Pre-request scripts run before the HTTP call. Use <code>pm.variables.set('k','v')</code> for runtime
-                   variables or <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
-                   Read any with <code>pm.variables.get('k')</code>.
-                 </v-alert>
+                <TestEditor
+                  :model-value="request.preRequest"
+                  @update:model-value="onPreChange"
+                />
+                <v-alert
+                  class="mt-2"
+                  type="info"
+                  variant="tonal"
+                  density="compact"
+                >
+                  Pre-request scripts run before the HTTP call. Use
+                  <code>pm.variables.set('k','v')</code> for runtime variables or
+                  <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
+                  Read any with <code>pm.variables.get('k')</code>.
+                </v-alert>
               </v-tabs-window-item>
               <v-tabs-window-item value="tests">
-                <TestEditor :model-value="request.postRequest" @update:model-value="onTestsChange" />
+                <TestEditor
+                  :model-value="request.postRequest"
+                  @update:model-value="onTestsChange"
+                />
               </v-tabs-window-item>
               <v-tabs-window-item value="extract">
                 <VariableExtractorEditor
@@ -203,16 +345,29 @@
                 />
               </v-tabs-window-item>
               <v-tabs-window-item value="settings">
-                <v-text-field v-model.number="timeoutLocal" type="number" label="Timeout (ms)" density="compact" hide-details @update:model-value="onTimeoutChange" />
+                <v-text-field
+                  v-model.number="timeoutLocal"
+                  type="number"
+                  label="Timeout (ms)"
+                  density="compact"
+                  hide-details
+                  @update:model-value="onTimeoutChange"
+                />
                 <v-divider class="my-3" />
-                <RetryPolicyEditor :model-value="retryLocal" @update:model-value="onRetryChange" />
+                <RetryPolicyEditor
+                  :model-value="retryLocal"
+                  @update:model-value="onRetryChange"
+                />
               </v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <ResponsePanel
           :response="lastResult?.response"
           :tests="lastResult?.tests"
@@ -265,7 +420,11 @@ const queryParamsLocal = ref<KeyValue[]>([...props.request.queryParams]);
 const pathParamsLocal = ref<KeyValue[]>([...props.request.pathParams]);
 const headersLocal = ref<KeyValue[]>([...props.request.headers]);
 const timeoutLocal = ref(props.request.timeoutMs);
-const retryLocal = ref<RetryPolicyWithCodes>({ ...props.request.retry, retryOn: [...props.request.retry.retryOn], retryStatusCodes: [...props.request.retry.retryStatusCodes] });
+const retryLocal = ref<RetryPolicyWithCodes>({
+  ...props.request.retry,
+  retryOn: [...props.request.retry.retryOn],
+  retryStatusCodes: [...props.request.retry.retryStatusCodes],
+});
 
 const bodyType = ref<string>('json');
 const bodyContent = ref<string>('');
@@ -280,7 +439,11 @@ const apiKeyName = ref('');
 const apiKeyValue = ref('');
 const apiKeyIn = ref<'header' | 'query'>('header');
 
-watch(() => props.request, (r) => syncFromProps(r), { immediate: true });
+watch(
+  () => props.request,
+  (r) => syncFromProps(r),
+  { immediate: true },
+);
 
 function syncFromProps(r: RequestDefinition) {
   localMethod.value = r.method;
@@ -291,7 +454,11 @@ function syncFromProps(r: RequestDefinition) {
   pathParamsLocal.value = [...r.pathParams];
   headersLocal.value = [...r.headers];
   timeoutLocal.value = r.timeoutMs;
-  retryLocal.value = { ...r.retry, retryOn: [...r.retry.retryOn], retryStatusCodes: [...r.retry.retryStatusCodes] };
+  retryLocal.value = {
+    ...r.retry,
+    retryOn: [...r.retry.retryOn],
+    retryStatusCodes: [...r.retry.retryStatusCodes],
+  };
   syncBody(r);
   syncAuth(r.auth);
 }
@@ -390,7 +557,18 @@ function onBodyTypeChange() {
     // No default Content-Type for multipart; browser sets the boundary.
     emitUpdate({ body: { type: 'multipart', fields: multipartFields.value } });
   } else if (t === 'binary') {
-    emitUpdate({ body: { type: 'binary', fileRef: { id: '0', name: '', size: 0, contentType: '', origin: { kind: 'browser', lastModified: 0 } } } });
+    emitUpdate({
+      body: {
+        type: 'binary',
+        fileRef: {
+          id: '0',
+          name: '',
+          size: 0,
+          contentType: '',
+          origin: { kind: 'browser', lastModified: 0 },
+        },
+      },
+    });
   } else {
     removeContentType();
     emitUpdate({ body: { type: 'none' } });
@@ -423,8 +601,10 @@ function removeContentType(): void {
 
 function onBodyContentChange() {
   if (bodyType.value === 'json') emitUpdate({ body: { type: 'json', content: bodyContent.value } });
-  else if (bodyType.value === 'raw') emitUpdate({ body: { type: 'raw', contentType: 'text/plain', content: bodyContent.value } });
-  else if (bodyType.value === 'text') emitUpdate({ body: { type: 'text', content: bodyContent.value } });
+  else if (bodyType.value === 'raw')
+    emitUpdate({ body: { type: 'raw', contentType: 'text/plain', content: bodyContent.value } });
+  else if (bodyType.value === 'text')
+    emitUpdate({ body: { type: 'text', content: bodyContent.value } });
 }
 
 function onFormChange(v: KeyValue[]) {
@@ -449,7 +629,19 @@ function toggleMultipartKind(i: number) {
   multipartFields.value = multipartFields.value.map((f, idx) => {
     if (idx !== i) return f;
     if (f.value.kind === 'text') {
-      return { ...f, value: { kind: 'file', file: { id: '0', name: '', size: 0, contentType: '', origin: { kind: 'browser', lastModified: 0 } } as FileReference } };
+      return {
+        ...f,
+        value: {
+          kind: 'file',
+          file: {
+            id: '0',
+            name: '',
+            size: 0,
+            contentType: '',
+            origin: { kind: 'browser', lastModified: 0 },
+          } as FileReference,
+        },
+      };
     }
     return { ...f, value: { kind: 'text', text: '' } };
   });
@@ -495,8 +687,10 @@ function onBinaryFile(fileList: File | File[] | null) {
 function onAuthChange() {
   let auth: Auth;
   if (authType.value === 'bearer') auth = { type: 'bearer', token: bearerToken.value };
-  else if (authType.value === 'basic') auth = { type: 'basic', username: basicUser.value, password: basicPass.value };
-  else if (authType.value === 'apiKey') auth = { type: 'apiKey', key: apiKeyName.value, value: apiKeyValue.value, in: apiKeyIn.value };
+  else if (authType.value === 'basic')
+    auth = { type: 'basic', username: basicUser.value, password: basicPass.value };
+  else if (authType.value === 'apiKey')
+    auth = { type: 'apiKey', key: apiKeyName.value, value: apiKeyValue.value, in: apiKeyIn.value };
   else auth = { type: 'none' };
   emitUpdate({ auth });
 }
@@ -533,7 +727,7 @@ async function run() {
   }
   await execution.run(props.request, collection?.variables ?? []);
   const r = execution.lastResult;
-  if (r && Object.keys(r.collectionVariables).length > 0) {
+  if (r?.ok && Object.keys(r.collectionVariables).length > 0) {
     await store.mergeCollectionVariables(r.collectionVariables);
   }
 }
@@ -549,9 +743,7 @@ function duplicateHeaderKeys(headers: ReadonlyArray<KeyValue>): string[] {
     const k = h.key.toLowerCase();
     seen.set(k, (seen.get(k) ?? 0) + 1);
   }
-  return [...seen.entries()]
-    .filter(([, n]) => n > 1)
-    .map(([k]) => k);
+  return [...seen.entries()].filter(([, n]) => n > 1).map(([k]) => k);
 }
 
 async function save() {
