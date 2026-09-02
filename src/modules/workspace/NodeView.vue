@@ -10,7 +10,9 @@
       <v-col cols="12">
         <div class="d-flex align-center mb-2">
           <span class="text-h6">{{ node?.name ?? activeCollection.name }}</span>
-          <v-chip v-if="node?.kind === 'folder'" size="small" class="ml-2">{{ t('folder') }}</v-chip>
+          <v-chip v-if="node?.kind === 'folder'" size="small" class="ml-2">{{
+            t('folder')
+          }}</v-chip>
           <v-chip v-else size="small" class="ml-2">{{ t('collection') }}</v-chip>
           <v-spacer />
           <v-btn
@@ -42,7 +44,11 @@
                   <v-icon icon="mdi-chevron-right" size="small" />
                 </template>
               </v-list-item>
-              <v-list-item v-if="(node?.children ?? []).length === 0" :title="t('empty')" value="" />
+              <v-list-item
+                v-if="(node?.children ?? []).length === 0"
+                :title="t('empty')"
+                value=""
+              />
             </v-list>
           </v-card-text>
         </v-card>
@@ -53,10 +59,9 @@
           <v-card-title>{{ t('collectionDetails') }}</v-card-title>
           <v-card-text>
             <div class="text-h6">{{ node?.name }}</div>
-            <div
-              v-if="activeCollection?.description"
-              class="text-body-2 text-medium-emphasis mt-1"
-            >{{ activeCollection?.description }}</div>
+            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">
+              {{ activeCollection?.description }}
+            </div>
             <div class="text-caption text-medium-emphasis mt-1">
               {{ t('updated') }} {{ formatDateValue(activeCollection?.updatedAt) }}
             </div>
@@ -92,7 +97,9 @@
                   <v-icon icon="mdi-play-box-outline" size="small" />
                 </template>
                 <template v-slot:append>
-                  <v-chip size="small" variant="text">{{ wf.steps.length }} {{ t('steps') }}</v-chip>
+                  <v-chip size="small" variant="text"
+                    >{{ wf.steps.length }} {{ t('steps') }}</v-chip
+                  >
                   <v-btn
                     icon="mdi-delete"
                     size="small"
@@ -106,11 +113,19 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" prepend-icon="mdi-plus" @click="addWorkflow">{{ t('addWorkflow') }}</v-btn>
+            <v-btn color="primary" prepend-icon="mdi-plus" @click="addWorkflow">{{
+              t('addWorkflow')
+            }}</v-btn>
           </v-card-actions>
         </v-card>
 
-        <v-alert v-if="!savedWorkflows.length" class="mt-3" type="info" variant="tonal" density="compact">
+        <v-alert
+          v-if="!savedWorkflows.length"
+          class="mt-3"
+          type="info"
+          variant="tonal"
+          density="compact"
+        >
           {{ t('noWorkflows') }}
         </v-alert>
       </v-col>
@@ -119,14 +134,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineAsyncComponent } from 'vue';
+import { computed,  defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import type { CollectionTreeNode } from '@stores/useCollectionStore';
 import type { Workflow } from '@domain/workflow/Workflow';
-import {formatDate} from "../../i18n/date";
-import {useLocaleStore} from "../../i18n/store";
+import { formatDate } from '../../i18n/date';
+import { useLocaleStore } from '../../i18n/store';
 
 const store = useCollectionStore();
 const router = useRouter();
