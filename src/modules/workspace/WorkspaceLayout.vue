@@ -32,10 +32,22 @@
       <v-card>
         <v-card-title>Import from OpenAPI</v-card-title>
         <v-card-text>
-          <v-text-field v-model="openApiUrl" label="OpenAPI URL" placeholder="https://example.com/swagger.json" />
-          <v-btn color="primary" :disabled="!openApiUrl" @click="importOpenApi">Import from URL</v-btn>
+          <v-text-field
+            v-model="openApiUrl"
+            label="OpenAPI URL"
+            placeholder="https://example.com/swagger.json"
+          />
+          <v-btn color="primary" :disabled="!openApiUrl" @click="importOpenApi"
+            >Import from URL</v-btn
+          >
           <v-btn class="ml-2" variant="tonal" @click="triggerOpenApiFile">From File</v-btn>
-          <input ref="openApiInput" type="file" accept=".json,.yaml,.yml" hidden @change="onOpenApiFile" />
+          <input
+            ref="openApiInput"
+            type="file"
+            accept=".json,.yaml,.yml"
+            hidden
+            @change="onOpenApiFile"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -69,17 +81,13 @@ const openApiInput = ref<HTMLInputElement | null>(null);
 
 onMounted(async () => {
   await store.refresh();
-  if (!store.activeCollectionId && store.collections[0]) {
-    const id = store.collections[0]!.id;
-    store.selectCollection(id);
-    router.replace({ name: 'collection', params: { collectionId: id } });
-  }
 });
 
 function onCreate(name: string) {
   store.createCollection(name).then(() => {
     notify('Collection created', 'success');
-    if (store.activeCollectionId) router.replace({ name: 'collection', params: { collectionId: store.activeCollectionId } });
+    if (store.activeCollectionId)
+      router.replace({ name: 'collection', params: { collectionId: store.activeCollectionId } });
   });
 }
 
