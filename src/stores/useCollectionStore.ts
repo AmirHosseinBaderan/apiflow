@@ -55,6 +55,15 @@ function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
   return roots;
 }
 
+function findNodeInTree(nodes: readonly CollectionTreeNode[], id: string): CollectionTreeNode | null {
+  for (const n of nodes) {
+    if (n.id === id) return n;
+    const child = findNodeInTree(n.children, id);
+    if (child) return child;
+  }
+  return null;
+}
+
 export const useCollectionStore = defineStore('collections', {
   state: () => ({
     collections: [] as Collection[],
@@ -99,6 +108,16 @@ export const useCollectionStore = defineStore('collections', {
             children: buildCollectionChildren(c),
           }) as CollectionTreeNode,
       );
+    },
+    activeTreeNode() {
+      return (folderId: string | null): CollectionTreeNode | null => {
+        const c = this.activeCollection;
+        if (!c) return null;
+        if (!folderId) {
+          return { kind: 'collection', id: c.id, name: c.name, parentId: null, children: buildCollectionChildren(c) };
+        }
+        return findNodeInTree(buildCollectionChildren(c), folderId);
+      };
     },
   },
 
