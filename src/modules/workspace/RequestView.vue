@@ -15,7 +15,10 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <VariablesEditor :model-value="activeCollection?.variables ?? []" @update:model-value="onVariablesChange" />
+          <VariablesEditor
+            :model-value="activeCollection?.variables ?? []"
+            @update:model-value="onVariablesChange"
+          />
         </v-col>
       </v-row>
     </template>
