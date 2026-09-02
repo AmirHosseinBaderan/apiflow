@@ -2,12 +2,15 @@ import { defineStore } from 'pinia';
 import type { ExecutionResult } from '@domain/test/TestResult';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableBundle } from '@domain/variable/VariableScope';
+import type { Workflow, WorkflowExecutionResult } from '@domain/workflow/Workflow';
+import { WorkflowEngine } from '@application/workflows/WorkflowEngine';
 import type { RequestExecutionService } from '@application/requests/RequestExecutionService';
 
 export const useExecutionStore = defineStore('execution', {
   state: () => ({
     running: false,
     lastResult: null as ExecutionResult | null,
+    workflowResult: null as WorkflowExecutionResult | null,
     history: [] as ExecutionResult[],
     runtimeVariables: [] as VariableBundle['runtime'],
     service: null as RequestExecutionService | null,
@@ -46,6 +49,29 @@ export const useExecutionStore = defineStore('execution', {
         this.error = (e as Error).message;
       } finally {
         this.running = false;
+      }
+    },
+    async runWorkflow(
+      workflow: Workflow,
+      requests: ReadonlyArray<RequestDefinition>,
+      collectionVars: VariableBundle['collection'],
+      runTests?: boolean,
+    ) {
+      const service = this.service;
+      if (!service) return;
+      this.running = true;
+      this.error = null;
+      try {
+        const bundle = this.bundleFor(collectionVars);
+        const engine = new WorkflowEngine(service);
+        const result = await engine.run({ workflow, requests, initialBundle: bundle, runTests });
+        this.workflowResult = result;
+        this.running = false;
+        return result;
+      } catch (e) {
+        this.error = (e as Error).message;
+        this.running = false;
+        return null;
       }
     },
     clearRuntime() {
