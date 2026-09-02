@@ -1,4 +1,4 @@
-import type { Locale } from '@i18n/store';
+import {Locale} from "./store";
 
 export function toShamsi(value: string | Date | number): string {
   const d = new Date(value);
