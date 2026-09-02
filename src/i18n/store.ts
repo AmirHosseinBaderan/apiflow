@@ -13,7 +13,10 @@ export function localeMessages(locale: string): Record<string, string> {
 
 export const useLocaleStore = defineStore('locale', {
   state: () => ({
-    locale: (typeof localStorage !== 'undefined' && (localStorage.getItem(STORAGE_KEY) as Locale | null)) || 'en',
+    locale:
+      (typeof localStorage !== 'undefined' &&
+        (localStorage.getItem(STORAGE_KEY) as Locale | null)) ||
+      'en',
   }),
   actions: {
     setLocale(locale: Locale) {
