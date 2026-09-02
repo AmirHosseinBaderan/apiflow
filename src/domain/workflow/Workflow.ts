@@ -1,5 +1,13 @@
-import type { RequestDefinition } from '@domain/request/RequestDefinition';
+import type { RequestDefinition, KeyValue } from '@domain/request/RequestDefinition';
 import type { TestResult } from '@domain/test/TestResult';
+import { createId } from '@shared/id';
+
+export interface StepOverrides {
+  readonly pathParams?: ReadonlyArray<KeyValue>;
+  readonly queryParams?: ReadonlyArray<KeyValue>;
+  readonly headers?: ReadonlyArray<KeyValue>;
+  readonly body?: string;
+}
 
 export interface WorkflowStep {
   readonly id: string;
@@ -7,6 +15,7 @@ export interface WorkflowStep {
   readonly condition?: WorkflowCondition;
   readonly next?: WorkflowNext;
   readonly variableMappings: ReadonlyArray<VariableMapping>;
+  readonly overrides?: StepOverrides;
 }
 
 export type WorkflowCondition =
@@ -64,4 +73,23 @@ export function buildLinearWorkflowFromRequests(
       variableMappings: [],
     } satisfies WorkflowStep;
   });
+}
+
+export function buildStepFromRequest(
+  request: RequestDefinition,
+  overrides?: StepOverrides,
+): WorkflowStep {
+  return {
+    id: `step_${request.id}_${createId('s')}`,
+    requestId: request.id,
+    condition: { type: 'always' },
+    next: { type: 'next' },
+    variableMappings: [],
+    overrides: overrides ?? {
+      pathParams: request.pathParams,
+      queryParams: request.queryParams,
+      headers: request.headers,
+      body: request.body.type === 'json' ? request.body.content : undefined,
+    },
+  };
 }
