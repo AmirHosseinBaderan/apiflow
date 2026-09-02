@@ -50,18 +50,28 @@ describe('RequestEditor', () => {
     await nextTick();
     await nextTick();
 
-    const text = wrapper.text();
-    expect(text).toContain('Path params');
-    expect(text).toContain('id');
-    expect(text).toContain('limit');
+    const inputValues = () =>
+      wrapper.findAll('input').map((i) => (i.element as HTMLInputElement).value);
+
+    const html = wrapper.html();
+    const idx = html.indexOf('Path params');
+    // eslint-disable-next-line no-console
+    console.log('HTML', idx >= 0 ? html.slice(idx, idx + 600) : 'NO Path params found; inputCount=' + wrapper.findAll('input').length);
+    expect(wrapper.text()).toContain('Path params');
+    expect(v).toContain('id');
+    expect(v).toContain('42');
+    expect(v).toContain('limit');
+    expect(v).toContain('10');
 
     await findTab(wrapper, 'Headers').trigger('click');
     await nextTick();
-    expect(wrapper.text()).toContain('X-Request-Id');
+    expect(inputValues()).toContain('X-Request-Id');
 
     await findTab(wrapper, 'Body').trigger('click');
     await nextTick();
-    const ta = wrapper.findAll('textarea').find((t) => (t.element as HTMLTextAreaElement).value.includes('name'));
+    const ta = wrapper
+      .findAll('textarea')
+      .find((t) => (t.element as HTMLTextAreaElement).value.includes('name'));
     expect(ta).toBeTruthy();
   });
 });

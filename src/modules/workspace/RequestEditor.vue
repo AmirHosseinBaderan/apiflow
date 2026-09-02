@@ -236,6 +236,7 @@ import type {
 import { HTTP_METHODS } from '@domain/request/RequestDefinition';
 import { createId } from '@shared/id';
 import JsonEditor from '@components/JsonEditor.vue';
+import KeyValueEditor from '@components/KeyValueEditor.vue';
 import ResponsePanel from '@components/ResponsePanel.vue';
 import RetryPolicyEditor from '@components/RetryPolicyEditor.vue';
 import TestEditor from '@components/TestEditor.vue';
