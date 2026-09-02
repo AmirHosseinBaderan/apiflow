@@ -2,10 +2,27 @@
   <v-navigation-drawer permanent width="320">
     <v-list-subheader>Collections</v-list-subheader>
 
+    <div class="pa-2 border-b">
+      <v-text-field
+        v-model="newItemName"
+        label="New request / folder name"
+        density="compact"
+        hide-details
+      />
+      <v-row dense class="mt-1">
+        <v-col cols="6">
+          <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click="newRequest">Request</v-btn>
+        </v-col>
+        <v-col cols="6">
+          <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click="newFolder">Folder</v-btn>
+        </v-col>
+      </v-row>
+    </div>
+
     <v-treeview
-      v-if="treeWithActions.length > 0"
+      v-if="tree.length > 0"
       v-model:opened="opened"
-      :items="treeWithActions"
+      :items="tree"
       item-value="id"
       item-title="name"
       item-children="children"
@@ -18,48 +35,7 @@
         <v-icon v-if="!item.isAction" :icon="iconFor(item.kind)" size="small" />
       </template>
       <template #title="{ item }">
-        <v-sheet v-if="item.isAction" width="100%" @click.stop>
-          <v-text-field
-            v-model="newRequestName"
-            label="New request name"
-            density="compact"
-            hide-details
-            @keyup.enter="addRequest"
-          />
-          <v-row dense class="mt-1">
-            <v-col cols="6">
-              <v-btn
-                size="small"
-                variant="tonal"
-                prepend-icon="mdi-plus"
-                block
-                @click.stop="addRequest"
-                >Request</v-btn
-              >
-            </v-col>
-            <v-col cols="6">
-              <v-btn
-                size="small"
-                variant="tonal"
-                prepend-icon="mdi-folder-plus"
-                block
-                @click.stop="addFolder"
-                >Folder</v-btn
-              >
-            </v-col>
-          </v-row>
-          <v-alert
-            v-if="activeTree.length === 0"
-            type="info"
-            variant="tonal"
-            density="compact"
-            class="mt-2"
-          >
-            This collection is empty. Add a request or folder to get started.
-          </v-alert>
-        </v-sheet>
         <span
-          v-else
           :class="{
             'font-weight-bold': isItemActive(item),
             'text-body-2': item.kind === 'collection',
@@ -69,7 +45,7 @@
         </span>
       </template>
       <template #append="{ item }">
-        <v-menu v-if="!item.isAction">
+        <v-menu>
           <template #activator="{ props: act }">
             <v-btn
               v-bind="act"
@@ -121,71 +97,32 @@
       </template>
     </v-treeview>
 
-    <v-alert
-      v-if="treeWithActions.length === 0"
-      type="info"
-      variant="tonal"
-      density="compact"
-      class="mx-2 my-2"
-    >
-      No collections yet. Create one above.
+    <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
+      No collections yet. Use "New Collection" in the header.
     </v-alert>
-
-    <v-dialog v-model="renameDialog.open" max-width="400">
-      <v-card>
-        <v-card-title>Rename Request</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="renameDialog.name" autofocus @keyup.enter="confirmRename" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="renameDialog.open = false">Cancel</v-btn>
-          <v-btn color="primary" :disabled="!renameDialog.name.trim()" @click="confirmRename"
-            >Save</v-btn
-          >
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollectionStore';
+import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
+import RenameRequestDialog from './dialogs/RenameRequestDialog.vue';
+import CollectionPickerDialog from './dialogs/CollectionPickerDialog.vue';
 
 const store = useCollectionStore();
 const router = useRouter();
+const dialog = useDialogStore();
 const { notify } = useNotifier();
 
 const tree = computed(() => store.tree);
-const activeTree = computed(() => store.treeForActive);
 const activeCollectionId = computed(() => store.activeCollectionId);
 const activeRequestId = computed(() => store.activeRequestId);
 
 const opened = ref<string[]>([]);
-const newRequestName = ref('');
-const renameDialog = reactive({ open: false, id: null as string | null, name: '' });
-
-const actionId = (collectionId: string) => `__action_${collectionId}`;
-
-const treeWithActions = computed(() => {
-  const activeId = activeCollectionId.value;
-  if (!activeId) return tree.value;
-  return tree.value.map((c) => {
-    if (c.id !== activeId) return c;
-    const action: CollectionTreeNode = {
-      kind: 'request',
-      id: actionId(activeId),
-      name: '',
-      parentId: activeId,
-      children: [],
-      isAction: true,
-    };
-    return { ...c, children: [action, ...c.children] };
-  });
-});
+const newItemName = ref('');
 
 watch(
   () => store.activeCollectionId,
@@ -223,29 +160,56 @@ function findNode(nodes: readonly CollectionTreeNode[], id: string): CollectionT
 function onActivate(ids: unknown[]) {
   const id = Array.isArray(ids) ? ids[0] : undefined;
   if (typeof id !== 'string') return;
-  const node = findNode(treeWithActions.value, id);
-  if (!node || node.isAction) return;
+  const node = findNode(tree.value, id);
+  if (!node) return;
   if (node.kind === 'collection') {
     store.selectCollection(id);
     router.push({ name: 'collection', params: { collectionId: id } });
+  } else if (node.kind === 'folder') {
+    const cid = store.ownerCollectionId(id);
+    if (cid) {
+      store.selectCollection(cid);
+      router.push({ name: 'node', params: { collectionId: cid, folderId: id } });
+    }
   } else if (node.kind === 'request') {
-    store.selectRequest(id);
-    const cid = activeCollectionId.value;
-    if (cid)
-      router.push({ name: 'collectionRequest', params: { collectionId: cid, requestId: id } });
+    const cid = store.ownerCollectionId(id);
+    if (cid) {
+      store.selectCollection(cid);
+      store.selectRequest(id);
+      router.push({ name: 'request', params: { collectionId: cid, requestId: id } });
+    }
   }
 }
 
-async function addRequest() {
-  const name = newRequestName.value.trim() || 'New Request';
-  await store.createRequest(name);
-  newRequestName.value = '';
-  notify('Request created', 'success');
+function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
+  if (store.activeCollectionId) return store.activeCollectionId;
+  dialog.openDialog({
+    component: CollectionPickerDialog,
+    title: 'Pick a collection',
+    props: { itemType, name: newItemName.value, noCloseButton: true },
+  });
+  return null;
 }
 
-async function addFolder() {
-  await store.createFolder('New Folder');
+async function newRequest() {
+  const name = newItemName.value.trim() || 'New Request';
+  const cid = requireActiveOrPick('request');
+  if (!cid) return;
+  await store.createRequest(name);
+  notify('Request created', 'success');
+  if (store.activeRequestId) router.push({ name: 'request', params: { collectionId: cid, requestId: store.activeRequestId } });
+}
+
+async function newFolder() {
+  const name = newItemName.value.trim() || 'New Folder';
+  const cid = requireActiveOrPick('folder');
+  if (!cid) return;
+  await store.createFolder(name);
+  const folderId = store.activeCollection?.folders.find((f) => f.name === name)?.id ?? null;
   notify('Folder created', 'success');
+  if (folderId) router.push({ name: 'node', params: { collectionId: cid, folderId } });
+  else router.push({ name: 'collection', params: { collectionId: cid } });
+  newItemName.value = '';
 }
 
 async function addFolderWithParent(parentId: string) {
@@ -260,21 +224,11 @@ async function deleteFolder(id: string) {
 }
 
 function renameRequest(id: string, currentName: string) {
-  renameDialog.open = true;
-  renameDialog.id = id;
-  renameDialog.name = currentName;
-}
-
-async function confirmRename() {
-  if (!renameDialog.id) return;
-  const id = renameDialog.id;
-  const newName = renameDialog.name.trim();
-  if (!newName) return;
-  const req = store.requestById(id);
-  if (req) await store.updateRequest({ ...req, name: newName });
-  renameDialog.open = false;
-  renameDialog.id = null;
-  notify('Request renamed', 'success');
+  dialog.openDialog({
+    component: RenameRequestDialog,
+    title: 'Rename Request',
+    props: { id, currentName },
+  });
 }
 
 async function deleteRequest(id: string) {
