@@ -123,10 +123,10 @@ import { computed, ref, defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
-import { useLocaleStore } from '@i18n/store';
-import { formatDate } from '@i18n/date';
 import type { CollectionTreeNode } from '@stores/useCollectionStore';
 import type { Workflow } from '@domain/workflow/Workflow';
+import {formatDate} from "../../i18n/date";
+import {useLocaleStore} from "../../i18n/store";
 
 const store = useCollectionStore();
 const router = useRouter();
