@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import en from './messages/en';
 import fa from './messages/fa';
-import type { Locale } from '@i18n/store';
 
 export type Locale = 'en' | 'fa';
 
