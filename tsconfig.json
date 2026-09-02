@@ -31,7 +31,8 @@
       "@components/*": ["src/components/*"],
       "@composables/*": ["src/composables/*"],
       "@modules/*": ["src/modules/*"],
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@i18n/*": ["src/i18n/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"],
