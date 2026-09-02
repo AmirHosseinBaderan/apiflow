@@ -1,6 +1,9 @@
 <template>
   <v-sheet color="surface-variant" class="json-code-view ma-1" elevation="1">
-    <pre class="ma-0 pa-3" style="overflow: auto"><code><span v-for="(token, i) in tokens" :key="`${token.type}-${i}`" :class="`token-${token.type}`">{{ token.text }}</span></code></pre>
+    <pre
+      class="ma-0 pa-3"
+      style="overflow: auto"
+    ><code><span v-for="(token, i) in tokens" :key="`${token.type}-${i}`" :class="`token-${token.type}`">{{ token.text }}</span></code></pre>
   </v-sheet>
 </template>
 
@@ -15,7 +18,8 @@ interface Token {
 const props = defineProps<{ value?: unknown }>();
 
 const tokens = computed<Token[]>(() => {
-  const input = typeof props.value === 'string' ? props.value : JSON.stringify(props.value, null, 2);
+  const input =
+    typeof props.value === 'string' ? props.value : JSON.stringify(props.value, null, 2);
   if (props.value === '' || props.value === undefined || props.value === null) return [];
   try {
     const obj = JSON.parse(input);
@@ -75,7 +79,8 @@ function tokenize(src: string): Token[] {
     }
     if (s === 'true' || s === 'false') out.push({ type: 'boolean', text: s });
     else if (s === 'null') out.push({ type: 'null', text: s });
-    else if (/^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/.test(s)) out.push({ type: 'number', text: s });
+    else if (/^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/.test(s))
+      out.push({ type: 'number', text: s });
     else out.push({ type: 'string', text: s });
   }
   return out;
