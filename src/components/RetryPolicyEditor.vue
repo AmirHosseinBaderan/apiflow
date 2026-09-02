@@ -12,13 +12,29 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { RetryPolicyWithCodes } from '@domain/request/RequestDefinition';
+import type { RetryPolicyWithCodes, RetryCondition } from '@domain/request/RequestDefinition';
+
+interface WritableRetry {
+  enabled: boolean;
+  maxAttempts: number;
+  initialDelayMs: number;
+  backoff: 'fixed' | 'exponential';
+  retryOn: RetryCondition[];
+  retryStatusCodes: number[];
+}
 
 const props = defineProps<{ modelValue: RetryPolicyWithCodes }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: RetryPolicyWithCodes): void }>();
 
-const local = computed({
-  get: () => ({ ...props.modelValue }),
-  set: (v) => emit('update:modelValue', { ...v }),
+const local = computed<WritableRetry>({
+  get: () => ({
+    enabled: props.modelValue.enabled,
+    maxAttempts: props.modelValue.maxAttempts,
+    initialDelayMs: props.modelValue.initialDelayMs,
+    backoff: props.modelValue.backoff,
+    retryOn: [...props.modelValue.retryOn],
+    retryStatusCodes: [...props.modelValue.retryStatusCodes],
+  }),
+  set: (v) => emit('update:modelValue', v),
 });
 </script>

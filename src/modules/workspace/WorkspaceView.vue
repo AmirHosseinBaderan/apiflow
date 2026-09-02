@@ -36,19 +36,39 @@
                           :items="availableRequests"
                           item-title="name"
                           item-value="id"
-                          label="Pick requests to chain"
+                          label="Pick requests to chain (in order)"
                           multiple
                           chips
                         />
-                        <v-btn color="primary" :disabled="workflowRequestIds.length < 2" @click="runWorkflow">Run Workflow</v-btn>
+                        <v-select
+                          v-model="workflowConditionType"
+                          :items="['always','statusEquals','variableEquals']"
+                          label="Condition between steps"
+                          density="compact"
+                          hide-details
+                          class="mt-2"
+                        />
+                        <v-text-field
+                          v-if="workflowConditionType !== 'always'"
+                          v-model="workflowConditionValue"
+                          :label="workflowConditionType === 'statusEquals' ? 'Expected status' : 'Variable value'"
+                          density="compact"
+                          hide-details
+                          class="mt-1"
+                        />
+                        <v-btn class="mt-3" color="primary" :disabled="workflowRequestIds.length < 2" @click="runWorkflow">Run Workflow</v-btn>
                         <v-list v-if="lastWorkflow" density="compact" class="mt-2">
                           <v-list-item v-for="s in lastWorkflow.steps" :key="s.stepId">
                             <template #prepend>
                               <v-icon :color="s.ok ? 'success' : 'error'">{{ s.ok ? 'mdi-check' : 'mdi-close' }}</v-icon>
                             </template>
                             <v-list-item-title>{{ s.requestName }}</v-list-item-title>
+                            <v-list-item-subtitle v-if="s.error">{{ s.error }}</v-list-item-subtitle>
                           </v-list-item>
                         </v-list>
+                        <v-alert v-if="lastWorkflow" :type="lastWorkflow.ok ? 'success' : 'error'" variant="tonal" class="mt-2">
+                          {{ lastWorkflow.ok ? 'Workflow passed' : 'Workflow failed' }}
+                        </v-alert>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -119,6 +139,8 @@ const openApiUrl = ref('');
 const openApiInput = ref<HTMLInputElement | null>(null);
 
 const workflowRequestIds = ref<string[]>([]);
+const workflowConditionType = ref<'always' | 'statusEquals' | 'variableEquals'>('always');
+const workflowConditionValue = ref('200');
 const lastWorkflow = ref<WorkflowExecutionResult | null>(null);
 
 const availableRequests = computed<RequestDefinition[]>(() => {
@@ -217,7 +239,22 @@ async function runWorkflow() {
   const requests = workflowRequestIds.value
     .map((id) => activeCollection.value!.requests.find((r) => r.id === id))
     .filter((r): r is RequestDefinition => Boolean(r));
-  const wf = { id: 'wf', name: 'Run', steps: buildLinearWorkflowFromRequests(requests) };
+  let condition;
+  if (workflowConditionType.value === 'statusEquals') {
+    condition = { type: 'statusEquals' as const, value: Number(workflowConditionValue.value) || 200 };
+  } else if (workflowConditionType.value === 'variableEquals') {
+    const [name, ...rest] = workflowConditionValue.value.split('=');
+    condition = { type: 'variableEquals' as const, name: name?.trim() ?? '', value: rest.join('=').trim() };
+  } else {
+    condition = { type: 'always' as const };
+  }
+  const baseSteps = buildLinearWorkflowFromRequests(requests);
+  const steps = baseSteps.map((s, idx) =>
+    idx === 0
+      ? { ...s, condition }
+      : { ...s, condition: { type: 'always' as const } },
+  );
+  const wf = { id: 'wf', name: 'Run', steps };
   const engine = new WorkflowEngine(new RequestExecutionService(httpClient()));
   lastWorkflow.value = await engine.run({
     workflow: wf,

@@ -43,6 +43,9 @@ export class WorkflowEngine {
       }
 
       bundle = this.applyExtractions(bundle, execResult.extractedVariables);
+      if (execResult.response) {
+        bundle = this.applyExtractions(bundle, { __last_status: String(execResult.response.status) });
+      }
 
       stepResults.push({ stepId: step.id, requestName: req.name, ok: execResult.ok, error: execResult.errors.join('; ') || undefined });
       if (!execResult.ok) {
