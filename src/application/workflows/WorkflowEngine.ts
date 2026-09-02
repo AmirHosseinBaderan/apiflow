@@ -1,4 +1,10 @@
-import type { Workflow, WorkflowStep, WorkflowExecutionResult, StepExecutionResult, VariableMapping } from '@domain/workflow/Workflow';
+import type {
+  Workflow,
+  WorkflowStep,
+  WorkflowExecutionResult,
+  StepExecutionResult,
+  VariableMapping,
+} from '@domain/workflow/Workflow';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry, VariableBundle } from '@domain/variable/VariableScope';
 import type { ExecutionResult } from '@domain/test/TestResult';
@@ -13,7 +19,11 @@ export interface RunWorkflowInput {
 export class WorkflowEngine {
   constructor(private readonly executor: RequestExecutionService) {}
 
-  async run({ workflow, requests, initialBundle }: RunWorkflowInput): Promise<WorkflowExecutionResult> {
+  async run({
+    workflow,
+    requests,
+    initialBundle,
+  }: RunWorkflowInput): Promise<WorkflowExecutionResult> {
     const requestMap = new Map(requests.map((r) => [r.id, r]));
     const stepResults: StepExecutionResult[] = [];
     let bundle: VariableBundle = initialBundle;
@@ -24,7 +34,12 @@ export class WorkflowEngine {
       const step = workflow.steps[cursor]!;
       const req = requestMap.get(step.requestId);
       if (!req) {
-        stepResults.push({ stepId: step.id, requestName: '(unknown)', ok: false, error: 'Request not found' });
+        stepResults.push({
+          stepId: step.id,
+          requestName: '(unknown)',
+          ok: false,
+          error: 'Request not found',
+        });
         ok = false;
         break;
       }
@@ -32,7 +47,14 @@ export class WorkflowEngine {
         cursor += 1;
         continue;
       }
-      bundle = { ...bundle, request: this.applyVariableMappings(this.requestVariablesFromStep(req), step, bundle) };
+      bundle = {
+        ...bundle,
+        request: this.applyVariableMappings(
+          this.requestVariablesFromStep(req),
+          step.variableMappings,
+          bundle,
+        ),
+      };
       let execResult: ExecutionResult;
       try {
         execResult = await this.executor.execute({ request: req, bundle });
@@ -48,7 +70,9 @@ export class WorkflowEngine {
 
       bundle = this.applyExtractions(bundle, execResult.extractedVariables);
       if (execResult.response) {
-        bundle = this.applyExtractions(bundle, { __last_status: String(execResult.response.status) });
+        bundle = this.applyExtractions(bundle, {
+          __last_status: String(execResult.response.status),
+        });
       }
 
       stepResults.push({
@@ -94,7 +118,12 @@ export class WorkflowEngine {
   }
 
   private requestVariablesFromStep(req: RequestDefinition) {
-    return req.variableExtractions.map((ve) => ({ key: ve.name, value: '', enabled: true, secret: false }));
+    return req.variableExtractions.map((ve) => ({
+      key: ve.name,
+      value: '',
+      enabled: true,
+      secret: false,
+    }));
   }
 
   private resolveVariable(name: string, bundle: VariableBundle): string | undefined {
@@ -124,14 +153,23 @@ export class WorkflowEngine {
       if (source === undefined) continue;
       const value = this.applyTransform(source, m.transform);
       const existing = map.get(m.toVar);
-      map.set(m.toVar, existing ? { ...existing, value, enabled: true } : { key: m.toVar, value, enabled: true, secret: false });
+      map.set(
+        m.toVar,
+        existing
+          ? { ...existing, value, enabled: true }
+          : { key: m.toVar, value, enabled: true, secret: false },
+      );
     }
     return Array.from(map.values());
   }
 
-  private applyExtractions(bundle: VariableBundle, extracted: Readonly<Record<string, string>>): VariableBundle {
+  private applyExtractions(
+    bundle: VariableBundle,
+    extracted: Readonly<Record<string, string>>,
+  ): VariableBundle {
     const map = new Map(bundle.runtime.map((v) => [v.key, v]));
-    for (const [k, v] of Object.entries(extracted)) map.set(k, { key: k, value: v, enabled: true, secret: false });
+    for (const [k, v] of Object.entries(extracted))
+      map.set(k, { key: k, value: v, enabled: true, secret: false });
     return { ...bundle, runtime: Array.from(map.values()) };
   }
 }
