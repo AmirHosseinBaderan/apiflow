@@ -14,10 +14,10 @@
 import { computed, onMounted } from 'vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { CollectionExporter } from '@application/imports/CollectionExchange';
-import { useNotifier } from '@composables/useNotifier';
+import CollectionsSidebar from "@modules/workspace/CollectionsSidebar.vue";
+import WorkspaceHeader from "@modules/workspace/WorkspaceHeader.vue";
 
 const store = useCollectionStore();
-const { notify } = useNotifier();
 
 const activeCollection = computed(() => store.activeCollection);
 
