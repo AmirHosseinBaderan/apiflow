@@ -21,9 +21,31 @@ export class RequestExecutionService {
     let attempts = 0;
     let response: ExecutionResponse | undefined;
     const extracted: Record<string, string> = {};
+    const runtimeMutations = new Map<string, string>();
 
-    let currentBundle: VariableBundle = bundle;
-    const built = requestBuilder.build({ request, bundle });
+    const applyMutations = (b: VariableBundle): VariableBundle => {
+      if (runtimeMutations.size === 0) return b;
+      const map = new Map(b.runtime.map((v) => [v.key, v]));
+      for (const [k, v] of runtimeMutations) map.set(k, { key: k, value: v, enabled: true, secret: false });
+      return { ...b, runtime: Array.from(map.values()) };
+    };
+
+    let currentBundle: VariableBundle = applyMutations(bundle);
+
+    for (const step of request.preRequest) {
+      const result = testEngine.runPreRequest(step, {
+        variables: currentBundle,
+        request: { id: request.id, name: request.name, url: request.url, method: request.method },
+        setRuntimeVariable: (name, value) => runtimeMutations.set(name, value),
+      });
+      tests.push(result);
+      if (result.status === 'error') {
+        errors.push(`Pre-request '${step.name}' errored: ${result.error ?? 'unknown'}`);
+      }
+    }
+    currentBundle = applyMutations(bundle);
+
+    let built = requestBuilder.build({ request, bundle: currentBundle });
 
     while (true) {
       attempts += 1;
@@ -54,11 +76,7 @@ export class RequestExecutionService {
         const delay = retryPolicyEngine.delayMs(attempts, request.retry);
         await new Promise((res) => setTimeout(res, delay));
         currentBundle = this.applyExtractedVariables(currentBundle, extracted);
-        const rebuilt = requestBuilder.build({
-          request,
-          bundle: currentBundle,
-        });
-        Object.assign(built, rebuilt);
+        built = requestBuilder.build({ request, bundle: currentBundle });
         continue;
       }
       break;
@@ -67,7 +85,7 @@ export class RequestExecutionService {
     return {
       requestId: request.id,
       requestName: request.name,
-      ok: response !== undefined && response.status < 400 && tests.every((t) => t.status !== 'failed'),
+      ok: response !== undefined && response.status < 400 && tests.every((t) => t.status !== 'failed' && t.status !== 'error'),
       attempts,
       response,
       tests,
