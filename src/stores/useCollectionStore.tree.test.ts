@@ -4,11 +4,33 @@ import { useCollectionStore } from '@stores/useCollectionStore';
 import { CollectionService } from '@application/collections/CollectionService';
 
 class MemoryRepo {
-  data: Map<string, { id: string; name: string; folders: { id: string; name: string; parentId: string | null; requestIds: string[]; childFolderIds: string[] }[]; requests: { id: string; name: string }[] }> = new Map();
-  async list() { return Array.from(this.data.values()) as never; }
-  async get(id: string) { return this.data.get(id) as never; }
-  async save(_c: { id: string }) { /* not used */ }
-  async remove(_id: string) { /* not used */ }
+  data: Map<
+    string,
+    {
+      id: string;
+      name: string;
+      folders: {
+        id: string;
+        name: string;
+        parentId: string | null;
+        requestIds: string[];
+        childFolderIds: string[];
+      }[];
+      requests: { id: string; name: string }[];
+    }
+  > = new Map();
+  async list() {
+    return Array.from(this.data.values()) as never;
+  }
+  async get(id: string) {
+    return this.data.get(id) as never;
+  }
+  async save(_c: { id: string }) {
+    /* not used */
+  }
+  async remove(_id: string) {
+    /* not used */
+  }
 }
 
 describe('treeForActive with OpenAPI-style data', () => {
@@ -22,7 +44,9 @@ describe('treeForActive with OpenAPI-style data', () => {
     repo.data.set('c1', {
       id: 'c1',
       name: 'Demo',
-      folders: [{ id: folderId, name: 'Users', parentId: null, requestIds: [reqId], childFolderIds: [] }],
+      folders: [
+        { id: folderId, name: 'Users', parentId: null, requestIds: [reqId], childFolderIds: [] },
+      ],
       requests: [{ id: reqId, name: 'Get User' }],
     });
     store.bindService(new CollectionService(repo as never));
@@ -49,8 +73,13 @@ describe('tree with OpenAPI-style data', () => {
     repo.data.set('c1', {
       id: 'c1',
       name: 'Demo',
-      folders: [{ id: folderId, name: 'Users', parentId: null, requestIds: [reqId], childFolderIds: [] }],
-      requests: [{ id: reqId, name: 'Get User' }, { id: unfiledId, name: 'Unfiled' }],
+      folders: [
+        { id: folderId, name: 'Users', parentId: null, requestIds: [reqId], childFolderIds: [] },
+      ],
+      requests: [
+        { id: reqId, name: 'Get User' },
+        { id: unfiledId, name: 'Unfiled' },
+      ],
     });
     store.bindService(new CollectionService(repo as never));
     await store.refresh();
