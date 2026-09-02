@@ -30,26 +30,14 @@ function goHome() {
 }
 
 function openNew() {
-  dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/NewCollectionDialog.vue')),
-    title: 'New Collection',
-    props: { noCloseButton: true },
-  });
+  dialog.openDialog({ component: defineAsyncComponent(() => import('./dialogs/NewCollectionDialog.vue')), title: 'New Collection' });
 }
 
 function openImport() {
-  dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/ImportCollectionDialog.vue')),
-    title: 'Import Collection JSON',
-    props: { noCloseButton: true },
-  });
+  dialog.openDialog({ component: defineAsyncComponent(() => import('./dialogs/ImportCollectionDialog.vue')), title: 'Import Collection JSON' });
 }
 
 function openOpenApi() {
-  dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/OpenApiImportDialog.vue')),
-    title: 'Import from OpenAPI',
-    props: { noCloseButton: true },
-  });
+  dialog.openDialog({ component: defineAsyncComponent(() => import('./dialogs/OpenApiImportDialog.vue')), title: 'Import from OpenAPI' });
 }
 </script>
