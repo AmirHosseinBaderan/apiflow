@@ -68,7 +68,6 @@ function pickNewCollection() {
   dialog.openDialog({
     component: NewCollectionDialog,
     title: 'New Collection',
-    props: { noCloseButton: true },
   });
   notify('Pick or create a collection, then use New Request/Folder again.', 'info');
 }
