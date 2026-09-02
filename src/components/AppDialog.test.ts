@@ -30,7 +30,7 @@ describe('AppDialog', () => {
 
   it('closes when the app-bar close button is clicked', async () => {
     const pinia = createPinia();
-    const wrapper = mount(AppDialog, { global: { plugins: [pinia, vuetify] } });
+    mount(AppDialog, { global: { plugins: [pinia, vuetify] } });
     const dialog = useDialogStore(pinia);
     dialog.openDialog({ component: Stub, title: 'Test dialog' });
     await nextTick();
