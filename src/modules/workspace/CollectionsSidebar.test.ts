@@ -44,8 +44,12 @@ describe('CollectionsSidebar render', () => {
         return [];
       }
     }
-    (globalThis as any).ResizeObserver = RO;
-    (globalThis as any).IntersectionObserver = RO;
+const g = globalThis as unknown as {
+  ResizeObserver: unknown;
+  IntersectionObserver: unknown;
+};
+g.ResizeObserver = RO;
+g.IntersectionObserver = RO;
   });
   it('renders collection names in an expandable tree', async () => {
     const pinia = createPinia();
