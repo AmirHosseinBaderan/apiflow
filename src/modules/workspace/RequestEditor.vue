@@ -80,9 +80,12 @@
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="reqTab">
-              <v-tabs-window-item value="params">
-                <KeyValueEditor v-model="queryParamsLocal" @update:model-value="onParamChange" />
-              </v-tabs-window-item>
+                <v-tabs-window-item value="params">
+                  <div v-if="pathParamsLocal.length" class="text-caption text-medium-emphasis mb-1">Path params</div>
+                  <KeyValueEditor v-if="pathParamsLocal.length" v-model="pathParamsLocal" @update:model-value="onPathParamChange" />
+                  <div class="text-caption text-medium-emphasis mb-1 mt-2">Query params</div>
+                  <KeyValueEditor v-model="queryParamsLocal" @update:model-value="onParamChange" />
+                </v-tabs-window-item>
               <v-tabs-window-item value="headers">
                 <KeyValueEditor v-model="headersLocal" @update:model-value="onHeaderChange" />
               </v-tabs-window-item>
@@ -256,6 +259,7 @@ const localUrl = ref(props.request.url);
 const nameLocal = ref(props.request.name);
 const descLocal = ref(props.request.description ?? '');
 const queryParamsLocal = ref<KeyValue[]>([...props.request.queryParams]);
+const pathParamsLocal = ref<KeyValue[]>([...props.request.pathParams]);
 const headersLocal = ref<KeyValue[]>([...props.request.headers]);
 const timeoutLocal = ref(props.request.timeoutMs);
 const retryLocal = ref<RetryPolicyWithCodes>({ ...props.request.retry, retryOn: [...props.request.retry.retryOn], retryStatusCodes: [...props.request.retry.retryStatusCodes] });
@@ -281,6 +285,7 @@ function syncFromProps(r: RequestDefinition) {
   nameLocal.value = r.name;
   descLocal.value = r.description ?? '';
   queryParamsLocal.value = [...r.queryParams];
+  pathParamsLocal.value = [...r.pathParams];
   headersLocal.value = [...r.headers];
   timeoutLocal.value = r.timeoutMs;
   retryLocal.value = { ...r.retry, retryOn: [...r.retry.retryOn], retryStatusCodes: [...r.retry.retryStatusCodes] };
@@ -343,6 +348,11 @@ function onDescChange() {
 function onParamChange(v: KeyValue[]) {
   queryParamsLocal.value = v;
   emitUpdate({ queryParams: v });
+}
+
+function onPathParamChange(v: KeyValue[]) {
+  pathParamsLocal.value = v;
+  emitUpdate({ pathParams: v });
 }
 
 function onHeaderChange(v: KeyValue[]) {

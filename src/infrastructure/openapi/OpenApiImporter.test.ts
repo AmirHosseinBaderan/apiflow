@@ -16,7 +16,21 @@ const sample = JSON.stringify({
       post: {
         operationId: 'createPet',
         summary: 'Create pet',
-        requestBody: { required: true, content: { 'application/json': {} } },
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  status: { type: 'integer' },
+                  active: { type: 'boolean' },
+                },
+              },
+            },
+          },
+        },
       },
     },
     '/pets/{id}': {
@@ -38,6 +52,14 @@ describe('OpenApiImporter', () => {
     expect(collection.requests[0]?.url).toBe('https://api.petstore.com/pets');
     const get = collection.requests.find((r) => r.name === 'Get pet');
     expect(get?.pathParams[0]?.key).toBe('id');
+    const created = collection.requests.find((r) => r.name === 'Create pet');
+    expect(created?.headers.find((h) => h.key === 'Content-Type')?.value).toBe('application/json');
+    expect(created?.body.type).toBe('json');
+    expect(JSON.parse((created?.body.type === 'json' ? created.body.content : '{}'))).toEqual({
+      name: '',
+      status: 0,
+      active: false,
+    });
   });
 
   it('groups operations into folders by tag', () => {

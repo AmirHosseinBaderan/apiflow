@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll } from 'vitest';
+import { describe, expect, it, beforeAll, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { defineComponent, h, nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
@@ -73,9 +73,9 @@ g.IntersectionObserver = RO;
     await store.createRequest('Get User');
 
     const wrapper = mount(Wrapper, {
-      global: { plugins: [pinia, vuetify] },
-    });
-    await wrapper.vm.$nextTick();
+             global: { plugins: [pinia, vuetify, router] },
+       });
+       await wrapper.vm.$nextTick();
 
     const text = wrapper.text();
     expect(text).toContain('Demo');
@@ -99,13 +99,17 @@ g.IntersectionObserver = RO;
     await router.isReady();
     await wrapper.vm.$nextTick();
 
-    const tree = wrapper.findComponent(VTreeview);
     const reqId = store.activeRequestId as string;
-    await tree.vm.$emit('update:activated', reqId);
-    await new Promise((r) => setTimeout(r));
+    const pushSpy = vi.spyOn(router, 'push');
+    const labels = wrapper.findAll('span').filter((s) => s.text() === 'Get User');
+    expect(labels.length).toBeGreaterThan(0);
+    await labels[0].trigger('click');
+    const pushPromise = pushSpy.mock.results[0]?.value;
+    if (pushPromise && typeof (pushPromise as Promise<unknown>).then === 'function')
+      await pushPromise;
+    await router.isReady();
     await nextTick();
-    // eslint-disable-next-line no-console
-    console.log('DBG', 'tv', tree.exists(), 'reqId', reqId, 'owner', store.ownerCollectionId(reqId!));
+
     expect(router.currentRoute.value.name).toBe('request');
     expect(router.currentRoute.value.params.requestId).toBe(reqId);
   });

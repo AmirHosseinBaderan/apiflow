@@ -29,9 +29,40 @@ export type NormalizedParameter = {
   readonly schema?: unknown;
 };
 
-export interface NormalizedRequestBody {
+ export interface NormalizedRequestBody {
   readonly required: boolean;
   readonly contentTypes: ReadonlyArray<string>;
+  readonly schema?: unknown;
+}
+
+function sampleFromSchema(schema: unknown): unknown {
+  if (!schema || typeof schema !== 'object') return undefined;
+  const s = schema as { type?: unknown; example?: unknown; default?: unknown; properties?: Record<string, unknown>; items?: unknown; required?: string[] };
+  if ('example' in s) return s.example;
+  if ('default' in s) return s.default;
+  const t = Array.isArray(s.type) ? s.type[0] : s.type;
+  switch (t) {
+    case 'object': {
+      const out: Record<string, unknown> = {};
+      if (s.properties) {
+        for (const [k, prop] of Object.entries(s.properties)) {
+          out[k] = sampleFromSchema(prop);
+        }
+      }
+      return out;
+    }
+    case 'array':
+      return s.items ? [sampleFromSchema(s.items)] : [];
+    case 'string':
+      return s.example ?? '';
+    case 'number':
+    case 'integer':
+      return typeof s.example === 'number' ? s.example : 0;
+    case 'boolean':
+      return typeof s.example === 'boolean' ? s.example : false;
+    default:
+      return undefined;
+  }
 }
 
 export class OpenApiImporter {
@@ -67,8 +98,8 @@ export class OpenApiImporter {
           method: method as HttpMethod,
           path,
           tags: op.tags ?? [],
-          parameters: this.normalizeParameters(op.parameters),
-          requestBody: op.requestBody ? { required: false, contentTypes: ['application/json'] } : undefined,
+           parameters: this.normalizeParameters(op.parameters),
+           requestBody: op.requestBody ? this.normalizeRequestBody(op.requestBody) : undefined,
         });
       }
     }
@@ -88,6 +119,17 @@ export class OpenApiImporter {
         schema: obj.schema,
       } satisfies NormalizedParameter;
     });
+  }
+
+  private normalizeRequestBody(body: unknown): NormalizedRequestBody {
+    const obj = body as { required?: boolean; content?: Record<string, { schema?: unknown; example?: unknown }> };
+    const content = obj.content ?? {};
+    const contentTypes = Object.keys(content);
+    const jsonKey = contentTypes.includes('application/json')
+      ? 'application/json'
+      : contentTypes[0];
+    const schema = jsonKey ? content[jsonKey]?.schema : undefined;
+    return { required: !!obj.required, contentTypes, schema };
   }
 }
 
@@ -130,12 +172,16 @@ export class CollectionGenerator {
           else if (p.in === 'path') pathParams.push(entry);
           else queryParams.push(entry);
         }
-        if (op.requestBody) {
-          headers.push({ id: createId('kv'), key: 'Content-Type', value: 'application/json', enabled: true });
-        }
-        const body: RequestDefinition['body'] = op.requestBody
-          ? { type: 'json', content: '{}' }
-          : { type: 'none' };
+         if (op.requestBody) {
+           const contentType = op.requestBody.contentTypes.includes('application/json')
+             ? 'application/json'
+             : (op.requestBody.contentTypes[0] ?? 'application/json');
+           headers.push({ id: createId('kv'), key: 'Content-Type', value: contentType, enabled: true });
+         }
+         const sample = op.requestBody ? sampleFromSchema(op.requestBody.schema) : undefined;
+         const body: RequestDefinition['body'] = op.requestBody
+           ? { type: 'json', content: typeof sample === 'string' ? sample : JSON.stringify(sample ?? {}, null, 2) }
+           : { type: 'none' };
         const built: RequestDefinition = {
           ...req,
           method: op.method,

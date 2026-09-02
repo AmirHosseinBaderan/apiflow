@@ -29,7 +29,7 @@
       density="compact"
       activatable
       open-on-click
-      @update:activated="onActivate($event as unknown[])"
+      @update:activated="onActivate($event as string | string[])"
     >
       <template #prepend="{ item }">
         <v-icon v-if="!item.isAction" :icon="iconFor(item.kind)" size="small" />
@@ -40,6 +40,7 @@
             'font-weight-bold': isItemActive(item),
             'text-body-2': item.kind === 'collection',
           }"
+          @click.stop="onActivate(item.id)"
         >
           {{ item.name }}
         </span>
