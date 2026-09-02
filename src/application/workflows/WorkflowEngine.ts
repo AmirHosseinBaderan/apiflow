@@ -8,21 +8,26 @@ import type {
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry, VariableBundle } from '@domain/variable/VariableScope';
 import type { ExecutionResult } from '@domain/test/TestResult';
-import { RequestExecutionService } from '@application/requests/RequestExecutionService';
 
 export interface RunWorkflowInput {
   readonly workflow: Workflow;
   readonly requests: ReadonlyArray<RequestDefinition>;
   readonly initialBundle: VariableBundle;
+  readonly runTests?: boolean;
+}
+
+export interface WorkflowExecutor {
+  execute(input: { request: RequestDefinition; bundle: VariableBundle }): Promise<ExecutionResult>;
 }
 
 export class WorkflowEngine {
-  constructor(private readonly executor: RequestExecutionService) {}
+  constructor(private readonly executor: WorkflowExecutor) {}
 
   async run({
     workflow,
     requests,
     initialBundle,
+    runTests = true,
   }: RunWorkflowInput): Promise<WorkflowExecutionResult> {
     const requestMap = new Map(requests.map((r) => [r.id, r]));
     const stepResults: StepExecutionResult[] = [];
@@ -39,6 +44,7 @@ export class WorkflowEngine {
           requestName: '(unknown)',
           ok: false,
           error: 'Request not found',
+          tests: [],
         });
         ok = false;
         break;
@@ -59,7 +65,13 @@ export class WorkflowEngine {
       try {
         execResult = await this.executor.execute({ request: req, bundle });
       } catch (e) {
-        stepResults.push({ stepId: step.id, requestName: req.name, ok: false, error: String(e) });
+        stepResults.push({
+          stepId: step.id,
+          requestName: req.name,
+          ok: false,
+          error: String(e),
+          tests: [],
+        });
         ok = false;
         break;
       }
@@ -67,6 +79,7 @@ export class WorkflowEngine {
       const requestBody = req.body.type === 'json' ? req.body.content : undefined;
       const responseBody = execResult.response?.bodyText;
       const responseContentType = execResult.response?.contentType;
+      const status = execResult.response?.status;
 
       bundle = this.applyExtractions(bundle, execResult.extractedVariables);
       if (execResult.response) {
@@ -75,16 +88,23 @@ export class WorkflowEngine {
         });
       }
 
+      const tests = execResult.tests ?? [];
+      const responseOk = execResult.response !== undefined && execResult.response.status < 400;
+      const testsOk = tests.every((t) => t.status !== 'failed' && t.status !== 'error');
+      const stepOk = responseOk && (runTests ? testsOk : true);
+
       stepResults.push({
         stepId: step.id,
         requestName: req.name,
-        ok: execResult.ok,
+        ok: stepOk,
         error: execResult.errors.join('; ') || undefined,
         requestBody,
         responseBody,
         responseContentType,
+        status,
+        tests,
       });
-      if (!execResult.ok) {
+      if (!stepOk) {
         ok = false;
         break;
       }
