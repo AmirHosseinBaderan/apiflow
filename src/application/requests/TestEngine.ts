@@ -1,6 +1,13 @@
 import type { HttpResponsePayload } from './httpClientPort';
 import type { TestResult } from '@domain/test/TestResult';
 import type { TestStep, TestKind } from '@domain/request/RequestDefinition';
+import type { VariableBundle } from '@domain/variable/VariableScope';
+
+export interface PreRequestContext {
+  readonly variables: VariableBundle;
+  readonly request: { id: string; name: string; url: string; method: string };
+  setRuntimeVariable(name: string, value: string): void;
+}
 
 export class TestEngine {
   runPostRequest(step: TestStep, response: HttpResponsePayload): TestResult {
@@ -15,8 +22,45 @@ export class TestEngine {
         durationMs: Math.round(performance.now() - start),
         error: e instanceof Error ? e.message : String(e),
       };
-    } finally {
-      void start;
+    }
+  }
+
+  runPreRequest(step: TestStep, ctx: PreRequestContext): TestResult {
+    const start = performance.now();
+    try {
+      if (step.kind.type !== 'script') {
+        return {
+          id: step.id,
+          name: step.name,
+          status: 'skipped',
+          durationMs: 0,
+        };
+      }
+      const fn = new Function(
+        'pm',
+        'request',
+        'variables',
+        `${step.kind.source}`,
+      );
+      const pm = {
+        variables: {
+          set: (name: string, value: string) => ctx.setRuntimeVariable(name, value),
+          get: (name: string) =>
+            ctx.variables.runtime.find((v) => v.key === name)?.value ??
+            ctx.variables.request.find((v) => v.key === name)?.value ??
+            ctx.variables.collection.find((v) => v.key === name)?.value,
+        },
+      };
+      const result = fn(pm, ctx.request, ctx.variables);
+      return this.makeResult(step, result !== false, result, true, start);
+    } catch (e) {
+      return {
+        id: step.id,
+        name: step.name,
+        status: 'error',
+        durationMs: Math.round(performance.now() - start),
+        error: e instanceof Error ? e.message : String(e),
+      };
     }
   }
 
