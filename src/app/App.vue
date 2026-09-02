@@ -10,9 +10,9 @@
 import { useTheme } from 'vuetify';
 import { watch, onMounted } from 'vue';
 import { useSettingsStore } from '@stores/useSettingsStore';
-import { useLocaleStore } from '@i18n/store';
 import AppNotifier from '@components/AppNotifier.vue';
 import AppDialog from '@components/AppDialog.vue';
+import {useLocaleStore} from "../i18n/store";
 
 const theme = useTheme();
 const settings = useSettingsStore();
