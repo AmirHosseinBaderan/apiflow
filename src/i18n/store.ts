@@ -3,6 +3,8 @@ import en from './messages/en';
 import fa from './messages/fa';
 import type { Locale } from '@i18n/store';
 
+export type Locale = 'en' | 'fa';
+
 const STORAGE_KEY = 'app_locale';
 const messages: Record<string, Record<string, string>> = { en, fa };
 
