@@ -103,6 +103,12 @@
                     </v-row>
                     <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addStepHeader(i)">Add header</v-btn>
                   </div>
+                  <v-divider class="my-1" />
+                  <div class="d-flex justify-end">
+                    <v-btn icon="mdi-chevron-up" size="small" variant="text" @click="moveUp(i)" />
+                    <v-btn icon="mdi-chevron-down" size="small" variant="text" @click="moveDown(i)" />
+                    <v-btn icon="mdi-delete" size="small" variant="text" color="error" @click="removeStep(i)" />
+                  </div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
