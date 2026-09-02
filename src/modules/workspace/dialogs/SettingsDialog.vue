@@ -34,7 +34,7 @@
 import { watch } from 'vue';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useSettingsStore } from '@stores/useSettingsStore';
-import { useLocaleStore } from '@i18n/store';
+import {useLocaleStore} from "../../../i18n/store";
 
 const dialog = useDialogStore();
 const settings = useSettingsStore();

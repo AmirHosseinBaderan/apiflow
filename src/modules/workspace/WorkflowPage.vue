@@ -2,12 +2,17 @@
   <v-container fluid v-if="local">
     <v-row>
       <v-col cols="12" sm="6">
-        <v-text-field v-model="local.name" label="Workflow title" density="compact" hide-details />
+        <v-text-field
+          v-model="local.name"
+          :label="t('workflowTitle')"
+          density="compact"
+          hide-details
+        />
       </v-col>
       <v-col cols="12" sm="6">
         <v-text-field
           v-model="local.description"
-          label="Workflow description"
+          :label="t('workflowDescription')"
           density="compact"
           hide-details
         />
@@ -17,7 +22,7 @@
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-card-title>Steps ({{ local.steps.length }})</v-card-title>
+          <v-card-title>{{ t('steps') }} ({{ local.steps.length }})</v-card-title>
           <v-card-text>
             <v-expansion-panels pop>
               <v-expansion-panel
@@ -32,7 +37,7 @@
                     :items="requestOptions"
                     item-title="name"
                     item-value="id"
-                    label="Request"
+                    :label="t('request')"
                     density="compact"
                     hide-details
                     class="mt-2"
@@ -42,20 +47,20 @@
                   <v-select
                     :model-value="condType(i)"
                     :items="condTypeItems"
-                    label="Condition"
+                    :label="t('condition')"
                     density="compact"
                     hide-details
                     class="mt-2"
-                    @update:model-value="e => setCondType(i, e)"
+                    @update:model-value="(e) => setCondType(i, e)"
                   />
                   <v-text-field
                     v-if="condType(i) === 'statusEquals'"
                     :model-value="condValue(i)"
-                    label="Expected status"
+                    :label="t('expectedStatus')"
                     density="compact"
                     hide-details
                     class="mt-1"
-                    @update:model-value="e => setCondValue(i, e)"
+                    @update:model-value="(e) => setCondValue(i, e)"
                   />
                   <div v-else-if="condType(i) === 'variableEquals'" class="d-flex mt-1">
                     <v-text-field
@@ -63,7 +68,7 @@
                       label="Variable name"
                       density="compact"
                       hide-details
-                      @update:model-value="e => setCondName(i, e)"
+                      @update:model-value="(e) => setCondName(i, e)"
                     />
                     <v-text-field
                       :model-value="condValue(i)"
@@ -71,7 +76,7 @@
                       density="compact"
                       hide-details
                       class="ml-2"
-                      @update:model-value="e => setCondValue(i, e)"
+                      @update:model-value="(e) => setCondValue(i, e)"
                     />
                   </div>
 
@@ -84,7 +89,7 @@
                       density="compact"
                       hide-details
                       placeholder="Enter valid JSON"
-                      @update:model-value="e => setStepBody(i, e)"
+                      @update:model-value="(e) => setStepBody(i, e)"
                     />
                   </div>
 
@@ -95,19 +100,47 @@
                         <v-text-field v-model="h.key" label="Name" density="compact" hide-details />
                       </v-col>
                       <v-col cols="7">
-                        <v-text-field v-model="h.value" label="Value" density="compact" hide-details />
+                        <v-text-field
+                          v-model="h.value"
+                          label="Value"
+                          density="compact"
+                          hide-details
+                        />
                       </v-col>
                       <v-col cols="1">
-                        <v-btn icon="mdi-delete" size="small" variant="text" color="error" @click="removeStepHeader(i, hi)" />
+                        <v-btn
+                          icon="mdi-delete"
+                          size="small"
+                          variant="text"
+                          color="error"
+                          @click="removeStepHeader(i, hi)"
+                        />
                       </v-col>
                     </v-row>
-                    <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addStepHeader(i)">Add header</v-btn>
+                    <v-btn
+                      size="small"
+                      variant="text"
+                      prepend-icon="mdi-plus"
+                      @click="addStepHeader(i)"
+                      >Add header</v-btn
+                    >
                   </div>
                   <v-divider class="my-1" />
                   <div class="d-flex justify-end">
                     <v-btn icon="mdi-chevron-up" size="small" variant="text" @click="moveUp(i)" />
-                    <v-btn icon="mdi-chevron-down" size="small" variant="text" @click="moveDown(i)" />
-                    <v-btn icon="mdi-delete" size="small" variant="text" color="error" @click="removeStep(i)" />
+                    <v-btn
+                      icon="mdi-chevron-down"
+                      size="small"
+                      variant="text"
+                      @click="moveDown(i)"
+                    />
+                    <v-btn
+                      icon="mdi-delete"
+                      size="small"
+                      variant="text"
+                      color="error"
+                      @click="removeStep(i)"
+                    />
                   </div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
@@ -116,7 +149,7 @@
             <div class="d-flex align-center mt-2">
               <v-btn color="primary" prepend-icon="mdi-plus" @click="addStep">Add step</v-btn>
               <v-spacer />
-              <v-btn variant="outlined" @click="save">Save workflow</v-btn>
+              <v-btn variant="outlined" @click="save">{{ t('saveWorkflow') }}</v-btn>
             </div>
           </v-card-text>
         </v-card>
@@ -128,7 +161,13 @@
         <v-card>
           <v-card-title>Run</v-card-title>
           <v-card-text class="d-flex align-center">
-            <v-switch v-model="runTests" label="Run tests" inset class="mt-0 mb-0" density="compact" />
+            <v-switch
+              v-model="runTests"
+              label="Run tests"
+              inset
+              class="mt-0 mb-0"
+              density="compact"
+            />
             <v-spacer />
             <v-btn
               color="primary"
@@ -149,11 +188,15 @@
         <v-card>
           <v-card-title>Run results</v-card-title>
           <v-card-text>
-            <v-chip :color="result.ok ? 'success' : 'error'" size="small">{{ result.ok ? 'Passed' : 'Failed' }}</v-chip>
+            <v-chip :color="result.ok ? 'success' : 'error'" size="small">{{
+              result.ok ? 'Passed' : 'Failed'
+            }}</v-chip>
             <div class="mt-2" v-for="(step, i) in result.steps" :key="step.stepId">
               <div class="font-weight-medium">{{ i + 1 }}. {{ step.requestName }}</div>
               <div class="d-flex align-center mt-1">
-                <v-chip :color="step.ok ? 'success' : 'error'" size="x-small">{{ step.ok ? 'OK' : 'FAILED' }}</v-chip>
+                <v-chip :color="step.ok ? 'success' : 'error'" size="x-small">{{
+                  step.ok ? 'OK' : 'FAILED'
+                }}</v-chip>
                 <span v-if="step.status" class="text-caption ml-1">HTTP {{ step.status }}</span>
                 <span v-if="step.error" class="text-error text-caption ml-1">{{ step.error }}</span>
               </div>
@@ -203,11 +246,14 @@ import type {
 import type { TestStatus } from '@domain/test/TestResult';
 import type { KeyValue } from '@domain/request/RequestDefinition';
 import { createId } from '@shared/id';
+import { useLocaleStore } from '../../i18n/store';
 
 const route = useRoute();
 const store = useCollectionStore();
 const execution = useExecutionStore();
+const locale = useLocaleStore();
 const { notify } = useNotifier();
+const t = (key: string) => locale.t(key);
 
 const runTests = ref(true);
 const collection = computed(() => store.activeCollection);
@@ -228,8 +274,8 @@ watch(
   { immediate: true },
 );
 
-const requestOptions = computed(() =>
-  (collection.value?.requests.map((r) => ({ id: r.id, name: r.name })) ?? []),
+const requestOptions = computed(
+  () => collection.value?.requests.map((r) => ({ id: r.id, name: r.name })) ?? [],
 );
 const condTypeItems = ['always', 'statusEquals', 'variableEquals'];
 
@@ -290,7 +336,12 @@ function setStepHeaders(i: number, headers: KeyValue[]) {
   const body = step.overrides?.body ?? stepBody(i);
   local.value!.steps[i] = {
     ...step,
-    overrides: { pathParams: step.overrides?.pathParams, queryParams: step.overrides?.queryParams, headers, body },
+    overrides: {
+      pathParams: step.overrides?.pathParams,
+      queryParams: step.overrides?.queryParams,
+      headers,
+      body,
+    },
   };
   replaceSteps(local.value!.steps);
 }
@@ -356,7 +407,8 @@ function setCondValue(i: number, value: string) {
     setCondType(i, 'statusEquals');
     return;
   }
-  if (cond.type === 'statusEquals') stepMutate(i, { condition: { ...cond, value: Number(value) || 0 } });
+  if (cond.type === 'statusEquals')
+    stepMutate(i, { condition: { ...cond, value: Number(value) || 0 } });
   else if (cond.type === 'variableEquals') stepMutate(i, { condition: { ...cond, value } });
 }
 
@@ -389,7 +441,8 @@ function addStep() {
 
 function removeStep(i: number) {
   const steps = local.value?.steps.filter((_, idx) => idx !== i) ?? [];
-  if (steps.length) steps[steps.length - 1] = { ...steps[steps.length - 1]!, next: { type: 'end' } };
+  if (steps.length)
+    steps[steps.length - 1] = { ...steps[steps.length - 1]!, next: { type: 'end' } };
   replaceSteps(steps);
 }
 
@@ -439,6 +492,11 @@ async function save() {
 
 async function runAll() {
   if (!local.value || !collection.value || local.value.steps.length < 1) return;
-  await execution.runWorkflow(local.value, collection.value.requests, collection.value.variables, runTests.value);
+  await execution.runWorkflow(
+    local.value,
+    collection.value.requests,
+    collection.value.variables,
+    runTests.value,
+  );
 }
 </script>
