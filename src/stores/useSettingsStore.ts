@@ -7,9 +7,14 @@ export type AppTheme = 'light' | 'dark';
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    theme: (typeof localStorage !== 'undefined' && (localStorage.getItem(STORAGE_KEY) as AppTheme | null)) ||
+    theme:
+      (typeof localStorage !== 'undefined' &&
+        (localStorage.getItem(STORAGE_KEY) as AppTheme | null)) ||
       'dark',
-    locale: (typeof localStorage !== 'undefined' && (localStorage.getItem('app_locale') as Locale | null)) || 'en',
+    locale:
+      (typeof localStorage !== 'undefined' &&
+        (localStorage.getItem('app_locale') as Locale | null)) ||
+      'en',
   }),
   actions: {
     setTheme(theme: AppTheme) {
