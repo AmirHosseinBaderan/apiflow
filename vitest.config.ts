@@ -22,5 +22,6 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.ts'],
     exclude: [...configDefaults.exclude, 'node_modules', 'dist'],
+    server: { deps: { inline: [/vuetify/] } },
   },
 });
