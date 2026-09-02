@@ -1,6 +1,7 @@
 import { AppError, toAppError } from '@shared/errors';
 import type { Collection, CollectionFolder } from '@domain/collection/Collection';
 import { emptyCollection, emptyFolder } from '@domain/collection/Collection';
+import type { Workflow } from '@domain/workflow/Workflow';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import { emptyRequest } from '@domain/request/RequestDefinition';
 import type { CollectionRepository } from './collectionRepositoryPort';
@@ -55,7 +56,11 @@ export class CollectionService {
     return copy;
   }
 
-  async createFolder(collectionId: string, name: string, parentId: string | null = null): Promise<Collection> {
+  async createFolder(
+    collectionId: string,
+    name: string,
+    parentId: string | null = null,
+  ): Promise<Collection> {
     const collection = await this.require(collectionId);
     const folder = emptyFolder(name, parentId);
     const updated: Collection = {
@@ -73,14 +78,26 @@ export class CollectionService {
     if (!folder) throw new AppError({ code: 'ValidationError', message: 'Folder not found' });
     const folders = collection.folders
       .filter((f) => f.id !== folderId)
-      .map((f) => ({ ...f, requestIds: f.requestIds.filter((rid) => !folder.requestIds.includes(rid)) }));
+      .map((f) => ({
+        ...f,
+        requestIds: f.requestIds.filter((rid) => !folder.requestIds.includes(rid)),
+      }));
     const requests = collection.requests.filter((r) => !folder.requestIds.includes(r.id));
-    const updated: Collection = { ...collection, folders, requests, updatedAt: new Date().toISOString() };
+    const updated: Collection = {
+      ...collection,
+      folders,
+      requests,
+      updatedAt: new Date().toISOString(),
+    };
     await this.repo.save(updated);
     return updated;
   }
 
-  async createRequest(collectionId: string, name: string, folderId: string | null = null): Promise<{ collection: Collection; request: RequestDefinition }> {
+  async createRequest(
+    collectionId: string,
+    name: string,
+    folderId: string | null = null,
+  ): Promise<{ collection: Collection; request: RequestDefinition }> {
     const collection = await this.require(collectionId);
     const request = emptyRequest(crypto.randomUUID(), name || 'New Request');
     const folders = collection.folders.map((f) =>
@@ -111,28 +128,60 @@ export class CollectionService {
       ...f,
       requestIds: f.requestIds.filter((id) => id !== requestId),
     }));
-    const updated: Collection = { ...collection, requests, folders, updatedAt: new Date().toISOString() };
+    const updated: Collection = {
+      ...collection,
+      requests,
+      folders,
+      updatedAt: new Date().toISOString(),
+    };
     await this.repo.save(updated);
     return updated;
   }
 
-  async moveRequestToFolder(collectionId: string, requestId: string, targetFolderId: string | null): Promise<Collection> {
+  async moveRequestToFolder(
+    collectionId: string,
+    requestId: string,
+    targetFolderId: string | null,
+  ): Promise<Collection> {
     const collection = await this.require(collectionId);
     const folders = collection.folders.map((f) => ({
       ...f,
       requestIds: f.requestIds.filter((id) => id !== requestId),
     }));
     const next = targetFolderId
-      ? folders.map((f) => (f.id === targetFolderId ? { ...f, requestIds: [...f.requestIds, requestId] } : f))
+      ? folders.map((f) =>
+          f.id === targetFolderId ? { ...f, requestIds: [...f.requestIds, requestId] } : f,
+        )
       : folders;
-    const updated: Collection = { ...collection, folders: next, updatedAt: new Date().toISOString() };
+    const updated: Collection = {
+      ...collection,
+      folders: next,
+      updatedAt: new Date().toISOString(),
+    };
     await this.repo.save(updated);
     return updated;
   }
 
-  async setCollectionVariables(collectionId: string, variables: Collection['variables']): Promise<Collection> {
+  async setCollectionVariables(
+    collectionId: string,
+    variables: Collection['variables'],
+  ): Promise<Collection> {
     const collection = await this.require(collectionId);
     const updated: Collection = { ...collection, variables, updatedAt: new Date().toISOString() };
+    await this.repo.save(updated);
+    return updated;
+  }
+
+  async setWorkflows(
+    collectionId: string,
+    workflows: ReadonlyArray<Workflow>,
+  ): Promise<Collection> {
+    const collection = await this.require(collectionId);
+    const updated: Collection = {
+      ...collection,
+      workflows: [...workflows],
+      updatedAt: new Date().toISOString(),
+    };
     await this.repo.save(updated);
     return updated;
   }
