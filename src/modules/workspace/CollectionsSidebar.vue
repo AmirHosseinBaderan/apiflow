@@ -1,17 +1,89 @@
 <template>
-  <v-navigation-drawer permanent width="300">
+  <v-navigation-drawer permanent width="320">
     <v-list-subheader>Collections</v-list-subheader>
-    <v-list density="compact">
-      <v-list-item
-        v-for="c in collections"
-        :key="c.id"
-        :active="c.id === activeId"
-        :title="c.name"
-        prepend-icon="mdi-folder"
-        @click="select(c.id)"
-        @contextmenu.prevent="openMenu($event, c)"
-      />
-    </v-list>
+
+    <v-treeview
+      v-if="tree.length > 0"
+      v-model:opened="opened"
+      v-model:activated="activeItemId"
+      :items="tree"
+      item-value="id"
+      item-title="name"
+      item-children="children"
+      density="compact"
+      activatable
+      open-on-click
+      @update:activated="onActivate($event as unknown[])"
+    >
+      <template #prepend="{ item }">
+        <v-icon :icon="iconFor(item.kind)" size="small" />
+      </template>
+      <template #title="{ item }">
+        <span
+          :class="{
+            'font-weight-bold': isItemActive(item),
+            'text-body-2': item.kind === 'collection',
+          }"
+        >
+          {{ item.name }}
+        </span>
+      </template>
+      <template #append="{ item }">
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              size="x-small"
+              variant="text"
+              icon="mdi-dots-vertical"
+              @click.stop
+            />
+          </template>
+          <v-list density="compact">
+            <v-list-item
+              v-if="item.kind === 'collection'"
+              prepend-icon="mdi-content-duplicate"
+              title="Duplicate"
+              @click="duplicateCollection(item.id)"
+            />
+            <v-list-item
+              v-if="item.kind === 'collection'"
+              prepend-icon="mdi-delete"
+              title="Delete"
+              @click="removeCollection(item.id)"
+            />
+            <v-list-item
+              v-if="item.kind === 'folder'"
+              prepend-icon="mdi-folder-plus"
+              title="Add subfolder"
+              @click="addFolderWithParent(item.id)"
+            />
+            <v-list-item
+              v-if="item.kind === 'folder'"
+              prepend-icon="mdi-folder-remove"
+              title="Delete folder"
+              @click="deleteFolder(item.id)"
+            />
+            <v-list-item
+              v-if="item.kind === 'request'"
+              prepend-icon="mdi-pencil"
+              title="Rename"
+              @click="renameRequest(item.id, item.name)"
+            />
+            <v-list-item
+              v-if="item.kind === 'request'"
+              prepend-icon="mdi-trash-can"
+              title="Delete"
+              @click="deleteRequest(item.id)"
+            />
+          </v-list>
+        </v-menu>
+      </template>
+    </v-treeview>
+
+    <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
+      No collections yet. Create one above.
+    </v-alert>
 
     <v-divider v-if="hasActive" />
     <div v-if="hasActive" class="pa-2">
@@ -35,79 +107,10 @@
         </v-col>
       </v-row>
 
-      <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
+      <v-alert v-if="activeTree.length === 0" type="info" variant="tonal" density="compact" class="mt-2">
         This collection is empty. Use the buttons above to add a request or folder.
       </v-alert>
-
-      <v-treeview
-        v-if="tree.length > 0"
-        v-model:opened="openedFolders"
-        :items="tree"
-        item-value="id"
-        item-title="name"
-        item-children="children"
-        density="compact"
-        class="mt-2"
-        activatable
-        open-on-click
-        @update:activated="onTreeActivate($event as unknown[])"
-      >
-        <template #prepend="{ item }">
-          <v-icon :icon="item.kind === 'folder' ? 'mdi-folder' : 'mdi-file-document'" size="small" />
-        </template>
-        <template #title="{ item }">
-          <span :class="{ 'font-weight-bold': item.kind === 'request' && item.id === activeRequestId }">
-            {{ item.name }}
-          </span>
-        </template>
-        <template #append="{ item }">
-          <v-menu>
-            <template #activator="{ props: act }">
-              <v-btn
-                v-bind="act"
-                size="x-small"
-                variant="text"
-                icon="mdi-dots-vertical"
-                @click.stop
-              />
-            </template>
-            <v-list density="compact">
-              <v-list-item
-                v-if="item.kind === 'request'"
-                prepend-icon="mdi-pencil"
-                title="Rename"
-                @click="renameRequest(item.id, item.name)"
-              />
-              <v-list-item
-                v-if="item.kind === 'request'"
-                prepend-icon="mdi-trash-can"
-                title="Delete"
-                @click="deleteRequest(item.id)"
-              />
-              <v-list-item
-                v-if="item.kind === 'folder'"
-                prepend-icon="mdi-folder-plus"
-                title="Add subfolder"
-                @click="addFolderWithParent(item.id)"
-              />
-              <v-list-item
-                v-if="item.kind === 'folder'"
-                prepend-icon="mdi-folder-remove"
-                title="Delete folder"
-                @click="deleteFolder(item.id)"
-              />
-            </v-list>
-          </v-menu>
-        </template>
-      </v-treeview>
     </div>
-
-    <v-menu v-model="collectionMenu.open" :x="collectionMenu.x" :y="collectionMenu.y" absolute>
-      <v-list density="compact">
-        <v-list-item prepend-icon="mdi-content-duplicate" title="Duplicate" @click="duplicateCollection" />
-        <v-list-item prepend-icon="mdi-delete" title="Delete" @click="removeCollection" />
-      </v-list>
-    </v-menu>
 
     <v-dialog v-model="renameDialog.open" max-width="400">
       <v-card>
@@ -133,39 +136,41 @@ import { useNotifier } from '@composables/useNotifier';
 const store = useCollectionStore();
 const { notify } = useNotifier();
 
-const collections = computed(() => store.collections);
-const activeId = computed(() => store.activeCollectionId);
+const tree = computed(() => store.tree);
+const activeTree = computed(() => store.treeForActive);
+const activeItemId = ref<string | null>(null);
+const activeCollectionId = computed(() => store.activeCollectionId);
 const activeRequestId = computed(() => store.activeRequestId);
 const hasActive = computed(() => Boolean(store.activeCollection));
-const tree = computed(() => store.treeForActive);
 
-const openedFolders = ref<string[]>([]);
+const opened = ref<string[]>([]);
 
-watch(
-  () => store.activeCollectionId,
-  () => {
-    const c = store.activeCollection;
-    if (c) openedFolders.value = c.folders.map((f) => f.id);
-  },
-  { immediate: true },
-);
 const newRequestName = ref('');
-
-const collectionMenu = reactive({ open: false, x: 0, y: 0, targetId: null as string | null });
 
 const renameDialog = reactive({ open: false, id: null as string | null, name: '' });
 
-function select(id: string) {
-  store.selectCollection(id);
+watch(
+  () => store.activeCollectionId,
+  (id) => {
+    if (!id) {
+      opened.value = [];
+      return;
+    }
+    const c = store.activeCollection;
+    opened.value = [id, ...(c?.folders.map((f) => f.id) ?? [])];
+  },
+  { immediate: true },
+);
+
+function iconFor(kind: CollectionTreeNode['kind']) {
+  if (kind === 'request') return 'mdi-file-document';
+  return 'mdi-folder';
 }
 
-function onTreeActivate(ids: unknown[]) {
-  const id = Array.isArray(ids) ? ids[0] : undefined;
-  if (typeof id === 'string') {
-    const node = findNode(tree.value, id);
-    if (node && node.kind === 'request') store.selectRequest(id);
-    else if (node && node.kind === 'collection') store.selectCollection(id);
-  }
+function isItemActive(item: CollectionTreeNode) {
+  if (item.kind === 'request') return item.id === activeRequestId.value;
+  if (item.kind === 'collection') return item.id === activeCollectionId.value;
+  return false;
 }
 
 function findNode(nodes: readonly CollectionTreeNode[], id: string): CollectionTreeNode | null {
@@ -175,6 +180,18 @@ function findNode(nodes: readonly CollectionTreeNode[], id: string): CollectionT
     if (child) return child;
   }
   return null;
+}
+
+function onActivate(ids: unknown[]) {
+  const id = Array.isArray(ids) ? ids[0] : undefined;
+  if (typeof id !== 'string') return;
+  const node = findNode(tree.value, id);
+  if (!node) return;
+  if (node.kind === 'collection') {
+    store.selectCollection(id);
+  } else if (node.kind === 'request') {
+    store.selectRequest(id);
+  }
 }
 
 async function addRequest() {
@@ -190,7 +207,7 @@ async function addFolder() {
 }
 
 async function addFolderWithParent(parentId: string) {
-  if (!openedFolders.value.includes(parentId)) openedFolders.value.push(parentId);
+  if (!opened.value.includes(parentId)) opened.value.push(parentId);
   await store.createFolder('New Folder', parentId);
   notify('Subfolder created', 'success');
 }
@@ -223,24 +240,13 @@ async function deleteRequest(id: string) {
   notify('Request deleted', 'success');
 }
 
-function openMenu(e: MouseEvent, c: { id: string }) {
-  collectionMenu.open = true;
-  collectionMenu.x = e.clientX;
-  collectionMenu.y = e.clientY;
-  collectionMenu.targetId = c.id;
-}
-
-async function duplicateCollection() {
-  if (!collectionMenu.targetId) return;
-  await store.duplicateCollection(collectionMenu.targetId);
-  collectionMenu.open = false;
+async function duplicateCollection(id: string) {
+  await store.duplicateCollection(id);
   notify('Collection duplicated', 'success');
 }
 
-async function removeCollection() {
-  if (!collectionMenu.targetId) return;
-  await store.deleteCollection(collectionMenu.targetId);
-  collectionMenu.open = false;
+async function removeCollection(id: string) {
+  await store.deleteCollection(id);
   notify('Collection deleted', 'success');
 }
 </script>
