@@ -5,7 +5,7 @@ import type {
   StepExecutionResult,
   VariableMapping,
 } from '@domain/workflow/Workflow';
-import type { RequestDefinition } from '@domain/request/RequestDefinition';
+import type { RequestDefinition, KeyValue } from '@domain/request/RequestDefinition';
 import type { VariableEntry, VariableBundle } from '@domain/variable/VariableScope';
 import type { ExecutionResult } from '@domain/test/TestResult';
 
@@ -53,6 +53,7 @@ export class WorkflowEngine {
         cursor += 1;
         continue;
       }
+      const effectiveRequest = this.applyOverrides(req, step);
       bundle = {
         ...bundle,
         request: this.applyVariableMappings(
@@ -63,7 +64,7 @@ export class WorkflowEngine {
       };
       let execResult: ExecutionResult;
       try {
-        execResult = await this.executor.execute({ request: req, bundle });
+        execResult = await this.executor.execute({ request: effectiveRequest, bundle });
       } catch (e) {
         stepResults.push({
           stepId: step.id,
@@ -76,7 +77,8 @@ export class WorkflowEngine {
         break;
       }
 
-      const requestBody = req.body.type === 'json' ? req.body.content : undefined;
+      const requestBody =
+        effectiveRequest.body.type === 'json' ? effectiveRequest.body.content : undefined;
       const responseBody = execResult.response?.bodyText;
       const responseContentType = execResult.response?.contentType;
       const status = execResult.response?.status;
@@ -144,6 +146,42 @@ export class WorkflowEngine {
       enabled: true,
       secret: false,
     }));
+  }
+
+  private applyOverrides(req: RequestDefinition, step: WorkflowStep): RequestDefinition {
+    const o = step.overrides;
+    if (!o) return req;
+    let body = req.body;
+    if (typeof o.body === 'string' && req.body.type === 'json') {
+      body = { ...req.body, content: o.body };
+    }
+    return {
+      ...req,
+      headers: this.mergeKeyValues(req.headers, o.headers),
+      pathParams: this.mergeKeyValues(req.pathParams, o.pathParams),
+      queryParams: this.mergeKeyValues(req.queryParams, o.queryParams),
+      body,
+    };
+  }
+
+  private mergeKeyValues(
+    base: ReadonlyArray<KeyValue>,
+    overrides?: ReadonlyArray<KeyValue>,
+  ): ReadonlyArray<KeyValue> {
+    if (!overrides) return base;
+    const seen = new Set<string>();
+    const out: KeyValue[] = base.map((kv) => {
+      seen.add(kv.key);
+      const o = overrides.find((o2) => o2.key === kv.key);
+      return o ?? kv;
+    });
+    for (const ov of overrides) {
+      if (!seen.has(ov.key)) {
+        out.push(ov);
+        seen.add(ov.key);
+      }
+    }
+    return out;
   }
 
   private resolveVariable(name: string, bundle: VariableBundle): string | undefined {
