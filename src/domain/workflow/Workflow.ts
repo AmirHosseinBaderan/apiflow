@@ -1,4 +1,5 @@
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
+import type { TestResult } from '@domain/test/TestResult';
 
 export interface WorkflowStep {
   readonly id: string;
@@ -46,6 +47,8 @@ export interface StepExecutionResult {
   readonly requestBody?: string;
   readonly responseBody?: string;
   readonly responseContentType?: string;
+  readonly status?: number;
+  readonly tests: ReadonlyArray<TestResult>;
 }
 
 export function buildLinearWorkflowFromRequests(
