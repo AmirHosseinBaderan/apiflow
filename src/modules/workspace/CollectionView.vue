@@ -43,7 +43,9 @@
                   Step {{ idx + 1 }}: {{ requestNameById(reqId) ?? reqId }}
                 </div>
                 <v-card variant="outlined" class="pa-2">
-                  <div class="text-caption mb-1">Parameters (map a variable into a request variable)</div>
+                  <div class="text-caption mb-1">
+                    Parameters (map a variable into a request variable)
+                  </div>
                   <v-row v-for="(m, mi) in stepMappings[idx] ?? []" :key="mi" dense align="center">
                     <v-col cols="4">
                       <v-text-field
@@ -55,7 +57,12 @@
                       />
                     </v-col>
                     <v-col cols="4">
-                      <v-text-field v-model="m.toVar" label="To variable" density="compact" hide-details />
+                      <v-text-field
+                        v-model="m.toVar"
+                        label="To variable"
+                        density="compact"
+                        hide-details
+                      />
                     </v-col>
                     <v-col cols="3">
                       <v-select
@@ -67,15 +74,32 @@
                       />
                     </v-col>
                     <v-col cols="1" cols-sm="auto">
-                      <v-btn icon="mdi-delete" size="small" variant="text" @click="removeMapping(idx, mi)" />
+                      <v-btn
+                        icon="mdi-delete"
+                        size="small"
+                        variant="text"
+                        @click="removeMapping(idx, mi)"
+                      />
                     </v-col>
                   </v-row>
-                  <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addMapping(idx)">Add parameter</v-btn>
+                  <v-btn
+                    size="small"
+                    variant="text"
+                    prepend-icon="mdi-plus"
+                    @click="addMapping(idx)"
+                    >Add parameter</v-btn
+                  >
                 </v-card>
               </div>
             </template>
 
-            <v-btn class="mt-3" color="primary" :disabled="workflowRequestIds.length < 2" @click="runWorkflow">Run workflow</v-btn>
+            <v-btn
+              class="mt-3"
+              color="primary"
+              :disabled="workflowRequestIds.length < 2"
+              @click="runWorkflow"
+              >Run workflow</v-btn
+            >
           </v-card-text>
         </v-card>
       </v-col>
@@ -90,7 +114,9 @@
             <v-list v-for="s in lastWorkflow.steps" :key="s.stepId" density="compact" class="mt-2">
               <v-list-item>
                 <template #prepend>
-                  <v-icon :color="s.ok ? 'success' : 'error'">{{ s.ok ? 'mdi-check' : 'mdi-close' }}</v-icon>
+                  <v-icon :color="s.ok ? 'success' : 'error'">{{
+                    s.ok ? 'mdi-check' : 'mdi-close'
+                  }}</v-icon>
                 </template>
                 <v-list-item-title>{{ s.requestName }}</v-list-item-title>
                 <v-list-item-subtitle v-if="s.error">{{ s.error }}</v-list-item-subtitle>
@@ -118,9 +144,12 @@ import { useNotifier } from '@composables/useNotifier';
 import { httpClient } from '@application/requests/httpClientPort';
 import { RequestExecutionService } from '@application/requests/RequestExecutionService';
 import { WorkflowEngine } from '@application/workflows/WorkflowEngine';
-import { buildLinearWorkflowFromRequests } from '@domain/workflow/Workflow';
-import type { VariableMapping } from '@domain/workflow/Workflow';
-import type { WorkflowExecutionResult } from '@domain/workflow/Workflow';
+import {
+  buildLinearWorkflowFromRequests,
+  type WorkflowExecutionResult,
+  type VariableMapping,
+} from '@domain/workflow/Workflow';
+import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import JsonCodeView from '@components/JsonCodeView.vue';
 
 const store = useCollectionStore();
@@ -162,7 +191,11 @@ function buildCondition() {
   }
   if (conditionType.value === 'variableEquals') {
     const [name, ...rest] = conditionValue.value.split('=');
-    return { type: 'variableEquals' as const, name: name?.trim() ?? '', value: rest.join('=').trim() };
+    return {
+      type: 'variableEquals' as const,
+      name: name?.trim() ?? '',
+      value: rest.join('=').trim(),
+    };
   }
   return { type: 'always' as const };
 }
@@ -170,7 +203,9 @@ function buildCondition() {
 async function runWorkflow() {
   const collection = activeCollection.value;
   if (!collection || workflowRequestIds.value.length < 2) return;
-  const requests = (workflowRequestIds.value.map((id) => requestById(id)).filter((r): r is NonNullable<ReturnType<typeof requestById>> => Boolean(r))) as ReturnType<typeof requestById>[];
+  const requests = workflowRequestIds.value
+    .map((id) => requestById(id))
+    .filter((r): r is RequestDefinition => Boolean(r));
   const cond = buildCondition();
   const baseSteps = buildLinearWorkflowFromRequests(requests);
   const steps = baseSteps.map((s, idx) => ({
@@ -184,7 +219,10 @@ async function runWorkflow() {
     requests,
     initialBundle: { collection: collection.variables, request: [], runtime: [] },
   });
-  notify(lastWorkflow.value.ok ? 'Workflow passed' : 'Workflow failed', lastWorkflow.value.ok ? 'success' : 'error');
+  notify(
+    lastWorkflow.value.ok ? 'Workflow passed' : 'Workflow failed',
+    lastWorkflow.value.ok ? 'success' : 'error',
+  );
 }
 
 function parseBody(contentType: string | undefined, body: string): unknown {
