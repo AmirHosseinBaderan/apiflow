@@ -17,7 +17,13 @@ export interface CollectionTreeNode {
 function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
   const folderNodes = new Map<string, CollectionTreeNode>();
   for (const f of c.folders)
-    folderNodes.set(f.id, { kind: 'folder', id: f.id, name: f.name, parentId: f.parentId, children: [] });
+    folderNodes.set(f.id, {
+      kind: 'folder',
+      id: f.id,
+      name: f.name,
+      parentId: f.parentId,
+      children: [],
+    });
   const roots: CollectionTreeNode[] = [];
   for (const f of c.folders) {
     const node = folderNodes.get(f.id)!;
@@ -30,10 +36,19 @@ function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
   for (const node of folderNodes.values()) {
     for (const rid of c.folders.find((f) => f.id === node.id)?.requestIds ?? []) {
       const req = c.requests.find((r) => r.id === rid);
-      if (req) node.children.push({ kind: 'request', id: req.id, name: req.name, parentId: node.id, children: [] });
+      if (req)
+        node.children.push({
+          kind: 'request',
+          id: req.id,
+          name: req.name,
+          parentId: node.id,
+          children: [],
+        });
     }
   }
-  const unfiledRequests = c.requests.filter((r) => !c.folders.some((f) => f.requestIds.includes(r.id)));
+  const unfiledRequests = c.requests.filter(
+    (r) => !c.folders.some((f) => f.requestIds.includes(r.id)),
+  );
   for (const r of unfiledRequests) {
     roots.push({ kind: 'request', id: r.id, name: r.name, parentId: c.id, children: [] });
   }
@@ -75,7 +90,14 @@ export const useCollectionStore = defineStore('collections', {
     },
     tree(): CollectionTreeNode[] {
       return this.collections.map(
-        (c) => ({ kind: 'collection', id: c.id, name: c.name, parentId: null, children: buildCollectionChildren(c) } as CollectionTreeNode),
+        (c) =>
+          ({
+            kind: 'collection',
+            id: c.id,
+            name: c.name,
+            parentId: null,
+            children: buildCollectionChildren(c),
+          }) as CollectionTreeNode,
       );
     },
   },
@@ -130,7 +152,11 @@ export const useCollectionStore = defineStore('collections', {
     },
     async createRequest(name: string, folderId: string | null = null) {
       if (!this.service || !this.activeCollectionId) return null;
-      const { collection, request } = await this.service.createRequest(this.activeCollectionId, name, folderId);
+      const { collection, request } = await this.service.createRequest(
+        this.activeCollectionId,
+        name,
+        folderId,
+      );
       this.replaceCollection(collection);
       this.activeRequestId = request.id;
       return request;
