@@ -13,7 +13,7 @@ export const vuetify = createVuetify({
     VCard: { variant: 'elevated' },
   },
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'dark',
     themes: {
       light: {
         dark: false,
