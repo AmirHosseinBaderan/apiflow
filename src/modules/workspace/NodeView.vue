@@ -160,13 +160,20 @@
               </div>
             </template>
 
-            <v-text-field
-              v-model="workflowName"
-              label="Workflow name"
-              density="compact"
-              hide-details
-              class="mt-2"
-            />
+             <v-text-field
+               v-model="workflowName"
+               label="Workflow name"
+               density="compact"
+               hide-details
+               class="mt-2"
+             />
+             <v-text-field
+               v-model="workflowDescription"
+               label="Workflow description"
+               density="compact"
+               hide-details
+               class="mt-1"
+             />
             <div class="d-flex align-center mt-2">
               <v-btn
                 class="mt-3"
@@ -222,28 +229,31 @@
         </v-card>
 
         <v-card v-if="savedWorkflows.length" variant="outlined" class="mt-3">
-          <v-card-title>Saved workflows</v-card-title>
+          <v-card-title class="text-h6">Workflows</v-card-title>
           <v-card-text class="pa-0">
             <v-list density="compact">
               <v-list-item
                 v-for="wf in savedWorkflows"
                 :key="wf.id"
                 :title="wf.name"
-                :subtitle="`${wf.steps.length} steps`"
+                :subtitle="wf.description ?? `${wf.steps.length} steps`"
+                @click="gotoWorkflow(wf)"
               >
+                <template v-slot:prepend>
+                  <v-icon icon="mdi-play-box-outline" size="small" />
+                </template>
                 <template v-slot:append>
-                  <v-btn
-                    icon="mdi-open-in-new"
-                    size="small"
-                    variant="text"
-                    @click="gotoWorkflow(wf)"
-                  />
+                  <v-chip size="small" variant="text">{{ wf.steps.length }} steps</v-chip>
                 </template>
               </v-list-item>
             </v-list>
           </v-card-text>
         </v-card>
-      </v-col>
+
+        <v-alert v-if="!savedWorkflows.length && workflowRequestIds.length < 2" class="mt-3" type="info" variant="tonal" density="compact">
+          Design and save a workflow to run it from its own page.
+        </v-alert>
+       </v-col>
     </template>
   </v-row>
 </template>
@@ -276,6 +286,7 @@ const availableRequests = computed(() => activeCollection.value?.requests ?? [])
 const requestById = (id: string) => availableRequests.value.find((r) => r.id === id);
 
 const workflowName = ref('Untitled workflow');
+const workflowDescription = ref('');
 const workflowRequestIds = ref<string[]>([]);
 const conditionType = ref<'always' | 'statusEquals' | 'variableEquals'>('always');
 const conditionValue = ref('200');
@@ -283,19 +294,24 @@ const stepMappings = ref<VariableMapping[][]>([]);
 const lastWorkflow = ref<WorkflowExecutionResult | null>(null);
 const savedWorkflows = computed(() => activeCollection.value?.workflows ?? []);
 
-function buildWorkflow(): Workflow {
-  const requests = workflowRequestIds.value
-    .map((id) => requestById(id))
-    .filter((r): r is NonNullable<ReturnType<typeof requestById>> => Boolean(r));
-  const cond = buildCondition();
-  const baseSteps = buildLinearWorkflowFromRequests(requests);
-  const steps = baseSteps.map((s, idx) => ({
-    ...s,
-    condition: idx === 0 ? cond : { type: 'always' as const },
-    variableMappings: stepMappings.value[idx] ?? [],
-  }));
-  return { id: createId('wf'), name: workflowName.value || 'Untitled workflow', steps };
-}
+  function buildWorkflow(): Workflow {
+    const requests = workflowRequestIds.value
+      .map((id) => requestById(id))
+      .filter((r): r is NonNullable<ReturnType<typeof requestById>> => Boolean(r));
+    const cond = buildCondition();
+    const baseSteps = buildLinearWorkflowFromRequests(requests);
+    const steps = baseSteps.map((s, idx) => ({
+      ...s,
+      condition: idx === 0 ? cond : { type: 'always' as const },
+      variableMappings: stepMappings.value[idx] ?? [],
+    }));
+    return {
+      id: createId('wf'),
+      name: workflowName.value || 'Untitled workflow',
+      description: workflowDescription.value || undefined,
+      steps,
+    };
+  }
 
 function gotoWorkflow(wf: { id: string }) {
   const cid = activeCollection.value?.id;
