@@ -40,7 +40,8 @@
       <v-card v-if="activeCollection" variant="tonal">
         <v-card-title>Active collection</v-card-title>
         <v-card-text>
-          <strong>{{ activeCollection.name }}</strong> — {{ activeCollection.requests.length }} requests,
+          <strong>{{ activeCollection.name }}</strong> —
+          {{ activeCollection.requests.length }} requests,
           {{ activeCollection.folders.length }} folders.
         </v-card-text>
       </v-card>
