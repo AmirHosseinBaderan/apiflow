@@ -1,5 +1,6 @@
 import type { Pinia } from 'pinia';
 import { LocalStorageCollectionRepository } from '@infrastructure/persistence/LocalStorageCollectionRepository';
+import { HttpCollectionRepository } from '@infrastructure/persistence/HttpCollectionRepository';
 import { FetchHttpClient } from '@infrastructure/http/FetchHttpClient';
 import { OpenApiImporter } from '@infrastructure/openapi/OpenApiImporter';
 import { CollectionService } from '@application/collections/CollectionService';
@@ -9,13 +10,24 @@ import { setCollectionRepository } from '@application/collections/collectionRepo
 import { setHttpClient } from '@application/requests/httpClientPort';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
+import axios from 'axios';
 
 export interface AppServices {
   openApiService: OpenApiService;
 }
 
-export function configureAppServices(pinia: Pinia): AppServices {
-  const repo = new LocalStorageCollectionRepository();
+async function detectServer(): Promise<boolean> {
+  try {
+    await axios.get('/health');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function configureAppServices(pinia: Pinia): Promise<AppServices> {
+  const useServer = await detectServer();
+  const repo = useServer ? new HttpCollectionRepository() : new LocalStorageCollectionRepository();
   const http = new FetchHttpClient();
   const openApi = new OpenApiImporter();
 
