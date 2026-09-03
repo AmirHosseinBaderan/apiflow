@@ -9,7 +9,7 @@
   >
     {{ item.text }}
     <template #actions>
-      <v-btn @click="dismiss(item.id)">
+      <v-btn @click="dismiss(item.id)" rounded="lg">
         Close
       </v-btn>
     </template>
