@@ -4,11 +4,16 @@
     class="tab-strip"
   >
     <div
-      v-for="tab in tabs.tabs"
+      v-for="(tab, index) in tabs.tabs"
       :key="tab.id"
       :class="['tab', { active: activeId === tab.id }]"
       :title="tab.title"
+      draggable="true"
       @click="select(tab)"
+      @dragstart="onDragStart($event, index)"
+      @dragover.prevent="onDragOver($event, index)"
+      @drop="onDrop($event, index)"
+      @dragend="onDragEnd"
     >
       <span class="tab-label">{{ tab.title }}</span>
       <div class="tab-panel-connector" />
@@ -33,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useTabStore } from '@stores/useTabStore';
 import { useLocaleStore } from '@i18n/store';
@@ -62,6 +67,9 @@ const activeId = computed(() => {
   return match?.id ?? tabs.activeTabId;
 });
 
+const dragIndex = ref<number | null>(null);
+const overIndex = ref<number | null>(null);
+
 function select(tab: { id: string; route: unknown }) {
   tabs.activate(tab.id);
   router.push(tab.route as Parameters<typeof router.push>[0]);
@@ -81,6 +89,31 @@ function newTab() {
     route: { name: 'home' },
   });
   router.push(tab.route as Parameters<typeof router.push>[0]);
+}
+
+function onDragStart(event: DragEvent, index: number) {
+  dragIndex.value = index;
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.dropEffect = 'move';
+  }
+}
+
+function onDragOver(_event: DragEvent, index: number) {
+  overIndex.value = index;
+}
+
+function onDrop(_event: DragEvent, index: number) {
+  if (dragIndex.value !== null && dragIndex.value !== index) {
+    tabs.reorder(dragIndex.value, index);
+  }
+  dragIndex.value = null;
+  overIndex.value = null;
+}
+
+function onDragEnd() {
+  dragIndex.value = null;
+  overIndex.value = null;
 }
 </script>
 
@@ -110,7 +143,7 @@ function newTab() {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px 6px 14px;
+  padding: 6px 24px 6px 14px;
   border: 1px solid transparent;
   border-bottom: none;
   border-top-left-radius: 6px;
@@ -124,6 +157,7 @@ function newTab() {
   transition:
     background-color 0.12s ease,
     box-shadow 0.12s ease;
+  user-select: none;
 }
 
 .tab:hover {
@@ -176,9 +210,12 @@ function newTab() {
 }
 
 .new-tab {
-  margin-left: 2px;
+  margin-left: 4px;
   color: rgb(var(--v-theme-on-surface));
   opacity: 0.6;
+  min-width: 28px;
+  width: 28px;
+  height: 28px;
 }
 
 .new-tab:hover {
