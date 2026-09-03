@@ -93,6 +93,8 @@ export const useCollectionStore = defineStore('collections', {
     error: null as string | null,
     service: null as CollectionService | null,
     unsortedRequests: [] as RequestDefinition[],
+    requestCache: new Map<string, RequestDefinition>(),
+    requestLoading: false,
   }),
 
   getters: {
@@ -100,14 +102,20 @@ export const useCollectionStore = defineStore('collections', {
       return state.collections.find((c) => c.id === state.activeCollectionId) ?? null;
     },
     activeRequest(): RequestDefinition | null {
-      const c = this.activeCollection;
       if (!this.activeRequestId) return null;
       if (this.isRequestUnsorted(this.activeRequestId)) {
         const u = this.unsortedRequests.find((r) => r.id === this.activeRequestId);
         if (u) return u;
       }
+      const cached = this.requestCache.get(this.activeRequestId);
+      if (cached) return cached;
+      const c = this.activeCollection;
       if (!c) return null;
-      return c.requests.find((r) => r.id === this.activeRequestId) ?? null;
+      const summary = c.requests.find((r) => r.id === this.activeRequestId);
+      if (summary && !('headers' in summary)) {
+        return null;
+      }
+      return (summary as RequestDefinition | undefined) ?? null;
     },
     requestById(state) {
       return (id: string): RequestDefinition | null => {
@@ -284,28 +292,23 @@ export const useCollectionStore = defineStore('collections', {
     },
     async updateRequest(request: RequestDefinition) {
       const cid = this.ownerCollectionId(request.id);
-      if (cid && this.service) {
-        const updated = await this.service.updateRequest(cid, request);
-        this.replaceCollection(updated);
-      } else if (this.isRequestUnsorted(request.id)) {
-        this.unsortedRequests = this.unsortedRequests.map((r) => (r.id === request.id ? request : r));
-        persistUnsorted(this.unsortedRequests);
-      }
+      if (!cid || !this.service) return;
+      await this.service.saveRequest(cid, request);
+      this.requestCache.set(request.id, request);
     },
     async deleteRequest(requestId: string) {
       const cid = this.ownerCollectionId(requestId);
       if (cid && this.service) {
-        const updated = await this.service.deleteRequest(cid, requestId);
-        this.replaceCollection(updated);
+        await this.service.deleteRequestById(cid, requestId);
       }
+      this.requestCache.delete(requestId);
       this.unsortedRequests = this.unsortedRequests.filter((r) => r.id !== requestId);
       persistUnsorted(this.unsortedRequests);
       if (this.activeRequestId === requestId) this.activeRequestId = null;
     },
     async setCollectionVariables(variables: VariableEntry[]) {
       if (!this.service || !this.activeCollectionId) return;
-      const updated = await this.service.setCollectionVariables(this.activeCollectionId, variables);
-      this.replaceCollection(updated);
+      await this.service.updateVariablesDirect(this.activeCollectionId, variables);
     },
     async mergeCollectionVariables(updates: Record<string, string>) {
       const c = this.activeCollection;
@@ -319,8 +322,7 @@ export const useCollectionStore = defineStore('collections', {
     },
     async saveWorkflows(workflows: Workflow[]) {
       if (!this.service || !this.activeCollectionId) return;
-      const updated = await this.service.setWorkflows(this.activeCollectionId, workflows);
-      this.replaceCollection(updated);
+      await this.service.updateWorkflowsDirect(this.activeCollectionId, workflows);
     },
     selectCollection(id: string) {
       this.activeCollectionId = id;
@@ -328,6 +330,22 @@ export const useCollectionStore = defineStore('collections', {
     },
     selectRequest(id: string) {
       this.activeRequestId = id;
+    },
+    async loadRequest(collectionId: string, requestId: string): Promise<RequestDefinition | null> {
+      if (!this.service) return null;
+      const cached = this.requestCache.get(requestId);
+      if (cached) return cached;
+      this.requestLoading = true;
+      try {
+        const req = await this.service.getRequest(collectionId, requestId);
+        if (req) {
+          this.requestCache.set(requestId, req);
+          return req;
+        }
+        return null;
+      } finally {
+        this.requestLoading = false;
+      }
     },
     replaceCollection(updated: Collection) {
       this.collections = this.collections.map((c) => (c.id === updated.id ? updated : c));
