@@ -22,7 +22,7 @@ export interface SetupRequest {
 
 export interface SetupResponse {
   token: string;
-  user: { username: string; role: string };
+  user: { username: string; role: 'admin' | 'user' };
 }
 
 export interface LoginRequest {
@@ -32,7 +32,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  user: { username: string; role: string };
+  user: { username: string; role: 'admin' | 'user' };
 }
 
 export const authCheck = () => request<CheckResponse>(api, 'GET', authUrls.check);
