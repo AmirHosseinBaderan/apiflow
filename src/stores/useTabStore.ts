@@ -61,10 +61,6 @@ export const useTabStore = defineStore('tabs', {
     activate(id: string) {
       if (this.tabs.some((t) => t.id === id)) this.activeTabId = id;
     },
-    activateByKey(key: string) {
-      const t = this.tabs.find((t) => t.id === key);
-      if (t) this.activeTabId = t.id;
-    },
     remove(id: string) {
       const idx = this.tabs.findIndex((t) => t.id === id);
       if (idx < 0) return;
@@ -93,6 +89,23 @@ export const useTabStore = defineStore('tabs', {
     clear() {
       this.tabs = [];
       this.activeTabId = null;
+    },
+    openRoute(name: string, params: Record<string, unknown>, title: string): Tab {
+      const collectionId = typeof params.collectionId === 'string' ? params.collectionId : undefined;
+      const folderId = typeof params.folderId === 'string' ? params.folderId : undefined;
+      const requestId = typeof params.requestId === 'string' ? params.requestId : undefined;
+      const workflowId = typeof params.workflowId === 'string' ? params.workflowId : undefined;
+      let kind: TabKind = 'home';
+      if (requestId) kind = 'request';
+      else if (workflowId) kind = 'workflow';
+      else if (folderId) kind = 'node';
+      else if (collectionId) kind = 'collection';
+      return this.open({
+        title,
+        kind,
+        meta: { collectionId, folderId, requestId, workflowId },
+        route: { name, params },
+      });
     },
   },
 });
