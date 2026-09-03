@@ -11,6 +11,7 @@
             <span>{{ spec.title }}</span>
             <v-spacer />
             <v-btn
+              rounded="lg"
               icon="mdi-close"
               density="comfortable"
               title="Close"
