@@ -1,24 +1,37 @@
 FROM node:20-alpine AS build
 WORKDIR /app
+
+# Install root dependencies and build frontend
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:20-alpine AS backend
-WORKDIR /app
-COPY backend/package.json backend/package-lock.json* ./backend/
-RUN cd backend && npm install --omit=dev
-COPY backend ./backend
+# Install backend dependencies and compile TypeScript
+WORKDIR /app/backend
+COPY backend/package.json backend/package-lock.json* ./
+RUN npm install --omit=dev
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+RUN npx tsc -p tsconfig.json
 
-FROM nginx:1.27-alpine AS frontend
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
+# Final runtime image
 FROM node:20-alpine
 WORKDIR /app
-COPY --from=backend /app/backend ./backend
-COPY --from=frontend /usr/share/nginx/html ./dist
-EXPOSE 3001
+
+# Copy built frontend
+COPY --from=build /app/dist ./dist
+
+# Copy compiled backend and node_modules
+COPY --from=build /app/backend/dist ./backend/dist
+COPY --from=build /app/backend/node_modules ./backend/node_modules
+COPY --from=build /app/backend/package.json ./backend/package.json
+
+# Data directory for configs, users, collections, files
+VOLUME ["/data"]
+ENV DATA_DIR=/data
 ENV PORT=3001
-CMD ["node", "backend/src/server.js"]
+
+EXPOSE 3001
+
+CMD ["node", "backend/dist/server.js"]
