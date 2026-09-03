@@ -8,6 +8,7 @@ export interface TestResult {
   readonly error?: string;
   readonly actualValue?: unknown;
   readonly expectedValue?: unknown;
+  readonly logs?: ReadonlyArray<{ level: 'log' | 'info' | 'warn' | 'error'; message: string }>;
 }
 
 export interface ExecutionResponse {

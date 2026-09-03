@@ -9,7 +9,7 @@ const ctx = (): PreRequestContext => {
   const bundle: VariableBundle = { collection: [], request: [], runtime: [] };
   return {
     variables: bundle,
-    request: { id: '1', name: 'r', url: '/', method: 'GET' },
+    request: { id: '1', name: 'r', url: '/', method: 'GET', headers: [], queryParams: [], pathParams: [], body: undefined },
     setRuntimeVariable: (k: string, v: string) => set.set(k, v),
     setCollectionVariable: (k: string, v: string) => col.set(k, v),
   };

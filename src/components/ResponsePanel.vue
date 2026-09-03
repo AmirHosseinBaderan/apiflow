@@ -104,6 +104,49 @@
               expected <code>{{ formatValue(t.expectedValue) }}</code> · got <code>{{ formatValue(t.actualValue) }}</code> · {{ t.durationMs }}ms
             </span>
           </v-list-item-subtitle>
+          <template #append>
+            <v-menu
+              v-if="t.logs && t.logs.length"
+              location="top end"
+            >
+              <template #activator="{ props: act }">
+                <v-btn
+                  v-bind="act"
+                  icon="mdi-console"
+                  size="x-small"
+                  variant="text"
+                />
+              </template>
+              <v-card
+                min-width="320"
+                max-width="480"
+              >
+                <v-card-title class="text-subtitle-2 pa-3">
+                  Console output
+                </v-card-title>
+                <v-divider />
+                <v-card-text class="pa-0">
+                  <v-list
+                    density="compact"
+                    class="log-list"
+                  >
+                    <v-list-item
+                      v-for="(log, i) in t.logs"
+                      :key="i"
+                      :class="`log-line log-${log.level}`"
+                    >
+                      <v-list-item-title class="text-caption font-weight-medium">
+                        {{ log.level.toUpperCase() }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle class="text-caption">
+                        {{ log.message }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </template>
         </v-list-item>
       </v-list>
     </v-card-text>
@@ -174,3 +217,34 @@ function formatValue(v: unknown): string {
   return JSON.stringify(v);
 }
 </script>
+
+<style scoped lang="scss">
+.log-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.log-line {
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.08);
+}
+
+.log-line:last-child {
+  border-bottom: none;
+}
+
+.log-log {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.log-info {
+  color: rgb(var(--v-theme-info));
+}
+
+.log-warn {
+  color: rgb(var(--v-theme-warning));
+}
+
+.log-error {
+  color: rgb(var(--v-theme-error));
+}
+</style>

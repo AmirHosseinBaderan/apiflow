@@ -32,12 +32,37 @@ export class RequestExecutionService {
       return { ...b, runtime: Array.from(map.values()) };
     };
 
-    const buildScriptCtx = (b: VariableBundle): ScriptContext => ({
-      variables: b,
-      request: { id: request.id, name: request.name, url: request.url, method: request.method },
-      setRuntimeVariable: (name, value) => runtimeMutations.set(name, value),
-      setCollectionVariable: (name, value) => collectionMutations.set(name, value),
-    });
+    const buildScriptCtx = (b: VariableBundle): ScriptContext => {
+      const enabledHeaders = request.headers.filter((h) => h.enabled).map((h) => ({ key: h.key, value: h.value }));
+      const enabledQuery = request.queryParams.filter((h) => h.enabled).map((h) => ({ key: h.key, value: h.value }));
+      const enabledPath = request.pathParams.filter((h) => h.enabled).map((h) => ({ key: h.key, value: h.value }));
+      let body: unknown = undefined;
+      if (request.body.type === 'json' || request.body.type === 'raw' || request.body.type === 'text') {
+        body = request.body.content;
+      } else if (request.body.type === 'formUrlEncoded') {
+        body = request.body.fields.filter((f) => f.enabled).map((f) => ({ key: f.key, value: f.value }));
+      } else if (request.body.type === 'multipart') {
+        body = request.body.fields.map((f) => ({
+          key: f.key,
+          value: f.value.kind === 'text' ? f.value.text : { name: f.value.file.name, contentType: f.value.file.contentType },
+        }));
+      }
+      return {
+        variables: b,
+        request: {
+          id: request.id,
+          name: request.name,
+          url: request.url,
+          method: request.method,
+          headers: enabledHeaders,
+          queryParams: enabledQuery,
+          pathParams: enabledPath,
+          body,
+        },
+        setRuntimeVariable: (name, value) => runtimeMutations.set(name, value),
+        setCollectionVariable: (name, value) => collectionMutations.set(name, value),
+      };
+    };
 
     let currentBundle: VariableBundle = applyMutations(bundle);
 

@@ -5,13 +5,31 @@ import type { VariableBundle } from '@domain/variable/VariableScope';
 
 export interface ScriptContext {
   readonly variables: VariableBundle;
-  readonly request: { id: string; name: string; url: string; method: string };
+  readonly request: {
+    id: string;
+    name: string;
+    url: string;
+    method: string;
+    headers: ReadonlyArray<{ key: string; value: string }>;
+    queryParams: ReadonlyArray<{ key: string; value: string }>;
+    pathParams: ReadonlyArray<{ key: string; value: string }>;
+    body: unknown;
+  };
   setRuntimeVariable(name: string, value: string): void;
   setCollectionVariable(name: string, value: string): void;
 }
 
 export interface PreRequestContext extends ScriptContext {
-  readonly request: { id: string; name: string; url: string; method: string };
+  readonly request: {
+    id: string;
+    name: string;
+    url: string;
+    method: string;
+    headers: ReadonlyArray<{ key: string; value: string }>;
+    queryParams: ReadonlyArray<{ key: string; value: string }>;
+    pathParams: ReadonlyArray<{ key: string; value: string }>;
+    body: unknown;
+  };
 }
 
 export class TestEngine {
@@ -41,10 +59,11 @@ export class TestEngine {
           durationMs: 0,
         };
       }
-      const pm = this.buildPm(ctx);
+      const logs: Array<{ level: 'log' | 'info' | 'warn' | 'error'; message: string }> = [];
+      const pm = this.buildPm(ctx, logs);
       const fn = new Function('pm', 'request', 'variables', `${step.kind.source}`);
       const result = fn(pm, ctx.request, ctx.variables);
-      return this.makeResult(step, result !== false, result, true, start);
+      return this.makeResult(step, result !== false, result, true, start, logs);
     } catch (e) {
       return {
         id: step.id,
@@ -56,15 +75,22 @@ export class TestEngine {
     }
   }
 
-  private buildPm(ctx: {
-    variables: VariableBundle;
-    setRuntimeVariable(name: string, value: string): void;
-    setCollectionVariable(name: string, value: string): void;
-  }) {
+  private buildPm(
+    ctx: {
+      variables: VariableBundle;
+      setRuntimeVariable(name: string, value: string): void;
+      setCollectionVariable(name: string, value: string): void;
+    },
+    logs: Array<{ level: 'log' | 'info' | 'warn' | 'error'; message: string }>,
+  ) {
     const local = new Map<string, string>();
     for (const v of ctx.variables.collection) local.set(v.key, v.value);
     for (const v of ctx.variables.request) local.set(v.key, v.value);
     for (const v of ctx.variables.runtime) local.set(v.key, v.value);
+
+    const pushLog = (level: 'log' | 'info' | 'warn' | 'error', ...args: unknown[]) => {
+      logs.push({ level, message: args.map(stringifyValue).join(' ') });
+    };
 
     return {
       variables: {
@@ -81,6 +107,10 @@ export class TestEngine {
         },
         get: (name: string): unknown => parseValue(local.get(name)),
       },
+      log: (...args: unknown[]) => pushLog('log', ...args),
+      info: (...args: unknown[]) => pushLog('info', ...args),
+      warn: (...args: unknown[]) => pushLog('warn', ...args),
+      error: (...args: unknown[]) => pushLog('error', ...args),
     };
   }
 
@@ -150,14 +180,15 @@ export class TestEngine {
   ): TestResult {
     try {
       const source = step.kind.type === 'script' ? step.kind.source : step.expression;
-      const pm = this.buildPm(ctx);
-      const fn = new Function('pm', 'response', `${source}`);
-      const result = fn(pm, {
+      const logs: Array<{ level: 'log' | 'info' | 'warn' | 'error'; message: string }> = [];
+      const pm = this.buildPm(ctx, logs);
+      const fn = new Function('pm', 'request', 'response', 'variables', `${source}`);
+      const result = fn(pm, ctx.request, {
         status: response.status,
         headers: response.headers,
         body: safeJson(response.bodyText),
-      });
-      return this.makeResult(step, result === true, result, true, start);
+      }, ctx.variables);
+      return this.makeResult(step, result === true, result, true, start, logs);
     } catch (e) {
       return {
         id: step.id,
@@ -175,6 +206,7 @@ export class TestEngine {
     actual: unknown,
     expected: unknown,
     start: number,
+    logs?: Array<{ level: 'log' | 'info' | 'warn' | 'error'; message: string }>,
   ): TestResult {
     return {
       id: step.id,
@@ -183,6 +215,7 @@ export class TestEngine {
       durationMs: Math.round(performance.now() - start),
       actualValue: actual,
       expectedValue: expected,
+      logs,
     };
   }
 }
