@@ -8,12 +8,12 @@ import { configureAppServices } from './providers/services';
 import { ServicesKey } from './providers/injectKeys';
 
 const app = createApp(App);
-app.use(createPinia());
+const pinia = createPinia();
+app.use(pinia);
 app.use(router);
 app.use(vuetify);
 
-const pinia = app.config.globalProperties.$pinia as ReturnType<typeof createPinia>;
-const services = configureAppServices(pinia);
-app.provide(ServicesKey, services);
-
-app.mount('#app');
+configureAppServices(pinia).then((services) => {
+  app.provide(ServicesKey, services);
+  app.mount('#app');
+});
