@@ -1,6 +1,7 @@
 <template>
   <div class="json-editor">
     <v-textarea
+      ref="editor"
       v-model="raw"
       :color="valid === false ? 'error' : undefined"
       :rows="rows"
@@ -32,6 +33,7 @@ import VariablePicker from '@components/VariablePicker.vue';
 const props = defineProps<{ modelValue: string; rows?: number; variables?: VariableDef[] }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>();
 
+const editor = ref<unknown>(null);
 const raw = ref(props.modelValue ?? '');
 const valid = ref<boolean | null>(null);
 
@@ -103,6 +105,25 @@ function format() {
   } else {
     valid.value = false;
   }
+}
+
+function insertAtCursor(name: string) {
+  const token = `{{${name}}}`;
+  const el = (editor.value as { el?: HTMLElement } | null)?.el;
+  const ta = el?.querySelector('textarea') as HTMLTextAreaElement | undefined;
+  if (!ta) {
+    raw.value = `${raw.value}${token}`;
+    emit('update:modelValue', raw.value);
+    return;
+  }
+  const start = ta.selectionStart ?? raw.value.length;
+  const end = ta.selectionEnd ?? start;
+  raw.value = `${raw.value.slice(0, start)}${token}${raw.value.slice(end)}`;
+  emit('update:modelValue', raw.value);
+  nextTick(() => {
+    ta.setSelectionRange(start + token.length, start + token.length);
+    ta.focus();
+  });
 }
 </script>
 
