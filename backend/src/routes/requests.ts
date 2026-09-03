@@ -1,0 +1,98 @@
+import { Router, type Request, type Response } from 'express';
+import { loadCollection, saveCollection } from '../config.js';
+import { authMiddleware } from '../auth.js';
+
+interface RequestItem {
+  id: string;
+  name: string;
+  method: string;
+  url: string;
+  headers: unknown[];
+  queryParams: unknown[];
+  pathParams: unknown[];
+  body: unknown;
+  auth: unknown;
+  timeoutMs: number;
+  retry: unknown;
+  preRequest: unknown[];
+  postRequest: unknown[];
+  variableExtractions: unknown[];
+}
+
+export const requestsRouter = Router();
+
+requestsRouter.use(authMiddleware);
+
+requestsRouter.get('/:requestId', (req: Request, res: Response) => {
+  const collection = loadCollection(req.params.id);
+  if (!collection) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const requests = (collection as { requests: RequestItem[] }).requests;
+  const request = requests.find((r) => r.id === req.params.requestId);
+  if (!request) {
+    res.status(404).json({ error: 'Request not found' });
+    return;
+  }
+  res.json(request);
+});
+
+requestsRouter.put('/:requestId', (req: Request, res: Response) => {
+  const collection = loadCollection(req.params.id);
+  if (!collection) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const body = req.body as Partial<RequestItem>;
+  const requests = (collection as { requests: RequestItem[] }).requests.map((r) =>
+    r.id === req.params.requestId ? { ...r, ...body, id: req.params.requestId } : r,
+  );
+  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  saveCollection(req.params.id, updated);
+  const updatedRequest = requests.find((r) => r.id === req.params.requestId);
+  res.json(updatedRequest);
+});
+
+requestsRouter.post('/', (req: Request, res: Response) => {
+  const collection = loadCollection(req.params.id);
+  if (!collection) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const body = req.body as Partial<RequestItem>;
+  const newRequest: RequestItem = {
+    id: body.id || `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    name: body.name || 'New Request',
+    method: body.method || 'GET',
+    url: body.url || '',
+    headers: body.headers || [],
+    queryParams: body.queryParams || [],
+    pathParams: body.pathParams || [],
+    body: body.body || { type: 'none' },
+    auth: body.auth || { type: 'none' },
+    timeoutMs: body.timeoutMs || 30000,
+    retry: body.retry || { enabled: false, maxAttempts: 1, initialDelayMs: 500, backoff: 'fixed', retryOn: [], retryStatusCodes: [] },
+    preRequest: body.preRequest || [],
+    postRequest: body.postRequest || [],
+    variableExtractions: body.variableExtractions || [],
+  };
+  const requests = [...(collection as { requests: RequestItem[] }).requests, newRequest];
+  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  saveCollection(req.params.id, updated);
+  res.status(201).json(newRequest);
+});
+
+requestsRouter.delete('/:requestId', (req: Request, res: Response) => {
+  const collection = loadCollection(req.params.id);
+  if (!collection) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const requests = (collection as { requests: RequestItem[] }).requests.filter(
+    (r) => r.id !== req.params.requestId,
+  );
+  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  saveCollection(req.params.id, updated);
+  res.status(204).send();
+});
