@@ -6,10 +6,11 @@
     <div
       v-for="(tab, index) in tabs.tabs"
       :key="tab.id"
-      :class="['tab', { active: activeId === tab.id }]"
+      :class="['tab', { active: activeId === tab.id, dragging: dragIndex === index }]"
       :title="tab.title"
       draggable="true"
       @click="select(tab)"
+      @mousedown="onMouseDown(tab, $event)"
       @dragstart="onDragStart($event, index)"
       @dragover.prevent="onDragOver($event, index)"
       @drop="onDrop($event, index)"
@@ -68,7 +69,6 @@ const activeId = computed(() => {
 });
 
 const dragIndex = ref<number | null>(null);
-const overIndex = ref<number | null>(null);
 
 function select(tab: { id: string; route: unknown }) {
   tabs.activate(tab.id);
@@ -91,29 +91,34 @@ function newTab() {
   router.push(tab.route as Parameters<typeof router.push>[0]);
 }
 
+function onMouseDown(tab: { id: string }, event: MouseEvent) {
+  if (event.button === 1) {
+    event.preventDefault();
+    close(tab);
+  }
+}
+
 function onDragStart(event: DragEvent, index: number) {
   dragIndex.value = index;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.setData('text/plain', String(index));
   }
 }
 
 function onDragOver(_event: DragEvent, index: number) {
-  overIndex.value = index;
+  if (dragIndex.value === null || dragIndex.value === index) return;
+  tabs.reorder(dragIndex.value, index);
+  dragIndex.value = index;
 }
 
-function onDrop(_event: DragEvent, index: number) {
-  if (dragIndex.value !== null && dragIndex.value !== index) {
-    tabs.reorder(dragIndex.value, index);
-  }
+function onDrop(_event: DragEvent, _index: number) {
   dragIndex.value = null;
-  overIndex.value = null;
 }
 
 function onDragEnd() {
   dragIndex.value = null;
-  overIndex.value = null;
 }
 </script>
 
@@ -156,7 +161,8 @@ function onDragEnd() {
   background: rgb(var(--v-theme-background));
   transition:
     background-color 0.12s ease,
-    box-shadow 0.12s ease;
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
   user-select: none;
 }
 
@@ -172,6 +178,10 @@ function onDragEnd() {
   box-shadow: 0 -1px 0 0 rgb(var(--v-theme-surface));
   font-weight: 600;
   z-index: 2;
+}
+
+.tab.dragging {
+  opacity: 0.4;
 }
 
 .tab-panel-connector {
