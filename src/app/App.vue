@@ -31,11 +31,28 @@ function applyLocale() {
   html.dir = locale.locale === 'fa' ? 'rtl' : 'ltr';
 }
 
-onMounted(() => {
+onMounted(async () => {
   applyTheme();
   applyLocale();
+  await loadServerSettings();
 });
 
 watch(() => settings.theme, applyTheme);
 watch(() => locale.locale, applyLocale);
+
+async function loadServerSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.defaultTheme) settings.setTheme(data.defaultTheme);
+    if (data.defaultLocale) locale.setLocale(data.defaultLocale);
+    if (data.appName) {
+      const title = document.querySelector('title');
+      if (title) title.textContent = data.appName;
+    }
+  } catch {
+    // ignore
+  }
+}
 </script>
