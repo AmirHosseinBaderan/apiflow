@@ -20,12 +20,10 @@
     </div>
     <v-btn
       icon="mdi-plus"
-      size="small"
       variant="text"
       class="new-tab"
       :title="t('newTab')"
-      @click="newTab"
-    />
+      @click="newTab" />
     <div class="tab-spacer" />
   </div>
 </template>

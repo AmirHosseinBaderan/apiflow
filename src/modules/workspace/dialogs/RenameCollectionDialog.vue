@@ -4,23 +4,19 @@
       v-model="name"
       :label="t('newCollectionName')"
       autofocus
-      density="compact"
       hide-details
-      @keyup.enter="save"
-    />
+      @keyup.enter="save" />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
       <v-btn
         text
-        @click="close"
-      >
+        @click="close" >
         {{ t('cancel') }}
       </v-btn>
       <v-btn
         color="primary"
         :disabled="!name.trim()"
-        @click="save"
-      >
+        @click="save" >
         {{ t('save') }}
       </v-btn>
     </v-card-actions>

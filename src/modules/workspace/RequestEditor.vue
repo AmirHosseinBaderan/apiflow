@@ -10,11 +10,9 @@
                   v-model="localMethod"
                   :items="methods"
                   label="Method"
-                  density="compact"
                   hide-details
                   style="min-width: 130px"
-                  @update:model-value="commit"
-                />
+                  @update:model-value="commit" />
               </v-col>
               <v-col>
                 <v-text-field
@@ -22,11 +20,9 @@
                   v-model="localUrl"
                   placeholder="https://api.example.com/path"
                   prepend-inner-icon="mdi-link-variant"
-                  density="compact"
                   hide-details
                   style="min-width: 130px"
-                  @update:model-value="commit"
-                >
+                  @update:model-value="commit" >
                   <template #append>
                     <VariablePicker
                       v-if="variableNames.length"
@@ -56,13 +52,11 @@
           <v-text-field
             v-model="nameLocal"
             label="Request name"
-            density="compact"
             hide-details
             variant="plain"
             class="text-h6"
             style="max-width: 480px"
-            @update:model-value="onNameChange"
-          />
+            @update:model-value="onNameChange" />
           <v-spacer />
           <v-chip v-if="props.request.method" size="small" color="primary" label class="mt-3">
             {{ props.request.method }}
@@ -72,12 +66,10 @@
           v-model="descLocal"
           label="Description"
           placeholder="What does this request do?"
-          density="compact"
           hide-details
           variant="outlined"
           class="mt-1"
-          @update:model-value="onDescChange"
-        />
+          @update:model-value="onDescChange" />
       </v-col>
     </v-row>
 
@@ -92,6 +84,7 @@
             <v-tab value="pre"> Pre-req </v-tab>
             <v-tab value="tests"> Tests </v-tab>
             <v-tab value="extract"> Extract </v-tab>
+            <v-tab value="variables"> Variables </v-tab>
             <v-tab value="settings"> Settings </v-tab>
           </v-tabs>
           <v-card-text>
@@ -125,11 +118,9 @@
                   v-model="bodyType"
                   :items="bodyTypes"
                   label="Body type"
-                  density="compact"
                   hide-details
                   class="mb-3"
-                  @update:model-value="onBodyTypeChange"
-                />
+                  @update:model-value="onBodyTypeChange" />
                 <JsonEditor
                   v-if="bodyType === 'json'"
                   v-model="bodyContent"
@@ -141,10 +132,8 @@
                   v-else-if="['raw', 'text'].includes(bodyType)"
                   v-model="bodyContent"
                   :rows="8"
-                  density="compact"
                   hide-details
-                  @update:model-value="onBodyContentChange"
-                />
+                  @update:model-value="onBodyContentChange" />
                 <KeyValueEditor
                   v-if="bodyType === 'form'"
                   :model-value="formFields"
@@ -160,65 +149,51 @@
                     class="mb-1"
                   >
                     <v-col cols="auto">
-                      <v-checkbox-btn v-model="f.enabled" density="compact" />
+                      <v-checkbox-btn v-model="f.enabled" />
                     </v-col>
                     <v-col>
                       <v-text-field
                         v-model="f.key"
                         placeholder="key"
-                        density="compact"
-                        hide-details
-                      />
+                        hide-details />
                     </v-col>
                     <v-col>
                       <v-text-field
                         v-if="f.value.kind === 'text'"
                         v-model="f.value.text"
                         placeholder="text"
-                        density="compact"
-                        hide-details
-                      />
+                        hide-details />
                       <v-file-input
                         v-else
                         :model-value="undefined"
                         placeholder="file"
-                        density="compact"
                         hide-details
                         prepend-icon=""
-                        @update:model-value="onMultipartFile(i, $event)"
-                      />
+                        @update:model-value="onMultipartFile(i, $event)" />
                     </v-col>
                     <v-col cols="auto">
                       <v-btn
                         icon="mdi-swap-horizontal"
-                        size="small"
                         variant="text"
-                        @click="toggleMultipartKind(i)"
-                      />
+                        @click="toggleMultipartKind(i)" />
                       <v-btn
                         icon="mdi-delete"
-                        size="small"
                         variant="text"
-                        @click="removeMultipart(i)"
-                      />
+                        @click="removeMultipart(i)" />
                     </v-col>
                   </v-row>
                   <v-btn
-                    size="small"
                     variant="text"
                     prepend-icon="mdi-plus"
-                    @click="addMultipartText"
-                  >
+                    @click="addMultipartText" >
                     Add field
                   </v-btn>
                 </div>
                 <div v-if="bodyType === 'binary'">
                   <v-file-input
                     label="Select file"
-                    density="compact"
                     hide-details
-                    @update:model-value="onBinaryFile"
-                  />
+                    @update:model-value="onBinaryFile" />
                 </div>
               </v-tabs-window-item>
               <v-tabs-window-item value="auth">
@@ -226,59 +201,45 @@
                   v-model="authType"
                   :items="['none', 'bearer', 'basic', 'apiKey']"
                   label="Auth type"
-                  density="compact"
                   hide-details
                   class="mb-3"
-                  @update:model-value="onAuthChange"
-                />
+                  @update:model-value="onAuthChange" />
                 <v-text-field
                   v-if="authType === 'bearer'"
                   v-model="bearerToken"
                   label="Token"
-                  density="compact"
                   hide-details
-                  @update:model-value="onAuthChange"
-                />
+                  @update:model-value="onAuthChange" />
                 <template v-if="authType === 'basic'">
                   <v-text-field
                     v-model="basicUser"
                     label="Username"
-                    density="compact"
                     hide-details
-                    @update:model-value="onAuthChange"
-                  />
+                    @update:model-value="onAuthChange" />
                   <v-text-field
                     v-model="basicPass"
                     label="Password"
                     type="password"
-                    density="compact"
                     hide-details
-                    @update:model-value="onAuthChange"
-                  />
+                    @update:model-value="onAuthChange" />
                 </template>
                 <template v-if="authType === 'apiKey'">
                   <v-text-field
                     v-model="apiKeyName"
                     label="Header / Query name"
-                    density="compact"
                     hide-details
-                    @update:model-value="onAuthChange"
-                  />
+                    @update:model-value="onAuthChange" />
                   <v-text-field
                     v-model="apiKeyValue"
                     label="Value"
-                    density="compact"
                     hide-details
-                    @update:model-value="onAuthChange"
-                  />
+                    @update:model-value="onAuthChange" />
                   <v-select
                     v-model="apiKeyIn"
                     :items="['header', 'query']"
                     label="Add to"
-                    density="compact"
                     hide-details
-                    @update:model-value="onAuthChange"
-                  />
+                    @update:model-value="onAuthChange" />
                 </template>
               </v-tabs-window-item>
               <v-tabs-window-item value="pre">
@@ -307,10 +268,8 @@
                   v-model.number="timeoutLocal"
                   type="number"
                   label="Timeout (ms)"
-                  density="compact"
                   hide-details
-                  @update:model-value="onTimeoutChange"
-                />
+                  @update:model-value="onTimeoutChange" />
                 <v-divider class="my-3" />
                 <RetryPolicyEditor :model-value="retryLocal" @update:model-value="onRetryChange" />
               </v-tabs-window-item>
@@ -349,15 +308,23 @@ import KeyValueEditor from '@components/KeyValueEditor.vue';
 import ResponsePanel from '@components/ResponsePanel.vue';
 import RetryPolicyEditor from '@components/RetryPolicyEditor.vue';
 import TestEditor from '@components/TestEditor.vue';
+import VariablesEditor from '@components/VariablesEditor.vue';
 import VariableExtractorEditor from '@components/VariableExtractorEditor.vue';
 import VariablePicker from '@components/VariablePicker.vue';
 import type { VariableDef } from '@components/VariablePicker.vue';
+import type { VariableEntry } from '@domain/variable/VariableScope';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
 import { useNotifier } from '@composables/useNotifier';
 
-const props = defineProps<{ request: RequestDefinition }>();
-const emit = defineEmits<{ (e: 'update:request', v: RequestDefinition): void }>();
+const props = defineProps<{
+  request: RequestDefinition;
+  variables?: ReadonlyArray<VariableEntry>;
+}>();
+const emit = defineEmits<{
+  (e: 'update:request', v: RequestDefinition): void;
+  (e: 'update:variables', v: VariableEntry[]): void;
+}>();
 
 const store = useCollectionStore();
 const execution = useExecutionStore();

@@ -6,23 +6,18 @@
       <v-text-field
         v-model="newItemName"
         label="New request / folder name"
-        density="compact"
-        hide-details
-      />
+        hide-details />
       <v-row dense class="mt-1">
         <v-col cols="6">
-          <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click="newRequest"
-            >Request</v-btn
+          <v-btn variant="tonal" prepend-icon="mdi-plus" block @click="newRequest" >Request</v-btn
           >
         </v-col>
         <v-col cols="6">
           <v-btn
-            size="small"
             variant="tonal"
             prepend-icon="mdi-folder-plus"
             block
-            @click="newFolder"
-            >Folder</v-btn
+            @click="newFolder" >Folder</v-btn
           >
         </v-col>
       </v-row>
@@ -59,11 +54,9 @@
           <template #activator="{ props: act }">
             <v-btn
               v-bind="act"
-              size="x-small"
               variant="text"
               icon="mdi-dots-vertical"
-              @click.stop
-            />
+              @click.stop />
           </template>
           <v-list density="compact">
             <v-list-item

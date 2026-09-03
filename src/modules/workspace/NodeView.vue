@@ -20,10 +20,8 @@
           <v-btn
             v-if="node?.kind === 'folder'"
             color="primary"
-            size="small"
             :text="t('backToCollection')"
-            @click="gotoCollection"
-          />
+            @click="gotoCollection" />
         </div>
       </v-col>
 
@@ -43,10 +41,8 @@
             <v-btn
               class="mt-2"
               color="primary"
-              size="small"
               prepend-icon="mdi-pencil"
-              @click="renameCollection"
-            >
+              @click="renameCollection" >
               {{ t('rename') }}
             </v-btn>
           </v-card-text>
@@ -66,54 +62,44 @@
                     <v-text-field
                       v-model="mutableVariables[i].key"
                       :label="t('name')"
-                      density="compact"
-                      hide-details
-                    />
+                      hide-details />
                   </v-col>
                   <v-col cols="7">
                     <v-text-field
                       v-model="mutableVariables[i].value"
                       :type="v.secret ? 'password' : 'text'"
                       :label="t('value')"
-                      density="compact"
-                      hide-details
-                    />
+                      hide-details />
                   </v-col>
                   <v-col cols="auto">
                     <v-checkbox-btn
                       v-model="mutableVariables[i].enabled"
-                      density="compact"
-                      hide-details
-                    />
+                      hide-details />
                   </v-col>
                   <v-col cols="auto">
                     <v-switch
                       v-model="mutableVariables[i].secret"
                       inset
-                      density="compact"
                       hide-details
-                      class="mt-1"
-                    />
+                      class="mt-1" />
                   </v-col>
                   <v-col cols="auto">
                     <v-btn
                       icon="mdi-delete"
-                      size="small"
                       variant="text"
                       color="error"
-                      @click="removeCollectionVar(i)"
-                    />
+                      @click="removeCollectionVar(i)" />
                   </v-col>
                 </v-row>
               </v-list-item>
             </v-list>
-            <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addCollectionVar">
+            <v-btn variant="text" prepend-icon="mdi-plus" @click="addCollectionVar">
               {{ t('addVariable') }}
             </v-btn>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" size="small" @click="saveCollectionVariables">
+            <v-btn color="primary" @click="saveCollectionVariables">
               {{ t('save') }}
             </v-btn>
           </v-card-actions>
@@ -143,11 +129,9 @@
                   </v-chip>
                   <v-btn
                     icon="mdi-delete"
-                    size="small"
                     variant="text"
                     color="error"
-                    @click.stop="deleteWorkflow(wf)"
-                  />
+                    @click.stop="deleteWorkflow(wf)" />
                 </template>
               </v-list-item>
             </v-list>
@@ -218,7 +202,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" size="small" variant="text" @click="clearRuntime">
+            <v-btn color="primary" variant="text" @click="clearRuntime">
               {{ t('clearRuntime') }}
             </v-btn>
           </v-card-actions>

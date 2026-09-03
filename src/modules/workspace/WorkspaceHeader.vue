@@ -16,8 +16,7 @@
       variant="text"
       prepend-icon="mdi-export"
       :disabled="!activeCollection"
-      @click="emit('export')"
-      >{{ t('export') }}</v-btn
+      @click="emit('export')" >{{ t('export') }}</v-btn
     >
     <v-btn variant="text" prepend-icon="mdi-code-json" @click="openOpenApi">{{
       t('importOpenApi')

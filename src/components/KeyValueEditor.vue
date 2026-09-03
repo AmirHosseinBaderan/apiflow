@@ -13,7 +13,6 @@
           :model-value="row.key"
           placeholder="key"
           hide-details
-          density="compact"
           @update:model-value="(v) => update(row.id, 'key', v ?? '')"
         />
       </v-col>
@@ -22,7 +21,6 @@
           :model-value="row.value"
           placeholder="value"
           hide-details
-          density="compact"
           @update:model-value="(v) => update(row.id, 'value', v ?? '')"
         >
           <template #append>
@@ -35,10 +33,10 @@
         </v-text-field>
       </v-col>
       <v-col cols="auto">
-        <v-btn icon="mdi-delete" size="small" variant="text" @click="remove(row.id)" />
+        <v-btn icon="mdi-delete" variant="text" @click="remove(row.id)" />
       </v-col>
     </v-row>
-    <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="add">Add</v-btn>
+    <v-btn variant="text" prepend-icon="mdi-plus" @click="add">Add</v-btn>
   </div>
 </template>
 

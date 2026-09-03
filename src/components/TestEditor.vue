@@ -2,17 +2,14 @@
   <div>
     <v-row v-for="t in local" :key="t.id" dense class="mb-1" align="center">
       <v-col cols="3"
-        ><v-text-field v-model="t.name" placeholder="name" density="compact" hide-details
-      /></v-col>
+        ><v-text-field v-model="t.name" placeholder="name" hide-details /></v-col>
       <v-col cols="3">
         <v-select
           v-model="t.kind.type"
           :items="kinds"
           label="kind"
-          density="compact"
           hide-details
-          @update:model-value="onKindChange(t.id, $event)"
-        />
+          @update:model-value="onKindChange(t.id, $event)" />
       </v-col>
       <v-col v-if="t.kind.type === 'script'" cols="12">
         <CodeEditor
@@ -26,15 +23,13 @@
         <v-text-field
           v-model="t.expression"
           placeholder="expression / path / value"
-          density="compact"
-          hide-details
-        />
+          hide-details />
       </v-col>
       <v-col cols="auto">
-        <v-btn icon="mdi-delete" size="small" variant="text" @click="remove(t.id)" />
+        <v-btn icon="mdi-delete" variant="text" @click="remove(t.id)" />
       </v-col>
     </v-row>
-    <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="add">Add test</v-btn>
+    <v-btn variant="text" prepend-icon="mdi-plus" @click="add">Add test</v-btn>
   </div>
 </template>
 

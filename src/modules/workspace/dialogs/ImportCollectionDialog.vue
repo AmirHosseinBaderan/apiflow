@@ -4,10 +4,8 @@
       v-model="text"
       rows="10"
       placeholder="Paste collection JSON here"
-      density="compact"
       hide-details
-      @update:model-value="err = null"
-    />
+      @update:model-value="err = null" />
     <v-alert v-if="err" type="error" variant="tonal" density="compact">{{ err }}</v-alert>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />

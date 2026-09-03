@@ -6,20 +6,16 @@
         item-title="label"
         item-value="value"
         :label="t('locale')"
-        density="compact"
         hide-details
-        class="mt-2"
-    />
+        class="mt-2" />
     <v-select
         v-model="settings.theme"
         :items="[{ value: 'light', label: t('light') }, { value: 'dark', label: t('dark') }]"
         item-title="label"
         item-value="value"
         :label="t('theme')"
-        density="compact"
         hide-details
-        class="mt-2"
-    />
+        class="mt-2" />
   </v-card-text>
   <v-card-actions>
     <v-spacer/>

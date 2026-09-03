@@ -4,10 +4,8 @@
       v-model="name"
       label="Collection name"
       autofocus
-      density="compact"
       hide-details
-      @keyup.enter="create"
-    />
+      @keyup.enter="create" />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
       <v-btn text @click="close">Cancel</v-btn>

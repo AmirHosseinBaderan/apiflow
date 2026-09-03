@@ -4,11 +4,8 @@
       <v-btn
         v-bind="menuProps"
         icon="mdi-variable"
-        size="small"
         variant="text"
-        density="compact"
-        :title="t('insertVariable')"
-      />
+        :title="t('insertVariable')" />
     </template>
     <v-list density="compact" style="max-width: 220px">
       <v-list-item

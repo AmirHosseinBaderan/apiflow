@@ -1,0 +1,32 @@
+$widget-gap: 6px;
+
+.v-text-field,
+.v-select,
+.v-autocomplete,
+.v-combobox,
+.v-otp-field,
+.v-file-input,
+.v-textarea,
+.v-btn,
+.v-checkbox,
+.v-switch,
+.v-radio-group,
+.v-item-group,
+.v-card {
+  margin-top: $widget-gap;
+  margin-bottom: $widget-gap;
+}
+
+// Layout primitives stay flush with the surface so widget gaps only appear
+// between form controls and cards.
+.v-toolbar,
+.v-navigation-drawer,
+.v-navigation-drawer > *,
+.v-breadcrumbs,
+.v-footer,
+.v-spacer,
+.v-row,
+.v-col {
+  margin-top: 0;
+  margin-bottom: 0;
+}

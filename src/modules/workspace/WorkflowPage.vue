@@ -11,9 +11,7 @@
         <v-text-field
           v-model="local.name"
           :label="t('workflowTitle')"
-          density="compact"
-          hide-details
-        />
+          hide-details />
       </v-col>
       <v-col
         cols="12"
@@ -22,9 +20,7 @@
         <v-text-field
           v-model="local.description"
           :label="t('workflowDescription')"
-          density="compact"
-          hide-details
-        />
+          hide-details />
       </v-col>
     </v-row>
 
@@ -47,17 +43,14 @@
                     item-title="name"
                     item-value="id"
                     :label="t('request')"
-                    density="compact"
                     hide-details
                     class="mt-2"
-                    @update:model-value="onStepRequestChange(i, $event)"
-                  />
+                    @update:model-value="onStepRequestChange(i, $event)" />
 
                   <v-select
                     :model-value="condType(i)"
                     :items="condTypeItems"
                     :label="t('condition')"
-                    density="compact"
                     hide-details
                     class="mt-2"
                     @update:model-value="(e: string) => setCondType(i, e)"
@@ -66,7 +59,6 @@
                     v-if="condType(i) === 'statusEquals'"
                     :model-value="condValue(i)"
                     :label="t('expectedStatus')"
-                    density="compact"
                     hide-details
                     class="mt-1"
                     @update:model-value="(e: string) => setCondValue(i, e)"
@@ -78,14 +70,12 @@
                     <v-text-field
                       :model-value="condName(i)"
                       label="Variable name"
-                      density="compact"
                       hide-details
                       @update:model-value="(e: string) => setCondName(i, e)"
                     />
                     <v-text-field
                       :model-value="condValue(i)"
                       label="Equals"
-                      density="compact"
                       hide-details
                       class="ml-2"
                       @update:model-value="(e: string) => setCondValue(i, e)"
@@ -100,7 +90,6 @@
                       :model-value="stepBody(i)"
                       :color="validStepBody(i) === false ? 'error' : undefined"
                       :rows="5"
-                      density="compact"
                       hide-details
                       placeholder="Enter valid JSON"
                       @update:model-value="(e: string) => setStepBody(i, e)"
@@ -121,7 +110,6 @@
                         <v-text-field
                           :model-value="h.key"
                           label="Name"
-                          density="compact"
                           hide-details
                           @update:model-value="(e: string) => setStepHeaderField(i, hi, 'key', e)"
                         />
@@ -130,7 +118,6 @@
                         <v-text-field
                           :model-value="h.value"
                           label="Value"
-                          density="compact"
                           hide-details
                           @update:model-value="(e: string) => setStepHeaderField(i, hi, 'value', e)"
                         />
@@ -138,19 +125,15 @@
                       <v-col cols="1">
                         <v-btn
                           icon="mdi-delete"
-                          size="small"
                           variant="text"
                           color="error"
-                          @click="removeStepHeader(i, hi)"
-                        />
+                          @click="removeStepHeader(i, hi)" />
                       </v-col>
                     </v-row>
                     <v-btn
-                      size="small"
                       variant="text"
                       prepend-icon="mdi-plus"
-                      @click="addStepHeader(i)"
-                    >
+                      @click="addStepHeader(i)" >
                       {{ t('addHeader') }}
                     </v-btn>
                   </div>
@@ -158,23 +141,17 @@
                   <div class="d-flex justify-end">
                     <v-btn
                       icon="mdi-chevron-up"
-                      size="small"
                       variant="text"
-                      @click="moveUp(i)"
-                    />
+                      @click="moveUp(i)" />
                     <v-btn
                       icon="mdi-chevron-down"
-                      size="small"
                       variant="text"
-                      @click="moveDown(i)"
-                    />
+                      @click="moveDown(i)" />
                     <v-btn
                       icon="mdi-delete"
-                      size="small"
                       variant="text"
                       color="error"
-                      @click="removeStep(i)"
-                    />
+                      @click="removeStep(i)" />
                   </div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
@@ -184,15 +161,13 @@
               <v-btn
                 color="primary"
                 prepend-icon="mdi-plus"
-                @click="addStep"
-              >
+                @click="addStep" >
                 Add step
               </v-btn>
               <v-spacer />
               <v-btn
                 variant="outlined"
-                @click="save"
-              >
+                @click="save" >
                 {{ t('saveWorkflow') }}
               </v-btn>
             </div>
@@ -210,17 +185,14 @@
               v-model="runTests"
               :label="t('runTests')"
               inset
-              class="mt-0 mb-0"
-              density="compact"
-            />
+              class="mt-0 mb-0" />
             <v-spacer />
             <v-btn
               color="primary"
               prepend-icon="mdi-play"
               :loading="running"
               :disabled="running"
-              @click="runAll"
-            >
+              @click="runAll" >
               {{ t('runWorkflow') }}
             </v-btn>
           </v-card-text>

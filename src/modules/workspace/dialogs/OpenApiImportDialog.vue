@@ -4,10 +4,8 @@
       v-model="url"
       label="OpenAPI URL"
       placeholder="https://example.com/swagger.json"
-      density="compact"
       hide-details
-      @keyup.enter="fromUrl"
-    />
+      @keyup.enter="fromUrl" />
     <v-row dense class="mt-1">
       <v-col cols="12" sm="auto">
         <v-btn color="primary" :disabled="!url" @click="fromUrl">Import from URL</v-btn>

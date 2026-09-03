@@ -17,25 +17,20 @@
               item-value="id"
               label="Pick requests to chain (in order)"
               multiple
-              chips
-            />
+              chips />
 
             <v-select
               v-model="conditionType"
               :items="['always', 'statusEquals', 'variableEquals']"
               label="Condition for first step"
-              density="compact"
               hide-details
-              class="mt-2"
-            />
+              class="mt-2" />
             <v-text-field
               v-if="conditionType !== 'always'"
               v-model="conditionValue"
               :label="conditionType === 'statusEquals' ? 'Expected status' : 'Variable value'"
-              density="compact"
               hide-details
-              class="mt-1"
-            />
+              class="mt-1" />
 
             <template v-if="workflowRequestIds.length > 0">
               <div v-for="(reqId, idx) in workflowRequestIds" :key="reqId" class="mt-3">
@@ -52,42 +47,32 @@
                         v-model="m.fromVar"
                         label="From variable"
                         placeholder="collection/runtime variable"
-                        density="compact"
-                        hide-details
-                      />
+                        hide-details />
                     </v-col>
                     <v-col cols="4">
                       <v-text-field
                         v-model="m.toVar"
                         label="To variable"
-                        density="compact"
-                        hide-details
-                      />
+                        hide-details />
                     </v-col>
                     <v-col cols="3">
                       <v-select
                         v-model="m.transform"
                         :items="[null, 'trim', 'lower', 'upper', 'number']"
                         label="Transform"
-                        density="compact"
-                        hide-details
-                      />
+                        hide-details />
                     </v-col>
                     <v-col cols="1" cols-sm="auto">
                       <v-btn
                         icon="mdi-delete"
-                        size="small"
                         variant="text"
-                        @click="removeMapping(idx, mi)"
-                      />
+                        @click="removeMapping(idx, mi)" />
                     </v-col>
                   </v-row>
                   <v-btn
-                    size="small"
                     variant="text"
                     prepend-icon="mdi-plus"
-                    @click="addMapping(idx)"
-                    >Add parameter</v-btn
+                    @click="addMapping(idx)" >Add parameter</v-btn
                   >
                 </v-card>
               </div>
@@ -97,8 +82,7 @@
               class="mt-3"
               color="primary"
               :disabled="workflowRequestIds.length < 2"
-              @click="runWorkflow"
-              >Run workflow</v-btn
+              @click="runWorkflow" >Run workflow</v-btn
             >
           </v-card-text>
         </v-card>

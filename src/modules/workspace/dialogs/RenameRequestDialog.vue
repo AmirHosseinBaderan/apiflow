@@ -4,10 +4,8 @@
       v-model="name"
       label="New request name"
       autofocus
-      density="compact"
       hide-details
-      @keyup.enter="save"
-    />
+      @keyup.enter="save" />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
       <v-btn text @click="close">Cancel</v-btn>

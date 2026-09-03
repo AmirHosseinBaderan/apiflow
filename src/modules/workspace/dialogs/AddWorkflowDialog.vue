@@ -1,7 +1,7 @@
 <template>
   <v-card-text>
-    <v-text-field v-model="name" label="Name" density="compact" hide-details autofocus/>
-    <v-text-field v-model="description" label="Description" density="compact" hide-details class="mt-1"/>
+    <v-text-field v-model="name" label="Name" hide-details autofocus/>
+    <v-text-field v-model="description" label="Description" hide-details class="mt-1"/>
   </v-card-text>
   <v-card-actions>
     <v-spacer/>

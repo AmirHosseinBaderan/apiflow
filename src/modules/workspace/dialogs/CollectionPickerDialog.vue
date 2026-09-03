@@ -15,7 +15,7 @@
       <v-list-item v-if="!collections.length" title="No collections" value="" />
     </v-list>
     <v-divider class="my-2" />
-    <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click="pickNewCollection">
+    <v-btn variant="tonal" prepend-icon="mdi-folder-plus" block @click="pickNewCollection">
       New Collection
     </v-btn>
     <v-card-actions class="pa-0 mt-2">

@@ -11,7 +11,7 @@
       @update:model-value="onInput"
     />
     <div class="d-flex align-center mt-1">
-      <v-btn size="small" variant="text" prepend-icon="mdi-format-align-left" @click="format">Format</v-btn>
+      <v-btn variant="text" prepend-icon="mdi-format-align-left" @click="format">Format</v-btn>
       <v-spacer />
       <VariablePicker
         v-if="variables?.length"

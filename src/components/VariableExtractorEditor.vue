@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-row v-for="v in local" :key="v.id" dense class="mb-1" align="center">
-      <v-col cols="4"><v-text-field v-model="v.name" placeholder="variable name" density="compact" hide-details /></v-col>
-      <v-col cols="7"><v-text-field v-model="v.path" placeholder="e.g. body.accessToken" density="compact" hide-details /></v-col>
-      <v-col cols="auto"><v-btn icon="mdi-delete" size="small" variant="text" @click="remove(v.id)" /></v-col>
+      <v-col cols="4"><v-text-field v-model="v.name" placeholder="variable name" hide-details /></v-col>
+      <v-col cols="7"><v-text-field v-model="v.path" placeholder="e.g. body.accessToken" hide-details /></v-col>
+      <v-col cols="auto"><v-btn icon="mdi-delete" variant="text" @click="remove(v.id)" /></v-col>
     </v-row>
-    <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="add">Add extraction</v-btn>
+    <v-btn variant="text" prepend-icon="mdi-plus" @click="add">Add extraction</v-btn>
   </div>
 </template>
 
