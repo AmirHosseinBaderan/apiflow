@@ -24,6 +24,7 @@ export default [
       'vue/multi-word-component-names': 'off',
       'vue/no-v-html': 'warn',
       'vue/require-default-prop': 'off',
+      'vue/valid-v-slot': 'off',
     },
   },
   {
