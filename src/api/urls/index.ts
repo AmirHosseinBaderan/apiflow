@@ -22,6 +22,20 @@ export const collectionUrls = {
   create: '/api/collections',
   update: (id: string) => `/api/collections/${encodeURIComponent(id)}`,
   delete: (id: string) => `/api/collections/${encodeURIComponent(id)}`,
+  variables: (id: string) => `/api/collections/${encodeURIComponent(id)}/variables`,
+  workflows: (id: string) => `/api/collections/${encodeURIComponent(id)}/workflows`,
+  folders: (id: string, folderId: string) => `/api/collections/${encodeURIComponent(id)}/folders/${encodeURIComponent(folderId)}`,
+};
+
+export const requestUrls = {
+  list: (collectionId: string) => `/api/collections/${encodeURIComponent(collectionId)}/requests`,
+  get: (collectionId: string, requestId: string) =>
+    `/api/collections/${encodeURIComponent(collectionId)}/requests/${encodeURIComponent(requestId)}`,
+  create: (collectionId: string) => `/api/collections/${encodeURIComponent(collectionId)}/requests`,
+  update: (collectionId: string, requestId: string) =>
+    `/api/collections/${encodeURIComponent(collectionId)}/requests/${encodeURIComponent(requestId)}`,
+  delete: (collectionId: string, requestId: string) =>
+    `/api/collections/${encodeURIComponent(collectionId)}/requests/${encodeURIComponent(requestId)}`,
 };
 
 export const fileUrls = {
