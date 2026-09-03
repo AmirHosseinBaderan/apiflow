@@ -13,10 +13,13 @@ import { useSettingsStore } from '@stores/useSettingsStore';
 import AppNotifier from '@components/AppNotifier.vue';
 import AppDialog from '@components/AppDialog.vue';
 import { useLocaleStore } from '../i18n/store';
+import { useKeyboard } from '@composables/useKeyboard';
 
 const theme = useTheme();
 const settings = useSettingsStore();
 const locale = useLocaleStore();
+
+useKeyboard();
 
 function applyTheme() {
   (theme.global as unknown as { name: { value: string } }).name.value = settings.theme;

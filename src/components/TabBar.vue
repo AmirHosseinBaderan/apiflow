@@ -1,38 +1,33 @@
 <template>
-  <v-container
-    v-if="tabs.tabs.length"
-    fluid
-    class="tab-bar pa-0"
-  >
-    <div class="d-flex align-center mx-2">
-      <v-btn
-        v-for="tab in tabs.tabs"
-        :key="tab.id"
-        :color="activeId === tab.id ? 'primary' : undefined"
-        :variant="activeId === tab.id ? 'flat' : 'text'"
-        size="small"
-        class="tab-item mr-1"
-        :title="tab.title"
-        @click="select(tab)"
-      >
-        {{ tab.title }}
-        <v-icon
-          v-if="tabs.tabs.length > 1"
-          icon="mdi-close"
-          size="small"
-          class="ml-1"
-          @click.stop="close(tab)"
-        />
-      </v-btn>
-      <v-btn
-        icon="mdi-plus"
-        size="small"
-        variant="text"
-        :title="t('newTab')"
-        @click="newTab"
+  <div v-show="tabs.tabs.length" class="tab-strip">
+    <div
+      v-for="tab in tabs.tabs"
+      :key="tab.id"
+      :class="['tab', { active: activeId === tab.id }]"
+      :title="tab.title"
+      @click="select(tab)"
+    >
+      <span class="tab-label">{{ tab.title }}</span>
+      <div class="tab-panel-connector" />
+      <v-icon
+        v-if="tabs.tabs.length > 1"
+        icon="mdi-close"
+        size="x-small"
+        class="tab-close"
+        @click.stop="close(tab)"
+        title="Close"
       />
     </div>
-  </v-container>
+    <v-btn
+      icon="mdi-plus"
+      size="small"
+      variant="text"
+      class="new-tab"
+      :title="t('newTab')"
+      @click="newTab"
+    />
+    <div class="tab-spacer" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -88,10 +83,100 @@ function newTab() {
 </script>
 
 <style scoped>
-.tab-bar {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+.tab-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 8px;
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-divider-color));
+  height: 36px;
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  overflow-x: auto;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.tab-item {
-  border-radius: 4px 4px 0 0;
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px 6px 14px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  font-size: 0.8rem;
+  color: rgb(var(--v-theme-on-surface));
+  cursor: pointer;
+  white-space: nowrap;
+  margin-right: 1px;
+  background: rgb(var(--v-theme-background));
+  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tab:hover {
+  background: color-mix(in srgb, rgb(var(--v-theme-surface)) 6%, transparent);
+}
+
+.tab.active {
+  background: rgb(var(--v-theme-surface));
+  border-color: rgb(var(--v-divider-color));
+  border-bottom-color: transparent;
+  border-bottom-width: 2px;
+  box-shadow: 0 -1px 0 0 rgb(var(--v-theme-surface));
+  font-weight: 600;
+  z-index: 2;
+}
+
+.tab-panel-connector {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.tab-label {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  opacity: 0.85;
+}
+
+.tab.active .tab-label {
+  opacity: 1;
+}
+
+.tab-close {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  opacity: 0;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.tab:hover .tab-close,
+.tab.active .tab-close {
+  opacity: 0.7;
+}
+
+.new-tab {
+  margin-left: 2px;
+  color: rgb(var(--v-theme-on-surface));
+  opacity: 0.6;
+}
+
+.new-tab:hover {
+  opacity: 1;
+}
+
+.tab-spacer {
+  flex: 1;
 }
 </style>

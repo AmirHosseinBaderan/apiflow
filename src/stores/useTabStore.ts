@@ -90,11 +90,11 @@ export const useTabStore = defineStore('tabs', {
       this.tabs = [];
       this.activeTabId = null;
     },
-    openRoute(name: string, params: Record<string, unknown>, title: string): Tab {
-      const collectionId = typeof params.collectionId === 'string' ? params.collectionId : undefined;
-      const folderId = typeof params.folderId === 'string' ? params.folderId : undefined;
-      const requestId = typeof params.requestId === 'string' ? params.requestId : undefined;
-      const workflowId = typeof params.workflowId === 'string' ? params.workflowId : undefined;
+    openRoute(name: string, params: Record<string, string | undefined>, title: string): Tab {
+      const collectionId = params.collectionId;
+      const folderId = params.folderId;
+      const requestId = params.requestId;
+      const workflowId = params.workflowId;
       let kind: TabKind = 'home';
       if (requestId) kind = 'request';
       else if (workflowId) kind = 'workflow';

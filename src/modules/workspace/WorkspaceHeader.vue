@@ -23,6 +23,7 @@
       t('importOpenApi')
     }}</v-btn>
     <v-btn variant="text" icon="mdi-cog" @click="openSettings" />
+    <v-btn variant="text" icon="mdi-help" :title="t('shortcuts')" @click="openShortcuts" />
   </v-app-bar>
 </template>
 
@@ -30,6 +31,7 @@
 import { defineAsyncComponent, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useTabStore } from '@stores/useTabStore';
 import type { Collection } from '@domain/collection/Collection';
 import { useLocaleStore } from '../../i18n/store';
 
@@ -38,10 +40,12 @@ const emit = defineEmits<{ (e: 'export'): void }>();
 
 const router = useRouter();
 const dialog = useDialogStore();
+const tabs = useTabStore();
 const locale = useLocaleStore();
 const t = computed(() => (key: string) => locale.t(key));
 
 function goHome() {
+  tabs.openRoute('home', {}, locale.t('appTitle'));
   router.push({ name: 'home' });
 }
 
@@ -70,6 +74,13 @@ function openSettings() {
   dialog.openDialog({
     component: defineAsyncComponent(() => import('./dialogs/SettingsDialog.vue')),
     title: t.value('settings'),
+  });
+}
+
+function openShortcuts() {
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('./dialogs/ShortcutsDialog.vue')),
+    title: t.value('shortcuts'),
   });
 }
 </script>

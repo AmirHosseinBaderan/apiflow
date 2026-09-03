@@ -1,14 +1,7 @@
 <template>
   <v-row>
-    <v-col
-      v-if="!activeCollection"
-      cols="12"
-    >
-      <v-alert
-        type="info"
-        variant="tonal"
-        density="compact"
-      >
+    <v-col v-if="!activeCollection" cols="12">
+      <v-alert type="info" variant="tonal" density="compact">
         {{ t('selectCollection') }}
       </v-alert>
     </v-col>
@@ -17,20 +10,10 @@
       <v-col cols="12">
         <div class="d-flex align-center mb-2">
           <span class="text-h6">{{ node?.name ?? activeCollection.name }}</span>
-          <v-chip
-            v-if="node?.kind === 'folder'"
-            size="small"
-            class="ml-2"
-          >
-            {{
-              t('folder')
-            }}
+          <v-chip v-if="node?.kind === 'folder'" size="small" class="ml-2">
+            {{ t('folder') }}
           </v-chip>
-          <v-chip
-            v-else
-            size="small"
-            class="ml-2"
-          >
+          <v-chip v-else size="small" class="ml-2">
             {{ t('collection') }}
           </v-chip>
           <v-spacer />
@@ -44,20 +27,14 @@
         </div>
       </v-col>
 
-      <v-col
-        v-if="node?.kind === 'collection'"
-        cols="12"
-      >
+      <v-col v-if="node?.kind === 'collection'" cols="12">
         <v-card>
           <v-card-title>{{ t('collectionDetails') }}</v-card-title>
           <v-card-text>
             <div class="text-h6">
               {{ activeCollection.name }}
             </div>
-            <div
-              v-if="activeCollection?.description"
-              class="text-body-2 text-medium-emphasis mt-1"
-            >
+            <div v-if="activeCollection?.description" class="text-body-2 text-medium-emphasis mt-1">
               {{ activeCollection.description }}
             </div>
             <div class="text-caption text-medium-emphasis mt-1">
@@ -76,25 +53,15 @@
         </v-card>
       </v-col>
 
-      <v-col
-        v-if="node?.kind === 'collection'"
-        cols="12"
-      >
+      <v-col v-if="node?.kind === 'collection'" cols="12">
         <v-card>
           <v-card-title class="text-h6">
             {{ t('variables') }}
           </v-card-title>
           <v-card-text class="pa-0">
             <v-list density="compact">
-              <v-list-item
-                v-for="(v, i) in mutableVariables"
-                :key="v.key || i"
-                class="align-top"
-              >
-                <v-row
-                  dense
-                  align="center"
-                >
+              <v-list-item v-for="(v, i) in mutableVariables" :key="v.key || i" class="align-top">
+                <v-row dense align="center">
                   <v-col cols="3">
                     <v-text-field
                       v-model="mutableVariables[i].key"
@@ -140,36 +107,20 @@
                 </v-row>
               </v-list-item>
             </v-list>
-            <v-btn
-              size="small"
-              variant="text"
-              prepend-icon="mdi-plus"
-              @click="addCollectionVar"
-            >
-              {{
-                t('addVariable')
-              }}
+            <v-btn size="small" variant="text" prepend-icon="mdi-plus" @click="addCollectionVar">
+              {{ t('addVariable') }}
             </v-btn>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="primary"
-              size="small"
-              @click="saveCollectionVariables"
-            >
-              {{
-                t('save')
-              }}
+            <v-btn color="primary" size="small" @click="saveCollectionVariables">
+              {{ t('save') }}
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
 
-      <v-col
-        v-if="node?.kind === 'collection'"
-        cols="12"
-      >
+      <v-col v-if="node?.kind === 'collection'" cols="12">
         <v-card>
           <v-card-title class="text-h6">
             {{ t('workflows') }}
@@ -184,16 +135,10 @@
                 @click="gotoWorkflow(wf)"
               >
                 <template #prepend>
-                  <v-icon
-                    icon="mdi-play-box-outline"
-                    size="small"
-                  />
+                  <v-icon icon="mdi-play-box-outline" size="small" />
                 </template>
                 <template #append>
-                  <v-chip
-                    size="small"
-                    variant="text"
-                  >
+                  <v-chip size="small" variant="text">
                     {{ wf.steps.length }} {{ t('steps') }}
                   </v-chip>
                   <v-btn
@@ -209,14 +154,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-plus"
-              @click="addWorkflow"
-            >
-              {{
-                t('addWorkflow')
-              }}
+            <v-btn color="primary" prepend-icon="mdi-plus" @click="addWorkflow">
+              {{ t('addWorkflow') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -245,19 +184,10 @@
                 @click="openNode(sub)"
               >
                 <template #prepend>
-                  <v-icon
-                    :icon="iconFor(sub.kind)"
-                    size="small"
-                  />
+                  <v-icon :icon="iconFor(sub.kind)" size="small" />
                 </template>
-                <template
-                  v-if="sub.kind === 'folder'"
-                  #append
-                >
-                  <v-icon
-                    icon="mdi-chevron-right"
-                    size="small"
-                  />
+                <template v-if="sub.kind === 'folder'" #append>
+                  <v-icon icon="mdi-chevron-right" size="small" />
                 </template>
               </v-list-item>
               <v-list-item
@@ -270,10 +200,7 @@
         </v-card>
       </v-col>
 
-      <v-col
-        v-if="runtimeVariables.length"
-        cols="12"
-      >
+      <v-col v-if="runtimeVariables.length" cols="12">
         <v-card>
           <v-card-title class="text-h6">
             {{ t('runtimeVariables') }}
@@ -291,15 +218,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="primary"
-              size="small"
-              variant="text"
-              @click="clearRuntime"
-            >
-              {{
-                t('clearRuntime')
-              }}
+            <v-btn color="primary" size="small" variant="text" @click="clearRuntime">
+              {{ t('clearRuntime') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -314,6 +234,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
+import { useTabStore } from '@stores/useTabStore';
 import type { CollectionTreeNode } from '@stores/useCollectionStore';
 import type { VariableEntry } from '@domain/variable/VariableScope';
 import type { Workflow } from '@domain/workflow/Workflow';
@@ -332,6 +253,7 @@ const router = useRouter();
 const route = useRoute();
 const dialog = useDialogStore();
 const execution = useExecutionStore();
+const tabs = useTabStore();
 const locale = useLocaleStore();
 const t = (key: string) => locale.t(key);
 
@@ -365,20 +287,29 @@ function iconFor(kind: CollectionTreeNode['kind']) {
 function openNode(item: CollectionTreeNode) {
   const cid = activeCollection.value?.id;
   if (!cid) return;
-  if (item.kind === 'folder')
+  if (item.kind === 'folder') {
+    tabs.openRoute('node', { collectionId: cid, folderId: item.id }, item.name);
     router.push({ name: 'node', params: { collectionId: cid, folderId: item.id } });
-  else if (item.kind === 'request')
+  } else if (item.kind === 'request') {
+    tabs.openRoute('request', { collectionId: cid, requestId: item.id }, item.name);
     router.push({ name: 'request', params: { collectionId: cid, requestId: item.id } });
+  }
 }
 
 function gotoCollection() {
   const cid = activeCollection.value?.id;
-  if (cid) router.push({ name: 'collection', params: { collectionId: cid } });
+  if (cid) {
+    tabs.openRoute('collection', { collectionId: cid }, activeCollection.value?.name ?? '');
+    router.push({ name: 'collection', params: { collectionId: cid } });
+  }
 }
 
 function gotoWorkflow(wf: Workflow) {
   const cid = activeCollection.value?.id;
-  if (cid) router.push({ name: 'workflow', params: { collectionId: cid, workflowId: wf.id } });
+  if (cid) {
+    tabs.openRoute('workflow', { collectionId: cid, workflowId: wf.id }, wf.name);
+    router.push({ name: 'workflow', params: { collectionId: cid, workflowId: wf.id } });
+  }
 }
 
 function addWorkflow() {

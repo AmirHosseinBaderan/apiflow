@@ -18,6 +18,7 @@
               </v-col>
               <v-col>
                 <v-text-field
+                  ref="urlField"
                   v-model="localUrl"
                   placeholder="https://api.example.com/path"
                   prepend-inner-icon="mdi-link-variant"
@@ -27,25 +28,19 @@
                   @update:model-value="commit"
                 >
                   <template #append>
-                    <VariablePicker v-if="variableNames.length" :variables="variableNames" @pick="insertUrlVar" />
+                    <VariablePicker
+                      v-if="variableNames.length"
+                      :variables="variableNames"
+                      @pick="insertUrlVar"
+                    />
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="auto">
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-send"
-                  :loading="running"
-                  @click="run"
-                >
+                <v-btn color="primary" prepend-icon="mdi-send" :loading="running" @click="run">
                   Send
                 </v-btn>
-                <v-btn
-                  class="ml-2"
-                  variant="tonal"
-                  prepend-icon="mdi-content-save"
-                  @click="save"
-                >
+                <v-btn class="ml-2" variant="tonal" prepend-icon="mdi-content-save" @click="save">
                   Save
                 </v-btn>
               </v-col>
@@ -69,16 +64,8 @@
             @update:model-value="onNameChange"
           />
           <v-spacer />
-          <v-chip
-            v-if="props.request.method"
-            size="small"
-            color="primary"
-            label
-            class="mt-3"
-          >
-            {{
-              props.request.method
-            }}
+          <v-chip v-if="props.request.method" size="small" color="primary" label class="mt-3">
+            {{ props.request.method }}
           </v-chip>
         </div>
         <v-text-field
@@ -95,48 +82,22 @@
     </v-row>
 
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <v-card>
-          <v-tabs
-            v-model="reqTab"
-            color="primary"
-            density="comfortable"
-          >
-            <v-tab value="params">
-              Params
-            </v-tab>
-            <v-tab value="headers">
-              Headers
-            </v-tab>
-            <v-tab value="body">
-              Body
-            </v-tab>
-            <v-tab value="auth">
-              Auth
-            </v-tab>
-            <v-tab value="pre">
-              Pre-req
-            </v-tab>
-            <v-tab value="tests">
-              Tests
-            </v-tab>
-            <v-tab value="extract">
-              Extract
-            </v-tab>
-            <v-tab value="settings">
-              Settings
-            </v-tab>
+          <v-tabs v-model="reqTab" color="primary" density="comfortable">
+            <v-tab value="params"> Params </v-tab>
+            <v-tab value="headers"> Headers </v-tab>
+            <v-tab value="body"> Body </v-tab>
+            <v-tab value="auth"> Auth </v-tab>
+            <v-tab value="pre"> Pre-req </v-tab>
+            <v-tab value="tests"> Tests </v-tab>
+            <v-tab value="extract"> Extract </v-tab>
+            <v-tab value="settings"> Settings </v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="reqTab">
               <v-tabs-window-item value="params">
-                <div
-                  v-if="pathParamsLocal.length"
-                  class="text-caption text-medium-emphasis mb-1"
-                >
+                <div v-if="pathParamsLocal.length" class="text-caption text-medium-emphasis mb-1">
                   Path params
                 </div>
                 <KeyValueEditor
@@ -145,9 +106,7 @@
                   :variables="variableNames"
                   @update:model-value="onPathParamChange"
                 />
-                <div class="text-caption text-medium-emphasis mb-1 mt-2">
-                  Query params
-                </div>
+                <div class="text-caption text-medium-emphasis mb-1 mt-2">Query params</div>
                 <KeyValueEditor
                   v-model="queryParamsLocal"
                   :variables="variableNames"
@@ -189,6 +148,7 @@
                 <KeyValueEditor
                   v-if="bodyType === 'form'"
                   :model-value="formFields"
+                  :variables="variableNames"
                   @update:model-value="onFormChange"
                 />
                 <div v-if="bodyType === 'multipart'">
@@ -200,10 +160,7 @@
                     class="mb-1"
                   >
                     <v-col cols="auto">
-                      <v-checkbox-btn
-                        v-model="f.enabled"
-                        density="compact"
-                      />
+                      <v-checkbox-btn v-model="f.enabled" density="compact" />
                     </v-col>
                     <v-col>
                       <v-text-field
@@ -325,16 +282,8 @@
                 </template>
               </v-tabs-window-item>
               <v-tabs-window-item value="pre">
-                <TestEditor
-                  :model-value="request.preRequest"
-                  @update:model-value="onPreChange"
-                />
-                <v-alert
-                  class="mt-2"
-                  type="info"
-                  variant="tonal"
-                  density="compact"
-                >
+                <TestEditor :model-value="request.preRequest" @update:model-value="onPreChange" />
+                <v-alert class="mt-2" type="info" variant="tonal" density="compact">
                   Pre-request scripts run before the HTTP call. Use
                   <code>pm.variables.set('k','v')</code> for runtime variables or
                   <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
@@ -363,20 +312,14 @@
                   @update:model-value="onTimeoutChange"
                 />
                 <v-divider class="my-3" />
-                <RetryPolicyEditor
-                  :model-value="retryLocal"
-                  @update:model-value="onRetryChange"
-                />
+                <RetryPolicyEditor :model-value="retryLocal" @update:model-value="onRetryChange" />
               </v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col cols="12" md="6">
         <ResponsePanel
           :response="lastResult?.response"
           :tests="lastResult?.tests"
@@ -390,7 +333,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import type {
   RequestDefinition,
   KeyValue,
@@ -428,6 +371,7 @@ const variableNames = computed((): VariableDef[] => {
   return Array.from(names).map((n) => ({ name: n }));
 });
 
+const urlField = ref<{ focus?: () => void } | null>(null);
 const reqTab = ref('params');
 const methods = HTTP_METHODS;
 
@@ -774,4 +718,18 @@ function duplicateHeaderKeys(headers: ReadonlyArray<KeyValue>): string[] {
 async function save() {
   await store.updateRequest(props.request);
 }
+
+onMounted(() => {
+  const onSave = () => save();
+  const onSend = () => run();
+  const onFocusUrl = () => urlField.value?.focus?.();
+  window.addEventListener('app:save', onSave);
+  window.addEventListener('app:send', onSend);
+  window.addEventListener('app:focus-url', onFocusUrl);
+  return () => {
+    window.removeEventListener('app:save', onSave);
+    window.removeEventListener('app:send', onSend);
+    window.removeEventListener('app:focus-url', onFocusUrl);
+  };
+});
 </script>

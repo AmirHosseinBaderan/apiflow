@@ -51,7 +51,7 @@ import VariablePicker from '@components/VariablePicker.vue';
 
 const props = defineProps<{
   modelValue: ReadonlyArray<KeyValue>;
-  variables?: VariableDef[];
+  variables: VariableDef[];
 }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: KeyValue[]): void }>();
 
@@ -66,7 +66,10 @@ function add() {
 }
 
 function remove(id: string) {
-  emit('update:modelValue', props.modelValue.filter((r) => r.id !== id));
+  emit(
+    'update:modelValue',
+    props.modelValue.filter((r) => r.id !== id),
+  );
 }
 
 function update<K extends keyof KeyValue>(id: string, field: K, value: KeyValue[K]) {

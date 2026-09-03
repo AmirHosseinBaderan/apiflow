@@ -11,10 +11,19 @@
       />
       <v-row dense class="mt-1">
         <v-col cols="6">
-          <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click="newRequest">Request</v-btn>
+          <v-btn size="small" variant="tonal" prepend-icon="mdi-plus" block @click="newRequest"
+            >Request</v-btn
+          >
         </v-col>
         <v-col cols="6">
-          <v-btn size="small" variant="tonal" prepend-icon="mdi-folder-plus" block @click="newFolder">Folder</v-btn>
+          <v-btn
+            size="small"
+            variant="tonal"
+            prepend-icon="mdi-folder-plus"
+            block
+            @click="newFolder"
+            >Folder</v-btn
+          >
         </v-col>
       </v-row>
     </div>
@@ -98,7 +107,13 @@
       </template>
     </v-treeview>
 
-    <v-alert v-if="tree.length === 0" type="info" variant="tonal" density="compact" class="mx-2 my-2">
+    <v-alert
+      v-if="tree.length === 0"
+      type="info"
+      variant="tonal"
+      density="compact"
+      class="mx-2 my-2"
+    >
       No collections yet. Use "New Collection" in the header.
     </v-alert>
   </v-navigation-drawer>
@@ -109,9 +124,11 @@ import { computed, ref, watch, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useTabStore } from '@stores/useTabStore';
 import { useNotifier } from '@composables/useNotifier';
 
 const store = useCollectionStore();
+const tabs = useTabStore();
 const router = useRouter();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
@@ -163,11 +180,13 @@ function onActivate(ids: string | string[]) {
   if (!node) return;
   if (node.kind === 'collection') {
     store.selectCollection(id);
+    tabs.openRoute('collection', { collectionId: id }, node.name);
     router.push({ name: 'collection', params: { collectionId: id } });
   } else if (node.kind === 'folder') {
     const cid = store.ownerCollectionId(id);
     if (cid) {
       store.selectCollection(cid);
+      tabs.openRoute('node', { collectionId: cid, folderId: id }, node.name);
       router.push({ name: 'node', params: { collectionId: cid, folderId: id } });
     }
   } else if (node.kind === 'request') {
@@ -175,6 +194,7 @@ function onActivate(ids: string | string[]) {
     if (cid) {
       store.selectCollection(cid);
       store.selectRequest(id);
+      tabs.openRoute('request', { collectionId: cid, requestId: id }, node.name);
       router.push({ name: 'request', params: { collectionId: cid, requestId: id } });
     }
   }
@@ -196,7 +216,13 @@ async function newRequest() {
   if (!cid) return;
   await store.createRequest(name);
   notify('Request created', 'success');
-  if (store.activeRequestId) router.push({ name: 'request', params: { collectionId: cid, requestId: store.activeRequestId } });
+  if (store.activeRequestId) {
+    tabs.openRoute('request', { collectionId: cid, requestId: store.activeRequestId }, name);
+    router.push({
+      name: 'request',
+      params: { collectionId: cid, requestId: store.activeRequestId },
+    });
+  }
 }
 
 async function newFolder() {
@@ -206,8 +232,13 @@ async function newFolder() {
   await store.createFolder(name);
   const folderId = store.activeCollection?.folders.find((f) => f.name === name)?.id ?? null;
   notify('Folder created', 'success');
-  if (folderId) router.push({ name: 'node', params: { collectionId: cid, folderId } });
-  else router.push({ name: 'collection', params: { collectionId: cid } });
+  if (folderId) {
+    tabs.openRoute('node', { collectionId: cid, folderId: folderId }, name);
+    router.push({ name: 'node', params: { collectionId: cid, folderId } });
+  } else {
+    tabs.openRoute('collection', { collectionId: cid }, store.activeCollection?.name ?? name);
+    router.push({ name: 'collection', params: { collectionId: cid } });
+  }
   newItemName.value = '';
 }
 
