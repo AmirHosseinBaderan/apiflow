@@ -12,8 +12,17 @@ collectionsRouter.get('/', (_req: Request, res: Response) => {
     .map((f) => {
       const raw = loadCollection(f.replace('.json', ''));
       if (!raw) return null;
-      const { requests: _r, workflows: _w, ...rest } = raw as Record<string, unknown>;
-      return rest;
+      const collection = raw as Record<string, unknown>;
+      const requests = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).map(
+        (r) => ({
+          id: r.id,
+          name: r.name,
+          method: r.method,
+          url: r.url,
+        }),
+      );
+      const { workflows: _w, ...rest } = collection;
+      return { ...rest, requests };
     })
     .filter(Boolean);
   res.json(collections);
