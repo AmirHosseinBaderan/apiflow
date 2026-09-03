@@ -118,7 +118,7 @@
             <v-card
                 variant="outlined"
                 class="settings-card"
-                @click="openSettings"
+                @click="openConfiguration"
             >
               <v-card-text class="d-flex align-center justify-space-between pa-4">
                 <div class="d-flex align-center gap-3">
@@ -169,12 +169,16 @@
 
 <script setup lang="ts">
 import {computed} from 'vue';
+import {useRouter} from 'vue-router';
 import {useDialogStore} from '@stores/useDialogStore';
 import {defineAsyncComponent} from 'vue';
 import {useLocaleStore} from '@i18n/store';
+import {useAuthStore} from '@stores/useAuthStore';
 
+const router = useRouter();
 const dialog = useDialogStore();
 const locale = useLocaleStore();
+const auth = useAuthStore();
 const t = computed(() => (key: string) => locale.t(key));
 
 function openNew() {
@@ -198,18 +202,26 @@ function openOpenApi() {
   });
 }
 
-function openSettings() {
-  dialog.openDialog({
-    component: defineAsyncComponent(() => import('@modules/workspace/dialogs/SettingsDialog.vue')),
-    title: t.value('settings'),
-  });
-}
-
 function openShortcuts() {
   dialog.openDialog({
     component: defineAsyncComponent(() => import('@modules/workspace/dialogs/ShortcutsDialog.vue')),
     title: t.value('shortcuts'),
   });
+}
+
+function openConfiguration() {
+  if (!auth.isAuthenticated) {
+    router.push({ name: 'login' });
+    return;
+  }
+  if (auth.isAdmin) {
+    router.push({ name: 'admin' });
+  } else {
+    dialog.openDialog({
+      component: defineAsyncComponent(() => import('@modules/workspace/dialogs/SettingsDialog.vue')),
+      title: t.value('settings'),
+    });
+  }
 }
 </script>
 

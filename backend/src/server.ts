@@ -41,7 +41,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/collections', collectionsRouter);
-collectionsRouter.use('/:id', requestsRouter);
+app.use('/api/collections/:id/requests', requestsRouter);
 app.use('/api/files', filesRouter);
 
 const staticDir = join(__dirname, '../../dist');

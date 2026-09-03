@@ -1,21 +1,18 @@
 <template>
-  <v-container
-    fluid
-    class="bg-grey-darken-4"
-  >
+  <v-container fluid class="bg-grey-darken-4">
     <v-row justify="center">
-      <v-col
-        cols="12"
-        md="8"
-        lg="6"
-      >
+      <v-col cols="12" md="10" lg="8">
         <v-card class="elevation-4 rounded-lg mt-6">
-          <v-card-title class="d-flex align-center">
-            <v-icon
-              icon="mdi-account-group"
-              class="mr-2"
-            />
-            {{ t('userManagement') }}
+          <v-card-title class="d-flex align-center pa-6">
+            <div>
+              <div class="d-flex align-center gap-2">
+                <v-icon icon="mdi-account-group" />
+                <span class="text-h5">{{ t('userManagement') }}</span>
+              </div>
+              <div class="text-subtitle-2 text-medium-emphasis mt-1">
+                Manage application users and permissions
+              </div>
+            </div>
             <v-spacer />
             <v-btn
               color="primary"
@@ -26,18 +23,17 @@
               {{ t('addUser') }}
             </v-btn>
           </v-card-title>
-          <v-card-text>
+          <v-divider />
+          <v-card-text class="pa-0">
             <v-data-table
               :headers="headers"
               :items="store.users"
               :loading="store.loading"
               class="elevation-0"
+              density="comfortable"
             >
               <template #item.role="{ item }">
-                <v-chip
-                  :color="item.role === 'admin' ? 'primary' : 'default'"
-                  size="small"
-                >
+                <v-chip :color="item.role === 'admin' ? 'primary' : 'default'" size="small">
                   {{ item.role }}
                 </v-chip>
               </template>
@@ -45,25 +41,35 @@
                 {{ new Date(item.createdAt).toLocaleDateString() }}
               </template>
               <template #item.actions="{ item }">
-                <v-icon
+                <v-btn
+                  icon
                   size="small"
-                  class="me-2"
+                  variant="text"
+                  color="primary"
                   @click="openEditDialog(item)"
                 >
-                  mdi-pencil
-                </v-icon>
-                <v-icon
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
                   size="small"
+                  variant="text"
+                  color="error"
                   @click="confirmDelete(item)"
                 >
-                  mdi-delete
-                </v-icon>
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <template #no-data>
+                <v-alert type="info" variant="tonal" density="compact" class="ma-4">
+                  No users found. Create one to get started.
+                </v-alert>
               </template>
             </v-data-table>
             <v-alert
               v-if="store.error"
               type="error"
-              class="mt-4"
+              class="mt-4 mx-4"
               density="compact"
             >
               {{ store.error }}
@@ -73,13 +79,14 @@
       </v-col>
     </v-row>
 
-    <v-dialog
-      v-model="showCreateDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showCreateDialog" max-width="500">
       <v-card>
-        <v-card-title>{{ t('addUser') }}</v-card-title>
-        <v-card-text>
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-account-plus" class="mr-2" />
+          {{ t('addUser') }}
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="pt-4">
           <v-form @submit.prevent="handleCreate">
             <v-text-field
               v-model="newUsername"
@@ -116,13 +123,14 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="showEditDialog"
-      max-width="500"
-    >
+    <v-dialog v-model="showEditDialog" max-width="500">
       <v-card>
-        <v-card-title>{{ t('editUser') }}</v-card-title>
-        <v-card-text>
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-account-edit" class="mr-2" />
+          {{ t('editUser') }}
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="pt-4">
           <v-form @submit.prevent="handleEdit">
             <v-text-field
               v-model="editUsername"
@@ -159,20 +167,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="showDeleteDialog"
-      max-width="400"
-    >
+    <v-dialog v-model="showDeleteDialog" max-width="400">
       <v-card>
-        <v-card-title>{{ t('deleteUser') }}</v-card-title>
-        <v-card-text>
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-alert-circle-outline" class="mr-2" color="error" />
+          {{ t('deleteUser') }}
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="pt-4">
           {{ t('deleteUserConfirm', editUsername) }}
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="showDeleteDialog = false">
-            {{ t('cancel') }}
-          </v-btn>
+          <v-btn @click="showDeleteDialog = false">{{ t('cancel') }}</v-btn>
           <v-btn
             color="error"
             :loading="actionLoading"
