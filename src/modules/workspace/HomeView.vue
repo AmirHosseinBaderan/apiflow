@@ -95,33 +95,6 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col
-            cols="12"
-            sm="6"
-          >
-            <v-card
-              class="action-card"
-              hover
-              :disabled="!activeCollection"
-              @click="onExport"
-            >
-              <v-card-text class="d-flex align-center gap-3">
-                <v-icon
-                  icon="mdi-export"
-                  size="28"
-                  color="success"
-                />
-                <div>
-                  <div class="text-subtitle-1 font-weight-medium">
-                    {{ t('export') }}
-                  </div>
-                  <div class="text-caption text-medium-emphasis">
-                    Export active collection
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
         </v-row>
 
         <v-row
@@ -205,7 +178,6 @@ import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { defineAsyncComponent } from 'vue';
 import { useLocaleStore } from '@i18n/store';
-import { CollectionExporter } from '@application/imports/CollectionExchange';
 
 const store = useCollectionStore();
 const dialog = useDialogStore();
@@ -233,19 +205,6 @@ function openOpenApi() {
     component: defineAsyncComponent(() => import('@modules/workspace/dialogs/OpenApiImportDialog.vue')),
     title: t.value('importOpenApi'),
   });
-}
-
-function onExport() {
-  const c = activeCollection.value;
-  if (!c) return;
-  const text = new CollectionExporter().export(c);
-  const blob = new Blob([text], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${c.name}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 </script>
 
