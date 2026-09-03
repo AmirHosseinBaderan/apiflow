@@ -1,6 +1,7 @@
 <template>
   <v-layout>
     <WorkspaceHeader :active-collection="activeCollection" @export="onExport" />
+    <TabBar />
     <CollectionsSidebar />
     <v-main>
       <v-container fluid class="pt-6">
@@ -14,8 +15,9 @@
 import { computed, onMounted } from 'vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { CollectionExporter } from '@application/imports/CollectionExchange';
-import CollectionsSidebar from "@modules/workspace/CollectionsSidebar.vue";
-import WorkspaceHeader from "@modules/workspace/WorkspaceHeader.vue";
+import CollectionsSidebar from '@modules/workspace/CollectionsSidebar.vue';
+import WorkspaceHeader from '@modules/workspace/WorkspaceHeader.vue';
+import TabBar from '@components/TabBar.vue';
 
 const store = useCollectionStore();
 
