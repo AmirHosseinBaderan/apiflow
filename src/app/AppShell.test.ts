@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll } from 'vitest';
+import { describe, expect, it, beforeAll, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import { createVuetify } from 'vuetify';
@@ -22,12 +22,20 @@ const vuetify = createVuetify({ components: { ...components, VTreeview }, direct
 
 describe('App shell', () => {
   beforeAll(() => {
-const g = globalThis as unknown as {
-  ResizeObserver: unknown;
-  IntersectionObserver: unknown;
-};
-g.ResizeObserver = RO;
-g.IntersectionObserver = RO;
+    const g = globalThis as unknown as {
+      ResizeObserver: unknown;
+      IntersectionObserver: unknown;
+      matchMedia: unknown;
+    };
+    g.ResizeObserver = RO;
+    g.IntersectionObserver = RO;
+    g.matchMedia = () => ({ matches: false, media: '', onchange: null, addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false });
+    vi.stubGlobal('fetch', vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ setupComplete: true, multiUser: false, forceLogin: false }),
+      } as Response),
+    ));
   });
 
   it('renders the sidebar on the home route', async () => {
