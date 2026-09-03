@@ -22,6 +22,11 @@ export const routes: RouteRecordRaw[] = [  {
         component: () => import('@modules/workspace/RequestView.vue'),
       },
       {
+        path: 'unsorted/requests/:requestId',
+        name: 'unsorted',
+        component: () => import('@modules/workspace/RequestView.vue'),
+      },
+      {
         path: 'collections/:collectionId/workflows/:workflowId',
         name: 'workflow',
         component: () => import('@modules/workspace/WorkflowPage.vue'),
@@ -38,7 +43,7 @@ export const router = createRouter({
 
 router.beforeEach((to) => {
   const store = useCollectionStore();
-  if (typeof to.params.collectionId === 'string') store.selectCollection(to.params.collectionId);
+  if (typeof to.params.collectionId === 'string' && to.params.collectionId !== '__unsorted__') store.selectCollection(to.params.collectionId);
   if (typeof to.params.requestId === 'string') store.selectRequest(to.params.requestId);
   return true;
 });
