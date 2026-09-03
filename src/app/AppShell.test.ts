@@ -30,12 +30,21 @@ describe('App shell', () => {
     g.ResizeObserver = RO;
     g.IntersectionObserver = RO;
     g.matchMedia = () => ({ matches: false, media: '', onchange: null, addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false });
-    vi.stubGlobal('fetch', vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ setupComplete: true, multiUser: false, forceLogin: false }),
-      } as Response),
-    ));
+    vi.mock('axios', () => ({
+      default: {
+        create: () => ({
+          interceptors: {
+            request: { use: () => {} },
+            response: { use: () => {} },
+          },
+          request: vi.fn(() =>
+            Promise.resolve({
+              data: { setupComplete: true, multiUser: false, forceLogin: false },
+            })
+          ),
+        }),
+      },
+    }));
   });
 
   it('renders the sidebar on the home route', async () => {
