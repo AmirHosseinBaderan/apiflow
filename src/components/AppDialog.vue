@@ -8,12 +8,10 @@
             <v-spacer />
             <v-btn
               icon="mdi-close"
-              size="small"
               variant="text"
               density="comfortable"
               title="Close"
-              @click="close"
-            />
+              @click="close" />
           </div>
         </v-card-title>
         <v-card-text>
