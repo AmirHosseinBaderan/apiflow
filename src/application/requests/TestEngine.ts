@@ -63,15 +63,21 @@ export class TestEngine {
   }) {
     return {
       variables: {
-        set: (name: string, value: string) => {
-          ctx.setRuntimeVariable(name, value);
-          ctx.setCollectionVariable(name, value);
+        set: (name: string, value: unknown) => {
+          const str = stringifyValue(value);
+          ctx.setRuntimeVariable(name, str);
+          ctx.setCollectionVariable(name, str);
         },
-        setCollection: (name: string, value: string) => ctx.setCollectionVariable(name, value),
-        get: (name: string): string | undefined =>
-          ctx.variables.runtime.find((v) => v.key === name)?.value ??
-          ctx.variables.request.find((v) => v.key === name)?.value ??
-          ctx.variables.collection.find((v) => v.key === name)?.value,
+        setCollection: (name: string, value: unknown) => {
+          ctx.setCollectionVariable(name, stringifyValue(value));
+        },
+        get: (name: string): unknown => {
+          const raw =
+            ctx.variables.runtime.find((v) => v.key === name)?.value ??
+            ctx.variables.request.find((v) => v.key === name)?.value ??
+            ctx.variables.collection.find((v) => v.key === name)?.value;
+          return parseValue(raw);
+        },
       },
     };
   }
@@ -211,3 +217,26 @@ function deepEq(a: unknown, b: unknown): boolean {
 }
 
 export const testEngine = new TestEngine();
+
+function stringifyValue(value: unknown): string {
+  if (value === undefined || value === null) return '';
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+function parseValue(value: string | undefined): unknown {
+  if (value === undefined) return undefined;
+  try {
+    const parsed = JSON.parse(value);
+    if (typeof parsed === 'object' && parsed !== null) return parsed;
+    return value;
+  } catch {
+    return value;
+  }
+}
