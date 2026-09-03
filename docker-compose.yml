@@ -6,4 +6,7 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
+      - DATA_DIR=/data
+    volumes:
+      - ./data:/data
     restart: unless-stopped
