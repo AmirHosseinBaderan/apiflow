@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="!activeRequest">
+    <v-row v-if="!activeRequest && !requestLoading">
       <v-col cols="12">
         <v-alert
           type="info"
@@ -11,10 +11,19 @@
         </v-alert>
       </v-col>
     </v-row>
+    <v-row v-else-if="requestLoading">
+      <v-col cols="12">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
+      </v-col>
+    </v-row>
     <template v-else>
       <v-row>
         <v-col cols="12">
           <RequestEditor
+            v-if="activeRequest"
             :request="activeRequest"
             :variables="activeCollection?.variables ?? []"
             :is-unsorted="isUnsorted"
@@ -29,7 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import RequestEditor from './RequestEditor.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
@@ -37,6 +47,7 @@ import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry } from '@domain/variable/VariableScope';
 
 const store = useCollectionStore();
+const route = useRoute();
 
 const activeRequest = computed(() => store.activeRequest);
 const activeCollection = computed(() => store.activeCollection);
@@ -44,6 +55,20 @@ const isUnsorted = computed(() => {
   if (!store.activeRequestId) return false;
   return store.isRequestUnsorted(store.activeRequestId);
 });
+const requestLoading = computed(() => store.requestLoading);
+
+const collectionId = computed(() => route.params.collectionId as string | undefined);
+
+watch(
+  () => store.activeRequestId,
+  async (requestId) => {
+    if (!requestId || !collectionId.value) return;
+    const cached = store.requestCache.get(requestId);
+    if (!cached && store.activeCollection) {
+      await store.loadRequest(store.activeCollection.id, requestId);
+    }
+  },
+);
 
 function onUpdateRequest(r: RequestDefinition) {
   store.updateRequest(r);
@@ -64,8 +89,8 @@ async function onSaveRequest() {
     title: 'Save request',
     props: {
       requestId,
-      onSave: async (collectionId: string, folderId: string) => {
-        await store.saveUnsortedRequestToCollection(requestId, collectionId, folderId);
+      onSave: async (cid: string, folderId: string | null) => {
+        await store.saveUnsortedRequestToCollection(requestId, cid, folderId);
       },
     },
   });
