@@ -171,7 +171,7 @@ function onBlur(): void {
 }
 
 function pick(i: number): void {
-  const suggestion = activeSuggestions.value[i];
+  const suggestion: JsSuggestion | undefined = activeSuggestions.value[i];
   if (!suggestion) return;
   const result = applySuggestion(text.value, cursor.value, ctx.value, suggestion);
   text.value = result.source;

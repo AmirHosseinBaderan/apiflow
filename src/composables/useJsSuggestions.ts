@@ -203,20 +203,15 @@ const BUILTIN_MEMBERS: Record<string, ReadonlyArray<JsSuggestion>> = {
 const SCOPE_MEMBERS: Record<string, ReadonlyArray<JsSuggestion>> = {
   pm: [s('variables', 'member', 'Variable scope API', undefined, 'pm.variables.set/get/setCollection')],
   'pm.variables': [
-    s(
-      'set',
-      'method',
-      "(name, value) Set runtime + collection variable",
-      'pm.variables.set',
-    ),
-    s('setCollection', 'method', '(name, value) Persist collection variable', 'pm.variables.setCollection'),
-    s('get', 'method', '(name) Read a variable value', 'pm.variables.get'),
+    s('set', 'method', '(name, value) Set runtime + collection variable'),
+    s('setCollection', 'method', '(name, value) Persist collection variable'),
+    s('get', 'method', '(name) Read a variable value'),
   ],
   response: [
-    s('status', 'property', 'HTTP status code (number)', 'response.status'),
-    s('headers', 'property', 'Response headers (object)', 'response.headers'),
-    s('body', 'property', 'Parsed response body (object|array|text)', 'response.body'),
-    s('bodyText', 'property', 'Raw response body text (string)', 'response.bodyText'),
+    s('status', 'property', 'HTTP status code (number)', undefined, 'response.status'),
+    s('headers', 'property', 'Response headers (object)', undefined, 'response.headers'),
+    s('body', 'property', 'Parsed response body (object|array|text)', undefined, 'response.body'),
+    s('bodyText', 'property', 'Raw response body text (string)', undefined, 'response.bodyText'),
   ],
   request: [
     s('id', 'property', 'Request id'),
