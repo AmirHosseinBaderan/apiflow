@@ -23,8 +23,13 @@
                   prepend-inner-icon="mdi-link-variant"
                   density="compact"
                   hide-details
+                  style="min-width: 130px"
                   @update:model-value="commit"
-                />
+                >
+                  <template #append>
+                    <VariablePicker v-if="variableNames.length" :variables="variableNames" @pick="insertUrlVar" />
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="auto">
                 <v-btn
@@ -166,6 +171,7 @@
                 <JsonEditor
                   v-if="bodyType === 'json'"
                   v-model="bodyContent"
+                  :variables="variableNames"
                   :rows="8"
                   @update:model-value="onBodyContentChange"
                 />
@@ -398,6 +404,8 @@ import ResponsePanel from '@components/ResponsePanel.vue';
 import RetryPolicyEditor from '@components/RetryPolicyEditor.vue';
 import TestEditor from '@components/TestEditor.vue';
 import VariableExtractorEditor from '@components/VariableExtractorEditor.vue';
+import VariablePicker from '@components/VariablePicker.vue';
+import type { VariableDef } from '@components/VariablePicker.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
 import { useNotifier } from '@composables/useNotifier';
@@ -408,6 +416,14 @@ const emit = defineEmits<{ (e: 'update:request', v: RequestDefinition): void }>(
 const store = useCollectionStore();
 const execution = useExecutionStore();
 const { notify } = useNotifier();
+
+const variableNames = computed((): VariableDef[] => {
+  const c = store.activeCollection;
+  const names = new Set<string>();
+  for (const v of c?.variables ?? []) names.add(v.key);
+  for (const v of execution.runtimeVariables) names.add(v.key);
+  return Array.from(names).map((n) => ({ name: n }));
+});
 
 const reqTab = ref('params');
 const methods = HTTP_METHODS;
