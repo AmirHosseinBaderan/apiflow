@@ -89,7 +89,7 @@ const CONTEXT: ReadonlyArray<JsSuggestion> = [
     'context',
     'Script API (Postman-style)',
     undefined,
-    'pm.variables.set(name, value), pm.variables.get(name), pm.variables.setCollection(name, value)',
+    "pm.variables.set('k', value) (JSON objects are stringified), pm.variables.get('k') (JSON is parsed back), pm.variables.setCollection('k', value)",
   ),
   s(
     'response',
