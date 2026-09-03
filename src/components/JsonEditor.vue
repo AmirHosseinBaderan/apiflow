@@ -12,6 +12,7 @@
     />
     <div class="d-flex align-center mt-1">
       <v-btn
+        rounded="lg"
         prepend-icon="mdi-format-align-left"
         @click="format"
       >
