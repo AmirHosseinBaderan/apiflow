@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar density="comfortable" elevation="1">
+    <v-app-bar app density="comfortable" elevation="1">
     <v-app-bar-title @click="goHome" style="cursor: pointer">
       <v-icon icon="mdi-api" class="mr-2" />
       {{ t('appTitle') }}
