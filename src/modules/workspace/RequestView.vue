@@ -10,14 +10,11 @@
     <template v-else>
       <v-row>
         <v-col cols="12">
-          <RequestEditor :request="activeRequest" @update:request="onUpdateRequest" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <VariablesEditor
-            :model-value="activeCollection?.variables ?? []"
-            @update:model-value="onVariablesChange"
+          <RequestEditor
+            :request="activeRequest"
+            :variables="activeCollection?.variables ?? []"
+            @update:request="onUpdateRequest"
+            @update:variables="onVariablesChange"
           />
         </v-col>
       </v-row>
@@ -28,7 +25,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import RequestEditor from './RequestEditor.vue';
-import VariablesEditor from '@components/VariablesEditor.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry } from '@domain/variable/VariableScope';

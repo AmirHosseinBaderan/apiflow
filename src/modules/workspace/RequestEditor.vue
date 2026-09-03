@@ -263,6 +263,12 @@
                   @update:model-value="onExtractionsChange"
                 />
               </v-tabs-window-item>
+              <v-tabs-window-item value="variables">
+                <VariablesEditor
+                  :model-value="props.variables ?? []"
+                  @update:model-value="onVariablesChange"
+                />
+              </v-tabs-window-item>
               <v-tabs-window-item value="settings">
                 <v-text-field
                   v-model.number="timeoutLocal"
@@ -475,22 +481,23 @@ function onRetryChange(v: RequestDefinition['retry']) {
   emitUpdate({ retry: v });
 }
 
+function onVariablesChange(v: VariableEntry[]) {
+  emit('update:variables', v);
+}
+
 function onBodyTypeChange() {
   const t = bodyType.value;
+  applyBodyHeaders(t);
   if (t === 'json') {
-    applyDefaultContentType('application/json');
     emitUpdate({ body: { type: 'json', content: bodyContent.value } });
   } else if (t === 'raw') {
-    applyDefaultContentType('text/plain');
     emitUpdate({ body: { type: 'raw', contentType: 'text/plain', content: bodyContent.value } });
   } else if (t === 'text') {
-    applyDefaultContentType('text/plain');
     emitUpdate({ body: { type: 'text', content: bodyContent.value } });
   } else if (t === 'form') {
-    applyDefaultContentType('application/x-www-form-urlencoded');
     emitUpdate({ body: { type: 'formUrlEncoded', fields: formFields.value } });
   } else if (t === 'multipart') {
-    // No default Content-Type for multipart; browser sets the boundary.
+    // No default Content-Type for multipart; the client sets the boundary.
     emitUpdate({ body: { type: 'multipart', fields: multipartFields.value } });
   } else if (t === 'binary') {
     emitUpdate({
@@ -506,33 +513,39 @@ function onBodyTypeChange() {
       },
     });
   } else {
-    removeContentType();
     emitUpdate({ body: { type: 'none' } });
   }
 }
 
-function applyDefaultContentType(value: string): void {
-  const existing = headersLocal.value.find((h) => h.key.toLowerCase() === 'content-type');
-  if (existing) {
-    if (existing.value === value) return;
-    headersLocal.value = headersLocal.value.map((h) =>
-      h.id === existing.id ? { ...h, value, enabled: true } : h,
-    );
-  } else {
-    headersLocal.value = [
-      ...headersLocal.value,
-      { id: createId('kv'), key: 'Content-Type', value, enabled: true },
-    ];
-  }
-  emitUpdate({ headers: headersLocal.value });
-}
+const BODY_DEFAULT_HEADERS: Record<string, Array<readonly [string, string]>> = {
+  json: [
+    ['Content-Type', 'application/json'],
+    ['Accept', 'application/json'],
+  ],
+  raw: [
+    ['Content-Type', 'text/plain'],
+    ['Accept', '*/*'],
+  ],
+  text: [['Content-Type', 'text/plain']],
+  form: [['Content-Type', 'application/x-www-form-urlencoded']],
+  multipart: [],
+  binary: [],
+  none: [['Accept', '*/*']],
+};
 
-function removeContentType(): void {
-  const next = headersLocal.value.filter((h) => h.key.toLowerCase() !== 'content-type');
-  if (next.length !== headersLocal.value.length) {
-    headersLocal.value = next;
-    emitUpdate({ headers: next });
+function applyBodyHeaders(type: string): void {
+  const defaults = BODY_DEFAULT_HEADERS[type] ?? [];
+  const next: KeyValue[] = [...headersLocal.value];
+  for (const [key, value] of defaults) {
+    const idx = next.findIndex((h) => h.key.toLowerCase() === key.toLowerCase());
+    if (idx >= 0) {
+      next[idx] = { ...next[idx]!, key, value, enabled: true };
+    } else {
+      next.push({ id: createId('kv'), key, value, enabled: true });
+    }
   }
+  headersLocal.value = next;
+  emitUpdate({ headers: next });
 }
 
 function onBodyContentChange() {

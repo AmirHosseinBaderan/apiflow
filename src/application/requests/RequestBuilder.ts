@@ -16,7 +16,7 @@ export class RequestBuilder {
     const headers = this.buildHeaders(request, bundle);
     const body = this.buildBody(request, bundle);
     const authHeaders = this.buildAuthHeaders(request.auth, bundle);
-    const allHeaders = [...headers, ...authHeaders];
+    const allHeaders = this.withDefaultHeaders([...headers, ...authHeaders], request.body);
 
     return {
       method: request.method,
@@ -25,6 +25,35 @@ export class RequestBuilder {
       body,
       timeoutMs: request.timeoutMs,
     };
+  }
+
+  private withDefaultHeaders(
+    headers: Array<readonly [string, string]>,
+    body: RequestBody,
+  ): Array<readonly [string, string]> {
+    const out: Array<readonly [string, string]> = [...headers];
+    const has = (name: string) => out.some(([k]) => k.toLowerCase() === name.toLowerCase());
+    const contentType = this.contentTypeForBody(body);
+    if (contentType && !has('Content-Type')) out.push(['Content-Type', contentType]);
+    if (!has('Accept')) out.push(['Accept', contentType === 'application/json' ? 'application/json' : '*/*']);
+    return out;
+  }
+
+  private contentTypeForBody(body: RequestBody): string | undefined {
+    switch (body.type) {
+      case 'json':
+        return 'application/json';
+      case 'raw':
+        return body.contentType || 'text/plain';
+      case 'text':
+        return 'text/plain';
+      case 'formUrlEncoded':
+        return 'application/x-www-form-urlencoded';
+      case 'multipart':
+      case 'binary':
+      case 'none':
+        return undefined;
+    }
   }
 
   private buildUrl(request: RequestDefinition, bundle: VariableBundle): string {
