@@ -1,20 +1,20 @@
 <template>
   <v-container
-    fluid
-    class="home-view"
+      fluid
+      class="home-view"
   >
     <v-row justify="center">
       <v-col
-        cols="12"
-        md="10"
-        lg="8"
+          cols="12"
+          md="10"
+          lg="8"
       >
         <div class="text-center mb-8">
           <v-icon
-            icon="mdi-api"
-            size="48"
-            color="primary"
-            class="mb-3"
+              icon="mdi-api"
+              size="48"
+              color="primary"
+              class="mb-3"
           />
           <h1 class="text-h4 font-weight-regular mb-2">
             {{ t('appTitle') }}
@@ -25,23 +25,23 @@
         </div>
 
         <v-row
-          dense
-          class="action-cards"
+            dense
+            class="action-cards"
         >
           <v-col
-            cols="12"
-            sm="6"
+              cols="12"
+              sm="6"
           >
             <v-card
-              class="action-card"
-              hover
-              @click="openNew"
+                class="action-card"
+                hover
+                @click="openNew"
             >
               <v-card-text class="d-flex align-center gap-3">
                 <v-icon
-                  icon="mdi-folder-plus"
-                  size="28"
-                  color="primary"
+                    icon="mdi-folder-plus"
+                    size="28"
+                    color="primary"
                 />
                 <div>
                   <div class="text-subtitle-1 font-weight-medium">
@@ -55,19 +55,19 @@
             </v-card>
           </v-col>
           <v-col
-            cols="12"
-            sm="6"
+              cols="12"
+              sm="6"
           >
             <v-card
-              class="action-card"
-              hover
-              @click="openImport"
+                class="action-card"
+                hover
+                @click="openImport"
             >
               <v-card-text class="d-flex align-center gap-3">
                 <v-icon
-                  icon="mdi-import"
-                  size="28"
-                  color="secondary"
+                    icon="mdi-import"
+                    size="28"
+                    color="secondary"
                 />
                 <div>
                   <div class="text-subtitle-1 font-weight-medium">
@@ -81,19 +81,18 @@
             </v-card>
           </v-col>
           <v-col
-            cols="12"
-            sm="6"
+              cols="12"
           >
             <v-card
-              class="action-card"
-              hover
-              @click="openOpenApi"
+                class="action-card"
+                hover
+                @click="openOpenApi"
             >
               <v-card-text class="d-flex align-center gap-3">
                 <v-icon
-                  icon="mdi-code-json"
-                  size="28"
-                  color="info"
+                    icon="mdi-code-json"
+                    size="28"
+                    color="info"
                 />
                 <div>
                   <div class="text-subtitle-1 font-weight-medium">
@@ -109,55 +108,55 @@
         </v-row>
 
         <v-row
-          dense
-          class="mt-6"
+            dense
+            class="mt-6"
         >
           <v-col
-            cols="12"
-            sm="6"
+              cols="12"
+              sm="6"
           >
             <v-card
-              variant="outlined"
-              class="settings-card"
-              @click="openSettings"
+                variant="outlined"
+                class="settings-card"
+                @click="openSettings"
             >
               <v-card-text class="d-flex align-center justify-space-between pa-4">
                 <div class="d-flex align-center gap-3">
                   <v-icon
-                    icon="mdi-cog"
-                    size="22"
+                      icon="mdi-cog"
+                      size="22"
                   />
                   <span class="text-body-1">{{ t('settings') }}</span>
                 </div>
                 <v-icon
-                  icon="mdi-chevron-right"
-                  size="20"
-                  class="text-medium-emphasis"
+                    icon="mdi-chevron-right"
+                    size="20"
+                    class="text-medium-emphasis"
                 />
               </v-card-text>
             </v-card>
           </v-col>
           <v-col
-            cols="12"
-            sm="6"
+              cols="12"
+              sm="6"
           >
             <v-card
-              variant="outlined"
-              class="settings-card"
-              @click="openShortcuts"
+                variant="outlined"
+                class="settings-card"
+                @click="openShortcuts"
             >
               <v-card-text class="d-flex align-center justify-space-between pa-4">
                 <div class="d-flex align-center gap-3">
                   <v-icon
-                    icon="mdi-help-circle-outline"
-                    size="22"
+                      icon="mdi-help-circle-outline"
+                      size="22"
                   />
                   <span class="text-body-1">{{ t('shortcuts') }}</span>
                 </div>
                 <v-icon
-                  icon="mdi-chevron-right"
-                  size="20"
-                  class="text-medium-emphasis"
+                    icon="mdi-chevron-right"
+                    size="20"
+                    class="text-medium-emphasis"
                 />
               </v-card-text>
             </v-card>
@@ -169,10 +168,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useDialogStore } from '@stores/useDialogStore';
-import { defineAsyncComponent } from 'vue';
-import { useLocaleStore } from '@i18n/store';
+import {computed} from 'vue';
+import {useDialogStore} from '@stores/useDialogStore';
+import {defineAsyncComponent} from 'vue';
+import {useLocaleStore} from '@i18n/store';
 
 const dialog = useDialogStore();
 const locale = useLocaleStore();
