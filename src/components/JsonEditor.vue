@@ -13,6 +13,11 @@
     <div class="d-flex align-center mt-1">
       <v-btn size="small" variant="text" prepend-icon="mdi-format-align-left" @click="format">Format</v-btn>
       <v-spacer />
+      <VariablePicker
+        v-if="variables?.length"
+        :variables="variables"
+        @pick="insertAtCursor"
+      />
       <v-chip v-if="valid === false" color="error" size="small" text="Invalid JSON" />
       <v-chip v-else-if="valid === true" color="success" size="small" text="Valid" />
     </div>
@@ -21,8 +26,10 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
+import type { VariableDef } from '@components/VariablePicker.vue';
+import VariablePicker from '@components/VariablePicker.vue';
 
-const props = defineProps<{ modelValue: string; rows?: number }>();
+const props = defineProps<{ modelValue: string; rows?: number; variables?: VariableDef[] }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>();
 
 const raw = ref(props.modelValue ?? '');
