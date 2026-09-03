@@ -26,7 +26,7 @@ export class HttpCollectionRepository implements CollectionRepository {
 
   async save(collection: Collection): Promise<void> {
     try {
-      await request(api, 'PUT', collectionUrls.update(collection.id), collection);
+      await request(api, 'POST', collectionUrls.create, collection);
     } catch (e) {
       throw new AppError({ code: 'StorageError', message: 'Failed to save collection', cause: e });
     }
