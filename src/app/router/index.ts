@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useAuthStore } from '@stores/useAuthStore';
+import { authCheck } from '../../api/calls/auth';
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -70,9 +71,9 @@ router.beforeEach(async (to) => {
     auth.restore();
   }
 
-  let authCheck: { setupComplete: boolean; multiUser: boolean; forceLogin: boolean } | null = null;
+  let authStatus: { setupComplete: boolean; multiUser: boolean; forceLogin: boolean } | null = null;
   try {
-    authCheck = await authCheck();
+    authStatus = await authCheck();
   } catch {
     // ignore
   }
@@ -88,11 +89,11 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresAuth) {
-    if (!authCheck?.setupComplete) return { name: 'setup' };
-    if (authCheck?.multiUser && authCheck?.forceLogin && !auth.isAuthenticated) {
+    if (!authStatus?.setupComplete) return { name: 'setup' };
+    if (authStatus?.multiUser && authStatus?.forceLogin && !auth.isAuthenticated) {
       return { name: 'login' };
     }
-    if (!auth.isAuthenticated && authCheck?.multiUser) {
+    if (!auth.isAuthenticated && authStatus?.multiUser) {
       return { name: 'login' };
     }
   }
