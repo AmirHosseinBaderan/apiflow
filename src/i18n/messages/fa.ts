@@ -71,4 +71,7 @@ export default {
   shortcutSend: 'Ctrl/Cmd + Enter : ارسال درخواست',
   shortcutSave: 'Ctrl/Cmd + S : ذخیره درخواست',
   shortcutFocusUrl: 'Ctrl/Cmd + L : تمرکز روی URL',
+  saveToCollection: 'ذخیره درخواست در کالکشن',
+  saveToFolder: 'ذخیره در پوشه',
+  rootFolder: 'ریشه (بدون پوشه)',
 };

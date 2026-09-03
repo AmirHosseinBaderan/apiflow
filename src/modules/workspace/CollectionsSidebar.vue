@@ -12,7 +12,10 @@
         density="compact"
         class="mb-2"
       />
-      <v-row dense class="quick-actions">
+      <v-row
+        dense
+        class="quick-actions"
+      >
         <v-col cols="6">
           <v-btn
             rounded="lg"

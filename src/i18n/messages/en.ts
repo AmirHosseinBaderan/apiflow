@@ -71,4 +71,7 @@ export default {
   shortcutSend: 'Ctrl/Cmd + Enter : Send request',
   shortcutSave: 'Ctrl/Cmd + S : Save request',
   shortcutFocusUrl: 'Ctrl/Cmd + L : Focus URL',
+  saveToCollection: 'Save request to collection',
+  saveToFolder: 'Save to folder',
+  rootFolder: 'Root (no folder)',
 };

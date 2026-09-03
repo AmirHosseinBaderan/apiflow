@@ -17,8 +17,10 @@
           <RequestEditor
             :request="activeRequest"
             :variables="activeCollection?.variables ?? []"
+            :is-unsorted="isUnsorted"
             @update:request="onUpdateRequest"
             @update:variables="onVariablesChange"
+            @save-request="onSaveRequest"
           />
         </v-col>
       </v-row>
@@ -30,6 +32,7 @@
 import { computed } from 'vue';
 import RequestEditor from './RequestEditor.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
+import { useDialogStore } from '@stores/useDialogStore';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry } from '@domain/variable/VariableScope';
 
@@ -37,6 +40,10 @@ const store = useCollectionStore();
 
 const activeRequest = computed(() => store.activeRequest);
 const activeCollection = computed(() => store.activeCollection);
+const isUnsorted = computed(() => {
+  if (!store.activeRequestId) return false;
+  return store.isRequestUnsorted(store.activeRequestId);
+});
 
 function onUpdateRequest(r: RequestDefinition) {
   store.updateRequest(r);
@@ -44,5 +51,23 @@ function onUpdateRequest(r: RequestDefinition) {
 
 function onVariablesChange(v: VariableEntry[]) {
   store.setCollectionVariables(v);
+}
+
+async function onSaveRequest() {
+  if (!isUnsorted.value) return;
+  const requestId = store.activeRequestId;
+  if (!requestId) return;
+  
+  const dialog = useDialogStore();
+  dialog.openDialog({
+    component: () => import('./dialogs/SaveRequestDialog.vue'),
+    title: 'Save request',
+    props: {
+      requestId,
+      onSave: async (collectionId: string, folderId: string) => {
+        await store.saveUnsortedRequestToCollection(requestId, collectionId, folderId);
+      },
+    },
+  });
 }
 </script>

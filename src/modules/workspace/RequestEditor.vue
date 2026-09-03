@@ -408,10 +408,12 @@ import { useNotifier } from '@composables/useNotifier';
 const props = defineProps<{
   request: RequestDefinition;
   variables?: ReadonlyArray<VariableEntry>;
+  isUnsorted?: boolean;
 }>();
 const emit = defineEmits<{
   (e: 'update:request', v: RequestDefinition): void;
   (e: 'update:variables', v: VariableEntry[]): void;
+  (e: 'save-request'): void;
 }>();
 
 const store = useCollectionStore();
@@ -778,6 +780,10 @@ function duplicateHeaderKeys(headers: ReadonlyArray<KeyValue>): string[] {
 }
 
 async function save() {
+  if (props.isUnsorted) {
+    emit('save-request');
+    return;
+  }
   await store.updateRequest(props.request);
 }
 

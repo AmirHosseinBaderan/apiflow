@@ -6,13 +6,13 @@
   >
     <v-card>
       <v-card-title class="text-h6">
-        Save request to collection
+        {{ t('saveToCollection') }}
       </v-card-title>
       <v-card-text>
         <v-select
           v-model="selectedCollectionId"
           :items="collectionItems"
-          label="Collection"
+          :label="t('collection')"
           item-title="name"
           item-value="id"
           hide-details
@@ -21,7 +21,7 @@
         <v-select
           v-model="selectedFolderId"
           :items="folderItems"
-          label="Folder"
+          :label="t('saveToFolder')"
           item-title="name"
           item-value="id"
           hide-details
@@ -29,7 +29,7 @@
           <template #prepend-item>
             <v-list-item
               value=""
-              title="Root (no folder)"
+              :title="t('rootFolder')"
               @click="selectedFolderId = ''"
             />
           </template>
@@ -41,14 +41,14 @@
           variant="text"
           @click="onClose"
         >
-          Cancel
+          {{ t('cancel') }}
         </v-btn>
         <v-btn
           color="primary"
           :disabled="!selectedCollectionId"
           @click="onSave"
         >
-          Save
+          {{ t('save') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -59,9 +59,12 @@
 import { computed, ref, watch } from 'vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useLocaleStore } from '@i18n/store';
 
 const store = useCollectionStore();
 const dialog = useDialogStore();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const selectedCollectionId = ref('');
 const selectedFolderId = ref('');

@@ -15,6 +15,22 @@ export interface CollectionTreeNode {
   readonly isAction?: boolean;
 }
 
+const UNSORTED_KEY = 'apiflow.unsorted.v1';
+
+function loadUnsorted(): RequestDefinition[] {
+  try {
+    const raw = localStorage.getItem(UNSORTED_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as RequestDefinition[];
+  } catch {
+    return [];
+  }
+}
+
+function persistUnsorted(items: RequestDefinition[]) {
+  localStorage.setItem(UNSORTED_KEY, JSON.stringify(items));
+}
+
 function buildCollectionChildren(c: Collection): CollectionTreeNode[] {
   const folderNodes = new Map<string, CollectionTreeNode>();
   for (const f of c.folders)
@@ -76,6 +92,7 @@ export const useCollectionStore = defineStore('collections', {
     loading: false,
     error: null as string | null,
     service: null as CollectionService | null,
+    unsortedRequests: [] as RequestDefinition[],
   }),
 
   getters: {
@@ -83,17 +100,28 @@ export const useCollectionStore = defineStore('collections', {
       return state.collections.find((c) => c.id === state.activeCollectionId) ?? null;
     },
     activeRequest(): RequestDefinition | null {
+      if (this.activeRequestId === '__unsorted__') {
+        const u = this.unsortedRequests.find((r) => r.id === this.activeRequestId);
+        if (u) return u;
+      }
       const c = this.activeCollection;
       if (!c || !this.activeRequestId) return null;
       return c.requests.find((r) => r.id === this.activeRequestId) ?? null;
     },
     requestById(state) {
       return (id: string): RequestDefinition | null => {
+        const u = state.unsortedRequests.find((r) => r.id === id);
+        if (u) return u;
         for (const c of state.collections) {
           const r = c.requests.find((rr) => rr.id === id);
           if (r) return r;
         }
         return null;
+      };
+    },
+    isRequestUnsorted(): (requestId: string) => boolean {
+      return (requestId: string) => {
+        return this.unsortedRequests.some((r) => r.id === requestId);
       };
     },
     workflows(state) {
@@ -153,6 +181,8 @@ export const useCollectionStore = defineStore('collections', {
       this.error = null;
       try {
         this.collections = (await this.service.list()).map((c) => c);
+        this.unsortedRequests = loadUnsorted();
+        persistUnsorted(this.unsortedRequests);
       } catch (e) {
         this.error = (e as Error).message;
       } finally {
@@ -202,15 +232,68 @@ export const useCollectionStore = defineStore('collections', {
       this.activeRequestId = request.id;
       return request;
     },
+    async createUnsortedRequest(name: string): Promise<RequestDefinition> {
+      const id = createId('req');
+      const request: RequestDefinition = {
+        id,
+        name: name || 'New Request',
+        method: 'GET',
+        url: '',
+        headers: [],
+        queryParams: [],
+        pathParams: [],
+        body: { type: 'none' },
+        auth: { type: 'none' },
+        timeoutMs: 30_000,
+        retry: {
+          enabled: false,
+          maxAttempts: 1,
+          initialDelayMs: 500,
+          backoff: 'fixed',
+          retryOn: [],
+          retryStatusCodes: [],
+        },
+        preRequest: [],
+        postRequest: [],
+        variableExtractions: [],
+      };
+      this.unsortedRequests = [...this.unsortedRequests, request];
+      persistUnsorted(this.unsortedRequests);
+      this.activeRequestId = id;
+      return request;
+    },
+    async saveUnsortedRequestToCollection(requestId: string, collectionId: string, folderId: string | null = null) {
+      if (!this.service) return null;
+      const req = this.unsortedRequests.find((r) => r.id === requestId);
+      if (!req) return null;
+      const { collection, request } = await this.service.createRequest(collectionId, req.name, folderId);
+      const updatedReq = { ...request, ...req };
+      await this.service.updateRequest(collectionId, { ...updatedReq, id: request.id });
+      this.replaceCollection(collection);
+      this.unsortedRequests = this.unsortedRequests.filter((r) => r.id !== requestId);
+      persistUnsorted(this.unsortedRequests);
+      this.activeCollectionId = collectionId;
+      this.activeRequestId = request.id;
+      return request;
+    },
     async updateRequest(request: RequestDefinition) {
-      if (!this.service || !this.activeCollectionId) return;
-      const updated = await this.service.updateRequest(this.activeCollectionId, request);
-      this.replaceCollection(updated);
+      const cid = this.ownerCollectionId(request.id);
+      if (cid && this.service) {
+        const updated = await this.service.updateRequest(cid, request);
+        this.replaceCollection(updated);
+      } else if (this.isRequestUnsorted(request.id)) {
+        this.unsortedRequests = this.unsortedRequests.map((r) => (r.id === request.id ? request : r));
+        persistUnsorted(this.unsortedRequests);
+      }
     },
     async deleteRequest(requestId: string) {
-      if (!this.service || !this.activeCollectionId) return;
-      const updated = await this.service.deleteRequest(this.activeCollectionId, requestId);
-      this.replaceCollection(updated);
+      const cid = this.ownerCollectionId(requestId);
+      if (cid && this.service) {
+        const updated = await this.service.deleteRequest(cid, requestId);
+        this.replaceCollection(updated);
+      }
+      this.unsortedRequests = this.unsortedRequests.filter((r) => r.id !== requestId);
+      persistUnsorted(this.unsortedRequests);
       if (this.activeRequestId === requestId) this.activeRequestId = null;
     },
     async setCollectionVariables(variables: VariableEntry[]) {

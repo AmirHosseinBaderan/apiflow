@@ -41,6 +41,6 @@ g.IntersectionObserver = RO;
     await router.replace({ name: 'home' });
     await wrapper.vm.$nextTick();
     const text = wrapper.text();
-    expect(text).toContain('Collections');
+    expect(text).toContain('Quick create');
   });
 });

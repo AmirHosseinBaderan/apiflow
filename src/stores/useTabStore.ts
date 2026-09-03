@@ -107,5 +107,13 @@ export const useTabStore = defineStore('tabs', {
         route: { name, params },
       });
     },
+    reorder(fromIndex: number, toIndex: number) {
+      if (fromIndex === toIndex) return;
+      const tab = this.tabs[fromIndex];
+      const next = [...this.tabs];
+      next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, tab);
+      this.tabs = next;
+    },
   },
 });

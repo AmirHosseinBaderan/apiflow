@@ -30,5 +30,6 @@ const showTabs = computed(() => tabs.tabs.length > 0);
 
 onMounted(async () => {
   await store.refresh();
+  tabs.open({ title: 'Home', kind: 'home', meta: {}, route: { name: 'home' } });
 });
 </script>
