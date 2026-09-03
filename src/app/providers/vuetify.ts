@@ -6,11 +6,11 @@ import { VTreeview } from 'vuetify/labs/VTreeview';
 export const vuetify = createVuetify({
   components: { VTreeview },
   defaults: {
-    VBtn: { variant: 'flat', density: 'comfortable' },
-    VTextField: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto' },
-    VSelect: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto' },
-    VTextarea: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto' },
-    VCard: { variant: 'elevated' },
+    VBtn: { variant: 'flat', density: 'comfortable', size: 'medium', rounded: 'lg' },
+    VTextField: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg' },
+    VSelect: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg' },
+    VTextarea: { variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg' },
+    VCard: { variant: 'elevated', rounded: 'lg' },
   },
   theme: {
     defaultTheme: 'dark',
