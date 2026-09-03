@@ -75,7 +75,8 @@ router.beforeEach(async (to) => {
   try {
     authStatus = await authCheck();
   } catch {
-    // ignore
+    // If the check fails, do not force redirect to setup.
+    // The app will surface real API errors when data is loaded.
   }
 
   if (to.meta.guest) {
@@ -89,7 +90,7 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresAuth) {
-    if (!authStatus?.setupComplete) return { name: 'setup' };
+    if (authStatus?.setupComplete === false) return { name: 'setup' };
     if (authStatus?.multiUser && authStatus?.forceLogin && !auth.isAuthenticated) {
       return { name: 'login' };
     }
