@@ -1,15 +1,14 @@
 <template>
   <div class="json-editor">
-    <v-textarea
+    <CodeEditor
       ref="editor"
       v-model="raw"
-      :color="valid === false ? 'error' : undefined"
-      :rows="rows"
-      density="compact"
-      hide-details
+      lang="json"
       placeholder="Enter valid JSON"
-      @input="onInput"
-      @blur="onBlur"
+      :rows="rows"
+      :variables="pickedVariableNames"
+      :class="{ 'jce--invalid': valid === false }"
+      @update:model-value="onInput"
     />
     <div class="d-flex align-center mt-1">
       <v-btn size="small" variant="text" prepend-icon="mdi-format-align-left" @click="format">Format</v-btn>
@@ -26,16 +25,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { VariableDef } from '@components/VariablePicker.vue';
 import VariablePicker from '@components/VariablePicker.vue';
+import CodeEditor from '@components/CodeEditor.vue';
 
 const props = defineProps<{ modelValue: string; rows?: number; variables?: VariableDef[] }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>();
 
-const editor = ref<unknown>(null);
+const editor = ref<InstanceType<typeof CodeEditor> | null>(null);
 const raw = ref(props.modelValue ?? '');
 const valid = ref<boolean | null>(null);
+
+const pickedVariableNames = computed(() => (props.variables ?? []).map((v) => v.name));
 
 watch(
   () => props.modelValue,
@@ -84,18 +86,6 @@ function onInput() {
   validate(raw.value);
 }
 
-async function onBlur() {
-  const result = validate(raw.value);
-  if (result.ok) {
-    const formatted = JSON.stringify(result.value, null, 2);
-    if (formatted !== raw.value) {
-      raw.value = formatted;
-      emit('update:modelValue', formatted);
-      await nextTick();
-    }
-  }
-}
-
 function format() {
   const result = validate(raw.value);
   if (result.ok) {
@@ -108,22 +98,7 @@ function format() {
 }
 
 function insertAtCursor(name: string) {
-  const token = `{{${name}}}`;
-  const el = (editor.value as { el?: HTMLElement } | null)?.el;
-  const ta = el?.querySelector('textarea') as HTMLTextAreaElement | undefined;
-  if (!ta) {
-    raw.value = `${raw.value}${token}`;
-    emit('update:modelValue', raw.value);
-    return;
-  }
-  const start = ta.selectionStart ?? raw.value.length;
-  const end = ta.selectionEnd ?? start;
-  raw.value = `${raw.value.slice(0, start)}${token}${raw.value.slice(end)}`;
-  emit('update:modelValue', raw.value);
-  nextTick(() => {
-    ta.setSelectionRange(start + token.length, start + token.length);
-    ta.focus();
-  });
+  editor.value?.insertAtCursor(`{{${name}}}`);
 }
 </script>
 
@@ -131,5 +106,10 @@ function insertAtCursor(name: string) {
 .json-editor textarea {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.85rem;
+}
+.json-editor .jce--invalid {
+  .jce__area {
+    color: transparent;
+  }
 }
 </style>
