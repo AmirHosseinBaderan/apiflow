@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import {authMiddleware} from "../middleware/authMiddleware";
 
 export interface User {
   username: string;
@@ -27,6 +28,7 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.token = null;
       this.user = null;
+      authMiddleware.invalidate();
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('apiflow.auth.token');
         localStorage.removeItem('apiflow.auth.user');
@@ -35,7 +37,7 @@ export const useAuthStore = defineStore('auth', {
     restore() {
       if (typeof localStorage === 'undefined') return;
       const token = localStorage.getItem('apiflow.auth.token');
-      const userRaw = localStorage.getItem('apiflow.auth.auth.user');
+      const userRaw = localStorage.getItem('apiflow.auth.user');
       if (token && userRaw) {
         try {
           this.token = token;

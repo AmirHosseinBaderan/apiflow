@@ -133,6 +133,7 @@ import { useLocaleStore } from '../i18n/store';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { authSetup, type SetupRequest } from '../api/calls/auth';
 import { useAuthStore } from '../stores/useAuthStore';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = useRouter();
 const locale = useLocaleStore();
@@ -182,6 +183,7 @@ async function handleSetup() {
     }
     const data = await authSetup(body as unknown as SetupRequest);
     auth.setAuth(data.token, data.user);
+    authMiddleware.invalidate();
     if (theme.value) settings.setTheme(theme.value);
     if (localeVal.value) locale.setLocale(localeVal.value);
     router.push('/');

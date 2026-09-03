@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useAuthStore } from '@stores/useAuthStore';
-import { authCheck } from '../../api/calls/auth';
+import {authMiddleware} from "../../middleware/authMiddleware";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -71,13 +71,11 @@ router.beforeEach(async (to) => {
     auth.restore();
   }
 
-  let authStatus: { setupComplete: boolean; multiUser: boolean; forceLogin: boolean } | null = null;
-  try {
-    authStatus = await authCheck();
-  } catch {
-    // If the check fails, do not force redirect to setup.
-    // The app will surface real API errors when data is loaded.
+  if (!authMiddleware.status && auth.isAuthenticated) {
+    await authMiddleware.refresh();
   }
+
+  const authStatus = authMiddleware.status;
 
   if (to.meta.guest) {
     if (auth.isAuthenticated) return { name: 'home' };
