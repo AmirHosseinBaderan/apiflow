@@ -1,11 +1,15 @@
 <template>
   <div class="jce">
     <pre
+      ref="mirror"
       class="jce__mirror"
       aria-hidden="true"
-      ref="mirror"
       :style="editorStyle"
-      ><span v-for="(t, i) in tokens" :key="i" :class="`jce__tok--${t.type}`">{{ t.text }}</span></pre>
+    ><span
+v-for="(t, i) in tokens"
+           :key="i"
+:class="`jce__tok--${t.type}`"
+>{{ t.text }}</span></pre>
     <textarea
       ref="area"
       :value="text"
@@ -20,7 +24,10 @@
       @keydown="onKeyDown"
       @blur="onBlur"
     />
-    <nav v-show="showSuggest" class="jce__suggest">
+    <nav
+      v-show="showSuggest"
+      class="jce__suggest"
+    >
       <ul class="jce__list">
         <li
           v-for="(s, i) in activeSuggestions"
@@ -33,7 +40,11 @@
           <span class="jce__sline" />
           <span class="jce__sdetail">{{ s.detail }}</span>
         </li>
-        <li v-if="!activeSuggestions.length" class="jce__empty" aria-hidden="true">
+        <li
+          v-if="!activeSuggestions.length"
+          class="jce__empty"
+          aria-hidden="true"
+        >
           No suggestions
         </li>
       </ul>

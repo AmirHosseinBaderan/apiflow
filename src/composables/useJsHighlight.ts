@@ -116,11 +116,11 @@ const BUILTINS: ReadonlySet<string> = new Set([
 ]);
 
 function isRegexContext(prev: string | null): boolean {
-  if (prev === null) return true;
-  if (prev === '++' || prev === '--') return false;
+  if (!prev) return true;
   if (prev === ')' || prev === ']' || prev === '}') return false;
+  if (prev === '++' || prev === '--') return false;
   if (KEYWORDS.has(prev) || BUILTINS.has(prev)) return true;
-  return /[+\-*/%&=|:?!<>~^;,(\[{]$/.test(prev) || /[+\\]$/.test(prev);
+  return /^[-+*/%&|:=!?<>?~^;,({[]$/.test(prev);
 }
 
 function isIdentStart(c: string): boolean {
