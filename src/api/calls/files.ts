@@ -1,4 +1,4 @@
-import { createApiInstance, postForm } from '../index';
+import { createApiInstance, postForm, request } from '../index';
 import { fileUrls } from '../urls';
 
 const api = createApiInstance();
