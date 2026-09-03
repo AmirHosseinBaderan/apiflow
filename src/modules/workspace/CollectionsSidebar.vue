@@ -1,25 +1,24 @@
 <template>
   <v-navigation-drawer
     permanent
-    width="320"
+    width="280"
   >
-    <v-list-subheader>Collections</v-list-subheader>
-
-    <div class="pa-2 border-b">
+    <div class="pa-3 sidebar-header">
       <v-text-field
         v-model="newItemName"
-        label="New request / folder name"
+        label="Quick create"
+        placeholder="Request or folder name..."
         hide-details
+        density="compact"
+        class="mb-2"
       />
-      <v-row
-        dense
-        class="mt-1"
-      >
+      <v-row dense class="quick-actions">
         <v-col cols="6">
           <v-btn
             rounded="lg"
             prepend-icon="mdi-plus"
             block
+            density="comfortable"
             @click="newRequest"
           >
             Request
@@ -30,6 +29,7 @@
             rounded="lg"
             prepend-icon="mdi-folder-plus"
             block
+            density="comfortable"
             @click="newFolder"
           >
             Folder
@@ -37,6 +37,8 @@
         </v-col>
       </v-row>
     </div>
+
+    <v-divider />
 
     <v-treeview
       v-if="tree.length > 0"
@@ -55,13 +57,14 @@
           v-if="!item.isAction"
           :icon="iconFor(item.kind)"
           size="small"
+          class="tree-icon"
         />
       </template>
       <template #title="{ item }">
         <span
           :class="{
             'font-weight-bold': isItemActive(item),
-            'text-body-2': item.kind === 'collection',
+            'tree-title': true,
           }"
           @click.stop="onActivate(item.id)"
         >
@@ -75,6 +78,7 @@
               rounded="lg"
               v-bind="act"
               icon="mdi-dots-vertical"
+              size="x-small"
               @click.stop
             />
           </template>
@@ -125,9 +129,9 @@
       type="info"
       variant="tonal"
       density="compact"
-      class="mx-2 my-2"
+      class="mx-3 my-3"
     >
-      No collections yet. Use "New Collection" in the header.
+      No collections yet. Use "New Collection" on the home page.
     </v-alert>
   </v-navigation-drawer>
 </template>
@@ -167,8 +171,8 @@ watch(
 );
 
 function iconFor(kind: CollectionTreeNode['kind']) {
-  if (kind === 'request') return 'mdi-file-document';
-  return 'mdi-folder';
+  if (kind === 'request') return 'mdi-file-document-outline';
+  return 'mdi-folder-outline';
 }
 
 function isItemActive(item: CollectionTreeNode) {
@@ -225,17 +229,13 @@ function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
 
 async function newRequest() {
   const name = newItemName.value.trim() || 'New Request';
-  const cid = requireActiveOrPick('request');
-  if (!cid) return;
-  await store.createRequest(name);
+  const req = await store.createUnsortedRequest(name);
   notify('Request created', 'success');
-  if (store.activeRequestId) {
-    tabs.openRoute('request', { collectionId: cid, requestId: store.activeRequestId }, name);
-    router.push({
-      name: 'request',
-      params: { collectionId: cid, requestId: store.activeRequestId },
-    });
+  if (req) {
+    tabs.openRoute('request', { collectionId: '__unsorted__', requestId: req.id }, name);
+    router.push({ name: 'request', params: { collectionId: '__unsorted__', requestId: req.id } });
   }
+  newItemName.value = '';
 }
 
 async function newFolder() {
@@ -247,7 +247,7 @@ async function newFolder() {
   notify('Folder created', 'success');
   if (folderId) {
     tabs.openRoute('node', { collectionId: cid, folderId: folderId }, name);
-    router.push({ name: 'node', params: { collectionId: cid, folderId } });
+    router.push({ name: 'node', params: { collectionId: cid, folderId: folderId } });
   } else {
     tabs.openRoute('collection', { collectionId: cid }, store.activeCollection?.name ?? name);
     router.push({ name: 'collection', params: { collectionId: cid } });
@@ -289,3 +289,25 @@ async function removeCollection(id: string) {
   notify('Collection deleted', 'success');
 }
 </script>
+
+<style scoped lang="scss">
+.sidebar-header {
+  padding-bottom: 8px;
+}
+
+.quick-actions {
+  .v-col {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}
+
+.tree-icon {
+  margin-right: 4px;
+}
+
+.tree-title {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+</style>
