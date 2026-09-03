@@ -101,6 +101,8 @@
                   <v-btn
                     rounded="lg"
                     prepend-icon="mdi-plus"
+                    variant="text"
+                    size="small"
                     @click="addMapping(idx)"
                   >
                     Add parameter

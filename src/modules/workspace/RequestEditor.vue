@@ -243,6 +243,7 @@
                   <v-btn
                     rounded="lg"
                     prepend-icon="mdi-plus"
+                    variant="text"
                     @click="addMultipartText"
                   >
                     Add field
