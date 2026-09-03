@@ -1,345 +1,401 @@
 <template>
-  <v-row>
-    <v-col
-      v-if="!activeCollection"
-      cols="12"
-    >
-      <v-alert
-        type="info"
-        variant="tonal"
-        density="compact"
-      >
-        {{ t('selectCollection') }}
-      </v-alert>
-    </v-col>
-
-    <template v-else>
+  <v-container
+    fluid
+    class="node-view"
+  >
+    <v-row v-if="!activeCollection">
       <v-col cols="12">
-        <div class="d-flex align-center mb-4 flex-wrap gap-2">
-          <div>
-            <span class="text-h6">{{ node?.name ?? activeCollection.name }}</span>
-            <v-chip
-              v-if="node?.kind === 'folder'"
-              size="small"
-              class="ml-2"
-            >
-              {{ t('folder') }}
-            </v-chip>
-            <v-chip
-              v-else
-              size="small"
-              class="ml-2"
-            >
-              {{ t('collection') }}
-            </v-chip>
-          </div>
-          <v-spacer />
-          <v-btn
-            v-if="node?.kind === 'folder'"
-            rounded="lg"
-            color="primary"
-            :text="t('backToCollection')"
-            @click="gotoCollection"
-          />
-          <v-btn
-            rounded="lg"
-            prepend-icon="mdi-export"
-            variant="outlined"
-            @click="onExport"
-          >
-            {{ t('export') }}
-          </v-btn>
-          <v-btn
-            rounded="lg"
-            prepend-icon="mdi-pencil"
-            variant="outlined"
-            @click="renameCollection"
-          >
-            {{ t('rename') }}
-          </v-btn>
-          <v-btn
-            rounded="lg"
-            prepend-icon="mdi-plus"
-            color="primary"
-            @click="addNewRequest"
-          >
-            {{ t('request') }}
-          </v-btn>
-          <v-btn
-            rounded="lg"
-            prepend-icon="mdi-folder-plus"
-            variant="outlined"
-            @click="addNewFolder"
-          >
-            {{ t('folder') }}
-          </v-btn>
-        </div>
-      </v-col>
-
-      <v-col
-        v-if="node?.kind === 'collection'"
-        cols="12"
-        md="4"
-      >
-        <v-card>
-          <v-card-title class="text-h6">
-            {{ t('collectionDetails') }}
-          </v-card-title>
-          <v-card-text>
-            <div class="text-subtitle-1 font-weight-medium">
-              {{ activeCollection.name }}
-            </div>
-            <div
-              v-if="activeCollection?.description"
-              class="text-body-2 text-medium-emphasis mt-1"
-            >
-              {{ activeCollection.description }}
-            </div>
-            <div class="text-caption text-medium-emphasis mt-1">
-              {{ t('updated') }} {{ formatDateValue(activeCollection?.updatedAt) }}
-            </div>
-            <div class="d-flex gap-3 mt-3">
-              <div
-                class="text-center pa-2 rounded bg-grey-lighten-4"
-                style="min-width: 64px;"
-              >
-                <div class="text-h6">
-                  {{ activeCollection.requests.length }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ t('items') }}
-                </div>
-              </div>
-              <div
-                class="text-center pa-2 rounded bg-grey-lighten-4"
-                style="min-width: 64px;"
-              >
-                <div class="text-h6">
-                  {{ activeCollection.folders.length }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ t('folder') }}
-                </div>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="mt-4">
-          <v-card-title class="text-h6">
-            {{ t('variables') }}
-          </v-card-title>
-          <v-card-text class="pa-0">
-            <v-list density="compact">
-              <v-list-item
-                v-for="(v, i) in mutableVariables"
-                :key="v.key || i"
-                class="align-top"
-              >
-                <v-row
-                  dense
-                  align="center"
-                >
-                  <v-col cols="4">
-                    <v-text-field
-                      v-model="mutableVariables[i].key"
-                      :label="t('name')"
-                      hide-details
-                    />
-                  </v-col>
-                  <v-col cols="6">
-                    <v-text-field
-                      v-model="mutableVariables[i].value"
-                      :type="v.secret ? 'password' : 'text'"
-                      :label="t('value')"
-                      hide-details
-                    />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-checkbox-btn
-                      v-model="mutableVariables[i].enabled"
-                      hide-details
-                    />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-switch
-                      v-model="mutableVariables[i].secret"
-                      inset
-                      hide-details
-                      class="mt-1"
-                    />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn
-                      rounded="lg"
-                      icon="mdi-delete"
-                      size="small"
-                      color="error"
-                      @click="removeCollectionVar(i)"
-                    />
-                  </v-col>
-                </v-row>
-              </v-list-item>
-            </v-list>
-            <v-btn
-              rounded="lg"
-              prepend-icon="mdi-plus"
-              variant="text"
-              class="ml-2"
-              @click="addCollectionVar"
-            >
-              {{ t('addVariable') }}
-            </v-btn>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              rounded="lg"
-              color="primary"
-              @click="saveCollectionVariables"
-            >
-              {{ t('save') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-
-        <v-card class="mt-4">
-          <v-card-title class="text-h6">
-            {{ t('workflows') }}
-          </v-card-title>
-          <v-card-text class="pa-0">
-            <v-list density="compact">
-              <v-list-item
-                v-for="wf in savedWorkflows"
-                :key="wf.id"
-                :title="wf.name"
-                :subtitle="wf.description ?? `${wf.steps.length} ${t('steps')}`"
-                @click="gotoWorkflow(wf)"
-              >
-                <template #prepend>
-                  <v-icon
-                    icon="mdi-play-box-outline"
-                    size="small"
-                  />
-                </template>
-                <template #append>
-                  <v-chip
-                    size="small"
-                    variant="text"
-                  >
-                    {{ wf.steps.length }} {{ t('steps') }}
-                  </v-chip>
-                  <v-btn
-                    rounded="lg"
-                    icon="mdi-delete"
-                    size="small"
-                    color="error"
-                    @click.stop="deleteWorkflow(wf)"
-                  />
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              rounded="lg"
-              color="primary"
-              prepend-icon="mdi-plus"
-              @click="addWorkflow"
-            >
-              {{ t('addWorkflow') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-
         <v-alert
-          v-if="!savedWorkflows.length"
-          class="mt-3"
           type="info"
           variant="tonal"
           density="compact"
         >
-          {{ t('noWorkflows') }}
+          {{ t('selectCollection') }}
         </v-alert>
       </v-col>
+    </v-row>
 
-      <v-col
-        cols="12"
-        :md="node?.kind === 'collection' ? '8' : '12'"
-      >
-        <v-card>
-          <v-card-title class="text-h6">
-            {{ node?.kind === 'folder' ? t('folder') : t('collection') }} {{ t('items') }}
-          </v-card-title>
-          <v-card-text>
-            <v-list density="compact">
-              <v-list-item
-                v-for="sub in node?.children ?? []"
-                :key="sub.id"
-                :title="sub.name"
-                :value="sub.id"
-                @click="openNode(sub)"
+    <template v-else>
+      <v-row>
+        <v-col cols="12">
+          <div class="page-header">
+            <div class="page-title">
+              <span class="text-h5 font-weight-regular">{{ node?.name ?? activeCollection.name }}</span>
+              <v-chip
+                v-if="node?.kind === 'folder'"
+                size="small"
+                variant="tonal"
+                class="ml-2"
               >
-                <template #prepend>
-                  <v-icon
-                    :icon="iconFor(sub.kind)"
-                    size="small"
-                  />
-                </template>
-                <template
-                  v-if="sub.kind === 'folder'"
-                  #append
-                >
-                  <v-icon
-                    icon="mdi-chevron-right"
-                    size="small"
-                  />
-                </template>
-              </v-list-item>
-              <v-list-item
-                v-if="(node?.children ?? []).length === 0"
-                :title="t('empty')"
-                value=""
+                {{ t('folder') }}
+              </v-chip>
+              <v-chip
+                v-else
+                size="small"
+                variant="tonal"
+                color="primary"
+                class="ml-2"
+              >
+                {{ t('collection') }}
+              </v-chip>
+            </div>
+            <div class="page-actions">
+              <v-btn
+                v-if="node?.kind === 'folder'"
+                rounded="lg"
+                color="primary"
+                :text="t('backToCollection')"
+                @click="gotoCollection"
               />
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
+              <v-btn
+                rounded="lg"
+                prepend-icon="mdi-export"
+                variant="outlined"
+                @click="onExport"
+              >
+                {{ t('export') }}
+              </v-btn>
+              <v-btn
+                rounded="lg"
+                prepend-icon="mdi-pencil"
+                variant="outlined"
+                @click="renameCollection"
+              >
+                {{ t('rename') }}
+              </v-btn>
+              <v-btn
+                rounded="lg"
+                prepend-icon="mdi-plus"
+                color="primary"
+                @click="addNewRequest"
+              >
+                {{ t('request') }}
+              </v-btn>
+              <v-btn
+                rounded="lg"
+                prepend-icon="mdi-folder-plus"
+                variant="outlined"
+                @click="addNewFolder"
+              >
+                {{ t('folder') }}
+              </v-btn>
+            </div>
+          </div>
+        </v-col>
 
-      <v-col
-        v-if="runtimeVariables.length"
-        cols="12"
-      >
-        <v-card>
-          <v-card-title class="text-h6">
-            {{ t('runtimeVariables') }}
-          </v-card-title>
-          <v-card-text>
-            <v-list density="compact">
-              <v-list-item
-                v-for="rv in runtimeVariables"
-                :key="rv.key"
-                :title="rv.key"
-                :subtitle="rv.value"
-                density="compact"
-              />
-            </v-list>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              rounded="lg"
-              color="primary"
-              @click="clearRuntime"
+        <v-col
+          v-if="node?.kind === 'collection'"
+          cols="12"
+          md="4"
+          lg="3"
+        >
+          <div class="sidebar-stack">
+            <v-card
+              variant="flat"
+              class="info-card"
             >
-              {{ t('clearRuntime') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+              <v-card-text>
+                <div class="text-caption text-medium-emphasis mb-1">
+                  {{ t('updated') }}
+                </div>
+                <div class="text-body-2 mb-3">
+                  {{ formatDateValue(activeCollection?.updatedAt) }}
+                </div>
+                <div class="d-flex gap-3">
+                  <div class="stat-chip">
+                    <span class="text-h6">{{ activeCollection.requests.length }}</span>
+                    <span class="text-caption text-medium-emphasis">{{ t('items') }}</span>
+                  </div>
+                  <div class="stat-chip">
+                    <span class="text-h6">{{ activeCollection.folders.length }}</span>
+                    <span class="text-caption text-medium-emphasis">{{ t('folder') }}</span>
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+
+            <v-card
+              variant="flat"
+              class="section-card"
+            >
+              <v-card-text>
+                <div class="d-flex align-center justify-space-between mb-3">
+                  <div class="text-subtitle-2 font-weight-medium">
+                    {{ t('variables') }}
+                  </div>
+                  <v-btn
+                    rounded="lg"
+                    prepend-icon="mdi-plus"
+                    variant="text"
+                    size="x-small"
+                    @click="addCollectionVar"
+                  />
+                </div>
+                <v-list
+                  density="compact"
+                  class="bg-transparent pa-0"
+                >
+                  <v-list-item
+                    v-for="(v, i) in mutableVariables"
+                    :key="v.key || i"
+                    class="px-0 var-row"
+                  >
+                    <div class="var-row-inner">
+                      <div class="var-fields">
+                        <v-text-field
+                          v-model="mutableVariables[i].key"
+                          :label="t('name')"
+                          hide-details
+                          density="compact"
+                          class="var-field"
+                        />
+                        <v-text-field
+                          v-model="mutableVariables[i].value"
+                          :type="v.secret ? 'password' : 'text'"
+                          :label="t('value')"
+                          hide-details
+                          density="compact"
+                          class="var-field"
+                        />
+                      </div>
+                      <div class="var-controls">
+                        <v-checkbox-btn
+                          v-model="mutableVariables[i].enabled"
+                          hide-details
+                          density="compact"
+                        />
+                        <v-switch
+                          v-model="mutableVariables[i].secret"
+                          inset
+                          hide-details
+                          density="compact"
+                          class="mt-1"
+                        />
+                        <v-btn
+                          rounded="lg"
+                          icon="mdi-delete"
+                          size="x-small"
+                          variant="text"
+                          color="error"
+                          @click="removeCollectionVar(i)"
+                        />
+                      </div>
+                    </div>
+                  </v-list-item>
+                </v-list>
+              </v-card-text>
+              <v-card-actions class="pa-4 pt-0">
+                <v-spacer />
+                <v-btn
+                  rounded="lg"
+                  color="primary"
+                  size="small"
+                  @click="saveCollectionVariables"
+                >
+                  {{ t('save') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </div>
+        </v-col>
+
+        <v-col
+          cols="12"
+          :md="node?.kind === 'collection' ? '8' : '12'"
+          :lg="node?.kind === 'collection' ? '9' : '12'"
+        >
+          <v-card
+            variant="flat"
+            class="items-card"
+          >
+            <v-card-text>
+              <div class="d-flex align-center justify-space-between mb-3">
+                <div class="text-subtitle-2 font-weight-medium">
+                  {{ node?.kind === 'folder' ? t('folder') : t('collection') }} {{ t('items') }}
+                </div>
+                <div class="text-caption text-medium-emphasis">
+                  {{ node?.children?.length ?? 0 }} {{ t('items') }}
+                </div>
+              </div>
+              <v-list
+                density="compact"
+                class="bg-transparent pa-0"
+              >
+                <v-list-item
+                  v-for="sub in node?.children ?? []"
+                  :key="sub.id"
+                  :title="sub.name"
+                  :value="sub.id"
+                  class="item-row"
+                  @click="openNode(sub)"
+                >
+                  <template #prepend>
+                    <v-icon
+                      :icon="iconFor(sub.kind)"
+                      size="small"
+                      class="item-icon"
+                    />
+                  </template>
+                  <template
+                    v-if="sub.kind === 'folder'"
+                    #append
+                  >
+                    <v-icon
+                      icon="mdi-chevron-right"
+                      size="small"
+                      class="text-medium-emphasis"
+                    />
+                  </template>
+                </v-list-item>
+                <v-list-item
+                  v-if="(node?.children ?? []).length === 0"
+                  :title="t('empty')"
+                  value=""
+                  class="text-medium-emphasis"
+                />
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col
+          v-if="node?.kind === 'collection' && savedWorkflows.length"
+          cols="12"
+        >
+          <v-card
+            variant="flat"
+            class="workflows-card"
+          >
+            <v-card-text>
+              <div class="d-flex align-center justify-space-between mb-3">
+                <div class="text-subtitle-2 font-weight-medium">
+                  {{ t('workflows') }}
+                </div>
+                <v-btn
+                  rounded="lg"
+                  prepend-icon="mdi-plus"
+                  variant="outlined"
+                  size="small"
+                  @click="addWorkflow"
+                >
+                  {{ t('addWorkflow') }}
+                </v-btn>
+              </div>
+              <v-list
+                density="compact"
+                class="bg-transparent pa-0"
+              >
+                <v-list-item
+                  v-for="wf in savedWorkflows"
+                  :key="wf.id"
+                  :title="wf.name"
+                  :subtitle="wf.description ?? `${wf.steps.length} ${t('steps')}`"
+                  class="workflow-row"
+                  @click="gotoWorkflow(wf)"
+                >
+                  <template #prepend>
+                    <v-icon
+                      icon="mdi-play-box-outline"
+                      size="small"
+                    />
+                  </template>
+                  <template #append>
+                    <v-chip
+                      size="x-small"
+                      variant="tonal"
+                    >
+                      {{ wf.steps.length }} {{ t('steps') }}
+                    </v-chip>
+                    <v-btn
+                      rounded="lg"
+                      icon="mdi-delete"
+                      size="x-small"
+                      variant="text"
+                      color="error"
+                      @click.stop="deleteWorkflow(wf)"
+                    />
+                  </template>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col
+          v-if="node?.kind === 'collection' && !savedWorkflows.length"
+          cols="12"
+        >
+          <v-card
+            variant="flat"
+            class="workflows-card"
+          >
+            <v-card-text>
+              <div class="d-flex align-center justify-space-between mb-3">
+                <div class="text-subtitle-2 font-weight-medium">
+                  {{ t('workflows') }}
+                </div>
+                <v-btn
+                  rounded="lg"
+                  prepend-icon="mdi-plus"
+                  variant="outlined"
+                  size="small"
+                  @click="addWorkflow"
+                >
+                  {{ t('addWorkflow') }}
+                </v-btn>
+              </div>
+              <v-alert
+                type="info"
+                variant="tonal"
+                density="compact"
+              >
+                {{ t('noWorkflows') }}
+              </v-alert>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col
+          v-if="runtimeVariables.length"
+          cols="12"
+        >
+          <v-card
+            variant="flat"
+            class="runtime-card"
+          >
+            <v-card-text>
+              <div class="d-flex align-center justify-space-between">
+                <div class="text-subtitle-2 font-weight-medium">
+                  {{ t('runtimeVariables') }}
+                </div>
+                <v-btn
+                  rounded="lg"
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  @click="clearRuntime"
+                >
+                  {{ t('clearRuntime') }}
+                </v-btn>
+              </div>
+              <v-list
+                density="compact"
+                class="bg-transparent pa-0 mt-2"
+              >
+                <v-list-item
+                  v-for="rv in runtimeVariables"
+                  :key="rv.key"
+                  :title="rv.key"
+                  :subtitle="rv.value"
+                  density="compact"
+                />
+              </v-list>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </template>
-  </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
@@ -524,3 +580,132 @@ async function addNewFolder() {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.node-view {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(var(--v-divider-color), 0.6);
+  margin-bottom: 24px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sidebar-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-card {
+  background: rgba(var(--v-theme-surface-variant), 0.04);
+  border: 1px solid rgba(var(--v-border-color), 0.12);
+}
+
+.stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(var(--v-theme-surface-variant), 0.08);
+  min-width: 64px;
+}
+
+.section-card {
+  background: transparent;
+}
+
+.items-card {
+  background: transparent;
+}
+
+.workflows-card {
+  background: transparent;
+}
+
+.var-row {
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.var-row-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.var-fields {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.var-field {
+  :deep(.v-field) {
+    box-shadow: none;
+    background: rgba(var(--v-theme-surface-variant), 0.04);
+  }
+}
+
+.var-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+.workflow-row {
+  border-radius: 8px;
+  margin-bottom: 2px;
+  transition: background-color 0.12s ease;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-surface-variant), 0.04);
+  }
+}
+
+.item-row {
+  border-radius: 8px;
+  margin-bottom: 2px;
+  transition: background-color 0.12s ease;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-surface-variant), 0.04);
+  }
+}
+
+.item-icon {
+  margin-right: 8px;
+  color: rgb(var(--v-theme-on-surface-variant));
+}
+
+.runtime-card {
+  background: rgba(var(--v-theme-surface-variant), 0.04);
+  border: 1px solid rgba(var(--v-border-color), 0.12);
+}
+</style>
