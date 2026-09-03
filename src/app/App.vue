@@ -14,7 +14,8 @@ import AppNotifier from '@components/AppNotifier.vue';
 import AppDialog from '@components/AppDialog.vue';
 import { useLocaleStore } from '../i18n/store';
 import { useKeyboard } from '@composables/useKeyboard';
-import { getSettings } from '../api/calls/settings';
+import {authMiddleware} from "../middleware/authMiddleware";
+import {settingsMiddleware} from "../middleware/settingsMiddleware";
 
 const theme = useTheme();
 const settings = useSettingsStore();
@@ -35,23 +36,16 @@ function applyLocale() {
 onMounted(async () => {
   applyTheme();
   applyLocale();
-  await loadServerSettings();
+  await Promise.all([authMiddleware.init(), settingsMiddleware.init()]);
+  const serverSettings = settingsMiddleware.settings;
+  if (serverSettings?.defaultTheme) settings.setTheme(serverSettings.defaultTheme);
+  if (serverSettings?.defaultLocale) locale.setLocale(serverSettings.defaultLocale);
+  if (serverSettings?.appName) {
+    const title = document.querySelector('title');
+    if (title) title.textContent = serverSettings.appName;
+  }
 });
 
 watch(() => settings.theme, applyTheme);
 watch(() => locale.locale, applyLocale);
-
-async function loadServerSettings() {
-  try {
-    const data = await getSettings();
-    if (data.defaultTheme) settings.setTheme(data.defaultTheme);
-    if (data.defaultLocale) locale.setLocale(data.defaultLocale);
-    if (data.appName) {
-      const title = document.querySelector('title');
-      if (title) title.textContent = data.appName;
-    }
-  } catch {
-    // ignore
-  }
-}
 </script>
