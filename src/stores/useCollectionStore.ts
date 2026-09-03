@@ -100,12 +100,13 @@ export const useCollectionStore = defineStore('collections', {
       return state.collections.find((c) => c.id === state.activeCollectionId) ?? null;
     },
     activeRequest(): RequestDefinition | null {
-      if (this.activeRequestId === '__unsorted__') {
+      const c = this.activeCollection;
+      if (!this.activeRequestId) return null;
+      if (this.isRequestUnsorted(this.activeRequestId)) {
         const u = this.unsortedRequests.find((r) => r.id === this.activeRequestId);
         if (u) return u;
       }
-      const c = this.activeCollection;
-      if (!c || !this.activeRequestId) return null;
+      if (!c) return null;
       return c.requests.find((r) => r.id === this.activeRequestId) ?? null;
     },
     requestById(state) {
