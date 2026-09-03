@@ -6,11 +6,22 @@
     <v-row justify="center">
       <v-col
         cols="12"
-        md="8"
-        lg="6"
+        md="10"
+        lg="8"
       >
-        <div class="text-h4 font-weight-regular mb-6 text-center">
-          {{ t('appTitle') }}
+        <div class="text-center mb-8">
+          <v-icon
+            icon="mdi-api"
+            size="48"
+            color="primary"
+            class="mb-3"
+          />
+          <h1 class="text-h4 font-weight-regular mb-2">
+            {{ t('appTitle') }}
+          </h1>
+          <p class="text-body-2 text-medium-emphasis">
+            {{ t('selectCollection') }}
+          </p>
         </div>
 
         <v-row
@@ -101,10 +112,14 @@
           dense
           class="mt-6"
         >
-          <v-col cols="12">
+          <v-col
+            cols="12"
+            sm="6"
+          >
             <v-card
               variant="outlined"
               class="settings-card"
+              @click="openSettings"
             >
               <v-card-text class="d-flex align-center justify-space-between pa-4">
                 <div class="d-flex align-center gap-3">
@@ -122,10 +137,14 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12">
+          <v-col
+            cols="12"
+            sm="6"
+          >
             <v-card
               variant="outlined"
               class="settings-card"
+              @click="openShortcuts"
             >
               <v-card-text class="d-flex align-center justify-space-between pa-4">
                 <div class="d-flex align-center gap-3">
@@ -144,29 +163,6 @@
             </v-card>
           </v-col>
         </v-row>
-
-        <v-row
-          v-if="activeCollection"
-          dense
-          class="mt-6"
-        >
-          <v-col cols="12">
-            <v-card
-              variant="tonal"
-              color="primary"
-            >
-              <v-card-text class="pa-4">
-                <div class="text-body-1 font-weight-medium mb-1">
-                  {{ activeCollection.name }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ activeCollection.requests.length }} {{ t('items') }},
-                  {{ activeCollection.folders.length }} {{ t('folder') }}
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
       </v-col>
     </v-row>
   </v-container>
@@ -174,17 +170,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { defineAsyncComponent } from 'vue';
 import { useLocaleStore } from '@i18n/store';
 
-const store = useCollectionStore();
 const dialog = useDialogStore();
 const locale = useLocaleStore();
 const t = computed(() => (key: string) => locale.t(key));
-
-const activeCollection = computed(() => store.activeCollection);
 
 function openNew() {
   dialog.openDialog({
@@ -204,6 +196,20 @@ function openOpenApi() {
   dialog.openDialog({
     component: defineAsyncComponent(() => import('@modules/workspace/dialogs/OpenApiImportDialog.vue')),
     title: t.value('importOpenApi'),
+  });
+}
+
+function openSettings() {
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('@modules/workspace/dialogs/SettingsDialog.vue')),
+    title: t.value('settings'),
+  });
+}
+
+function openShortcuts() {
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('@modules/workspace/dialogs/ShortcutsDialog.vue')),
+    title: t.value('shortcuts'),
   });
 }
 </script>
@@ -232,9 +238,5 @@ function openOpenApi() {
   &:hover {
     background-color: rgba(var(--v-theme-surface-variant), 0.04);
   }
-}
-
-.gap-3 {
-  gap: 12px;
 }
 </style>

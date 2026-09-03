@@ -39,6 +39,16 @@ export class CollectionService {
     return updated;
   }
 
+  async renameFolder(collectionId: string, folderId: string, name: string): Promise<Collection> {
+    const collection = await this.require(collectionId);
+    const folders = collection.folders.map((f) =>
+      f.id === folderId ? { ...f, name, updatedAt: new Date().toISOString() } : f,
+    );
+    const updated: Collection = { ...collection, folders, updatedAt: new Date().toISOString() };
+    await this.repo.save(updated);
+    return updated;
+  }
+
   async deleteCollection(id: string): Promise<void> {
     await this.repo.remove(id);
   }

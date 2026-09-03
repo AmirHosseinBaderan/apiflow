@@ -1,5 +1,5 @@
 <template>
-  <v-card-text>
+  <div>
     <v-select
       v-model="settings.locale"
       :items="[{ value: 'en', label: 'English' }, { value: 'fa', label: 'فارسی' }]"
@@ -18,23 +18,22 @@
       hide-details
       class="mt-2"
     />
-  </v-card-text>
-  <v-card-actions>
-    <v-spacer />
-    <v-btn
-      rounded="lg"
-      @click="close"
-    >
-      {{ t('cancel') }}
-    </v-btn>
-  </v-card-actions>
+    <div class="pa-0 mt-4">
+      <v-btn
+        rounded="lg"
+        @click="close"
+      >
+        {{ t('cancel') }}
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {watch} from 'vue';
-import {useDialogStore} from '@stores/useDialogStore';
-import {useSettingsStore} from '@stores/useSettingsStore';
-import {useLocaleStore} from "../../../i18n/store";
+import { watch } from 'vue';
+import { useDialogStore } from '@stores/useDialogStore';
+import { useSettingsStore } from '@stores/useSettingsStore';
+import { useLocaleStore } from '@i18n/store';
 
 const dialog = useDialogStore();
 const settings = useSettingsStore();
@@ -42,8 +41,8 @@ const locale = useLocaleStore();
 const t = (key: string) => locale.t(key);
 
 watch(
-    () => settings.locale,
-    (v) => locale.setLocale(v),
+  () => settings.locale,
+  (v) => locale.setLocale(v),
 );
 
 function close() {

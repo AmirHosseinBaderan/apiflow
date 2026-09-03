@@ -201,6 +201,11 @@ export const useCollectionStore = defineStore('collections', {
       const updated = await this.service.renameCollection(id, name);
       this.collections = this.collections.map((c) => (c.id === id ? updated : c));
     },
+    async renameFolder(collectionId: string, folderId: string, name: string) {
+      if (!this.service) return;
+      const updated = await this.service.renameFolder(collectionId, folderId, name);
+      this.replaceCollection(updated);
+    },
     async deleteCollection(id: string) {
       if (!this.service) return;
       await this.service.deleteCollection(id);
