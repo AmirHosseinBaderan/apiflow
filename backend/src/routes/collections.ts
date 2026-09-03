@@ -11,7 +11,9 @@ collectionsRouter.get('/', (_req: Request, res: Response) => {
   const collections = files
     .map((f) => {
       const raw = loadCollection(f.replace('.json', ''));
-      return raw;
+      if (!raw) return null;
+      const { requests: _r, workflows: _w, ...rest } = raw as Record<string, unknown>;
+      return rest;
     })
     .filter(Boolean);
   res.json(collections);
@@ -23,7 +25,17 @@ collectionsRouter.get('/:id', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
-  res.json(raw);
+  const collection = raw as Record<string, unknown>;
+  const summaries = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).map(
+    (r) => ({
+      id: r.id,
+      name: r.name,
+      method: r.method,
+      url: r.url,
+    }),
+  );
+  const { requests: _r, workflows: _w, ...rest } = collection;
+  res.json({ ...rest, requests: summaries });
 });
 
 collectionsRouter.post('/', (req: { body: Record<string, unknown> }, res: Response) => {
@@ -49,5 +61,70 @@ collectionsRouter.put('/:id', (req: Request, res: Response) => {
 
 collectionsRouter.delete('/:id', (_req: Request, res: Response) => {
   deleteCollectionFile(_req.params.id);
+  res.status(204).send();
+});
+
+collectionsRouter.put('/:id/variables', (req: Request, res: Response) => {
+  const id = req.params.id;
+  const raw = loadCollection(id);
+  if (!raw) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const updated = { ...(raw as Record<string, unknown>), variables: req.body, updatedAt: new Date().toISOString() };
+  saveCollection(id, updated);
+  res.json(updated.variables);
+});
+
+collectionsRouter.put('/:id/workflows', (req: Request, res: Response) => {
+  const id = req.params.id;
+  const raw = loadCollection(id);
+  if (!raw) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const updated = { ...(raw as Record<string, unknown>), workflows: req.body, updatedAt: new Date().toISOString() };
+  saveCollection(id, updated);
+  res.json(updated.workflows);
+});
+
+collectionsRouter.put('/:id/folders/:folderId', (req: Request, res: Response) => {
+  const id = req.params.id;
+  const raw = loadCollection(id);
+  if (!raw) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const { name } = req.body as { name?: string };
+  if (!name) {
+    res.status(400).json({ error: 'Folder name is required' });
+    return;
+  }
+  const collection = raw as Record<string, unknown>;
+  const folders = (collection.folders as Array<{ id?: string; name?: string; parentId?: string | null; requestIds?: string[]; childFolderIds?: string[] }> || []).map((f) =>
+    f.id === req.params.folderId ? { ...f, name } : f,
+  );
+  const updated = { ...collection, folders, updatedAt: new Date().toISOString() };
+  saveCollection(id, updated);
+  res.json(folders.find((f) => f.id === req.params.folderId));
+});
+
+collectionsRouter.delete('/:id/folders/:folderId', (req: Request, res: Response) => {
+  const id = req.params.id;
+  const raw = loadCollection(id);
+  if (!raw) {
+    res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const collection = raw as Record<string, unknown>;
+  const folderId = req.params.folderId;
+  const folders = (collection.folders as Array<{ id?: string; name?: string; parentId?: string | null; requestIds?: string[]; childFolderIds?: string[] }> || []).filter(
+    (f) => f.id !== folderId,
+  );
+  const requests = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).filter(
+    (r) => !(collection.folders as Array<{ id?: string; requestIds?: string[] }> || []).some((f) => f.requestIds?.includes(r.id || '')),
+  );
+  const updated = { ...collection, folders, requests, updatedAt: new Date().toISOString() };
+  saveCollection(id, updated);
   res.status(204).send();
 });
