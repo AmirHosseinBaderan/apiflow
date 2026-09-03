@@ -15,13 +15,11 @@
         />
       </v-col>
       <v-col v-if="t.kind.type === 'script'" cols="12">
-        <v-textarea
+        <CodeEditor
           v-model="t.kind.source"
-          label="JS script"
+          lang="js"
           placeholder="return response.status === 200"
-          density="compact"
-          hide-details
-          class="font-monospace"
+          class="js-script-editor"
         />
       </v-col>
       <v-col v-else>
@@ -42,6 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import CodeEditor from '@components/CodeEditor.vue';
 import type { TestStep, TestKind } from '@domain/request/RequestDefinition';
 import { createId } from '@shared/id';
 
