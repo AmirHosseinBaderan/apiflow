@@ -95,7 +95,12 @@ function newTab() {
   top: 0;
   z-index: 12;
   overflow-x: auto;
+  scrollbar-width: none;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.tab-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
@@ -114,7 +119,9 @@ function newTab() {
   white-space: nowrap;
   margin-right: 1px;
   background: rgb(var(--v-theme-background));
-  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    background-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .tab:hover {
