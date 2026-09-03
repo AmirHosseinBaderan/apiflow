@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="!activeRequest && !requestLoading">
+    <v-row v-if="!activeRequestId">
       <v-col cols="12">
         <v-alert
           type="info"
@@ -11,7 +11,7 @@
         </v-alert>
       </v-col>
     </v-row>
-    <v-row v-else-if="requestLoading">
+    <v-row v-else-if="requestLoading || !activeRequest">
       <v-col cols="12">
         <v-progress-circular
           indeterminate
@@ -23,7 +23,6 @@
       <v-row>
         <v-col cols="12">
           <RequestEditor
-            v-if="activeRequest"
             :request="activeRequest"
             :variables="activeCollection?.variables ?? []"
             :is-unsorted="isUnsorted"
@@ -60,12 +59,15 @@ const requestLoading = computed(() => store.requestLoading);
 const collectionId = computed(() => route.params.collectionId as string | undefined);
 
 watch(
-  () => store.activeRequestId,
-  async (requestId) => {
-    if (!requestId || !collectionId.value) return;
+  [() => store.activeRequestId, () => store.activeCollectionId],
+  async ([requestId, _collectionId]) => {
+    if (!requestId) return;
+    if (store.isRequestUnsorted(requestId)) return;
+    const cid = collectionId.value || store.ownerCollectionId(requestId);
+    if (!cid) return;
     const cached = store.requestCache.get(requestId);
-    if (!cached && store.activeCollection) {
-      await store.loadRequest(store.activeCollection.id, requestId);
+    if (!cached) {
+      await store.loadRequest(cid, requestId);
     }
   },
 );
