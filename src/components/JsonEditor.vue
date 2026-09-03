@@ -11,15 +11,30 @@
       @update:model-value="onInput"
     />
     <div class="d-flex align-center mt-1">
-      <v-btn variant="text" prepend-icon="mdi-format-align-left" @click="format">Format</v-btn>
+      <v-btn
+        prepend-icon="mdi-format-align-left"
+        @click="format"
+      >
+        Format
+      </v-btn>
       <v-spacer />
       <VariablePicker
         v-if="variables?.length"
         :variables="variables"
         @pick="insertAtCursor"
       />
-      <v-chip v-if="valid === false" color="error" size="small" text="Invalid JSON" />
-      <v-chip v-else-if="valid === true" color="success" size="small" text="Valid" />
+      <v-chip
+        v-if="valid === false"
+        color="error"
+        size="small"
+        text="Invalid JSON"
+      />
+      <v-chip
+        v-else-if="valid === true"
+        color="success"
+        size="small"
+        text="Valid"
+      />
     </div>
   </div>
 </template>

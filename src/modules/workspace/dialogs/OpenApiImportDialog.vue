@@ -5,14 +5,38 @@
       label="OpenAPI URL"
       placeholder="https://example.com/swagger.json"
       hide-details
-      @keyup.enter="fromUrl" />
-    <v-row dense class="mt-1">
-      <v-col cols="12" sm="auto">
-        <v-btn color="primary" :disabled="!url" @click="fromUrl">Import from URL</v-btn>
+      @keyup.enter="fromUrl"
+    />
+    <v-row
+      dense
+      class="mt-1"
+    >
+      <v-col
+        cols="12"
+        sm="auto"
+      >
+        <v-btn
+          color="primary"
+          :disabled="!url"
+          @click="fromUrl"
+        >
+          Import from URL
+        </v-btn>
       </v-col>
-      <v-col cols="12" sm="auto">
-        <v-btn variant="tonal" @click="triggerFile">From File</v-btn>
-        <input ref="fileInput" type="file" accept=".json,.yaml,.yml" hidden @change="fromFile" />
+      <v-col
+        cols="12"
+        sm="auto"
+      >
+        <v-btn @click="triggerFile">
+          From File
+        </v-btn>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".json,.yaml,.yml"
+          hidden
+          @change="fromFile"
+        >
       </v-col>
     </v-row>
   </div>

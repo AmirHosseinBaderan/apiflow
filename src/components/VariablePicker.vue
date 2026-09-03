@@ -4,10 +4,13 @@
       <v-btn
         v-bind="menuProps"
         icon="mdi-variable"
-        variant="text"
-        :title="t('insertVariable')" />
+        :title="t('insertVariable')"
+      />
     </template>
-    <v-list density="compact" style="max-width: 220px">
+    <v-list
+      density="compact"
+      style="max-width: 220px"
+    >
       <v-list-item
         v-for="v in props.variables"
         :key="v.name"
@@ -18,7 +21,10 @@
           <v-list-item-title>{{ token(v.name) }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item v-if="!props.variables.length" :title="t('noVariables')">
+      <v-list-item
+        v-if="!props.variables.length"
+        :title="t('noVariables')"
+      >
         <v-list-item-content>
           <v-list-item-title class="text-medium-emphasis">
             {{ t('noVariables') }}

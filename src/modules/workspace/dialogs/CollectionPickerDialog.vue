@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-list density="compact" class="py-0">
+    <v-list
+      density="compact"
+      class="py-0"
+    >
       <v-list-item
         v-for="c in collections"
         :key="c.id"
@@ -9,18 +12,31 @@
         @click="pick(c.id)"
       >
         <template #prepend>
-          <v-icon icon="mdi-folder" size="small" />
+          <v-icon
+            icon="mdi-folder"
+            size="small"
+          />
         </template>
       </v-list-item>
-      <v-list-item v-if="!collections.length" title="No collections" value="" />
+      <v-list-item
+        v-if="!collections.length"
+        title="No collections"
+        value=""
+      />
     </v-list>
     <v-divider class="my-2" />
-    <v-btn variant="tonal" prepend-icon="mdi-folder-plus" block @click="pickNewCollection">
+    <v-btn
+      prepend-icon="mdi-folder-plus"
+      block
+      @click="pickNewCollection"
+    >
       New Collection
     </v-btn>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn text @click="close">Cancel</v-btn>
+      <v-btn @click="close">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </div>
 </template>

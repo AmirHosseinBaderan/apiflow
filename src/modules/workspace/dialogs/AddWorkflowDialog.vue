@@ -1,12 +1,30 @@
 <template>
   <v-card-text>
-    <v-text-field v-model="name" label="Name" hide-details autofocus/>
-    <v-text-field v-model="description" label="Description" hide-details class="mt-1"/>
+    <v-text-field
+      v-model="name"
+      label="Name"
+      hide-details
+      autofocus
+    />
+    <v-text-field
+      v-model="description"
+      label="Description"
+      hide-details
+      class="mt-1"
+    />
   </v-card-text>
   <v-card-actions>
-    <v-spacer/>
-    <v-btn text @click="close">Cancel</v-btn>
-    <v-btn color="primary" :disabled="!name.trim()" @click="create">Add</v-btn>
+    <v-spacer />
+    <v-btn @click="close">
+      Cancel
+    </v-btn>
+    <v-btn
+      color="primary"
+      :disabled="!name.trim()"
+      @click="create"
+    >
+      Add
+    </v-btn>
   </v-card-actions>
 </template>
 

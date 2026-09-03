@@ -5,12 +5,28 @@
       rows="10"
       placeholder="Paste collection JSON here"
       hide-details
-      @update:model-value="err = null" />
-    <v-alert v-if="err" type="error" variant="tonal" density="compact">{{ err }}</v-alert>
+      @update:model-value="err = null"
+    />
+    <v-alert
+      v-if="err"
+      type="error"
+      variant="tonal"
+      density="compact"
+    >
+      {{ err }}
+    </v-alert>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn text @click="close">Cancel</v-btn>
-      <v-btn color="primary" :disabled="!text.trim()" @click="importCollection">Import</v-btn>
+      <v-btn @click="close">
+        Cancel
+      </v-btn>
+      <v-btn
+        color="primary"
+        :disabled="!text.trim()"
+        @click="importCollection"
+      >
+        Import
+      </v-btn>
     </v-card-actions>
   </div>
 </template>

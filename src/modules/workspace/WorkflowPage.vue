@@ -11,7 +11,8 @@
         <v-text-field
           v-model="local.name"
           :label="t('workflowTitle')"
-          hide-details />
+          hide-details
+        />
       </v-col>
       <v-col
         cols="12"
@@ -20,7 +21,8 @@
         <v-text-field
           v-model="local.description"
           :label="t('workflowDescription')"
-          hide-details />
+          hide-details
+        />
       </v-col>
     </v-row>
 
@@ -45,7 +47,8 @@
                     :label="t('request')"
                     hide-details
                     class="mt-2"
-                    @update:model-value="onStepRequestChange(i, $event)" />
+                    @update:model-value="onStepRequestChange(i, $event)"
+                  />
 
                   <v-select
                     :model-value="condType(i)"
@@ -125,15 +128,15 @@
                       <v-col cols="1">
                         <v-btn
                           icon="mdi-delete"
-                          variant="text"
                           color="error"
-                          @click="removeStepHeader(i, hi)" />
+                          @click="removeStepHeader(i, hi)"
+                        />
                       </v-col>
                     </v-row>
                     <v-btn
-                      variant="text"
                       prepend-icon="mdi-plus"
-                      @click="addStepHeader(i)" >
+                      @click="addStepHeader(i)"
+                    >
                       {{ t('addHeader') }}
                     </v-btn>
                   </div>
@@ -141,17 +144,17 @@
                   <div class="d-flex justify-end">
                     <v-btn
                       icon="mdi-chevron-up"
-                      variant="text"
-                      @click="moveUp(i)" />
+                      @click="moveUp(i)"
+                    />
                     <v-btn
                       icon="mdi-chevron-down"
-                      variant="text"
-                      @click="moveDown(i)" />
+                      @click="moveDown(i)"
+                    />
                     <v-btn
                       icon="mdi-delete"
-                      variant="text"
                       color="error"
-                      @click="removeStep(i)" />
+                      @click="removeStep(i)"
+                    />
                   </div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
@@ -161,13 +164,12 @@
               <v-btn
                 color="primary"
                 prepend-icon="mdi-plus"
-                @click="addStep" >
+                @click="addStep"
+              >
                 Add step
               </v-btn>
               <v-spacer />
-              <v-btn
-                variant="outlined"
-                @click="save" >
+              <v-btn @click="save">
                 {{ t('saveWorkflow') }}
               </v-btn>
             </div>
@@ -185,14 +187,16 @@
               v-model="runTests"
               :label="t('runTests')"
               inset
-              class="mt-0 mb-0" />
+              class="mt-0 mb-0"
+            />
             <v-spacer />
             <v-btn
               color="primary"
               prepend-icon="mdi-play"
               :loading="running"
               :disabled="running"
-              @click="runAll" >
+              @click="runAll"
+            >
               {{ t('runWorkflow') }}
             </v-btn>
           </v-card-text>

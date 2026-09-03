@@ -2,7 +2,11 @@
   <div>
     <v-row v-if="!activeRequest">
       <v-col cols="12">
-        <v-alert type="info" variant="tonal" density="compact">
+        <v-alert
+          type="info"
+          variant="tonal"
+          density="compact"
+        >
           No request selected. Pick a request from the sidebar to edit it.
         </v-alert>
       </v-col>

@@ -1,25 +1,29 @@
 <template>
   <v-card-text>
     <v-select
-        v-model="settings.locale"
-        :items="[{ value: 'en', label: 'English' }, { value: 'fa', label: 'فارسی' }]"
-        item-title="label"
-        item-value="value"
-        :label="t('locale')"
-        hide-details
-        class="mt-2" />
+      v-model="settings.locale"
+      :items="[{ value: 'en', label: 'English' }, { value: 'fa', label: 'فارسی' }]"
+      item-title="label"
+      item-value="value"
+      :label="t('locale')"
+      hide-details
+      class="mt-2"
+    />
     <v-select
-        v-model="settings.theme"
-        :items="[{ value: 'light', label: t('light') }, { value: 'dark', label: t('dark') }]"
-        item-title="label"
-        item-value="value"
-        :label="t('theme')"
-        hide-details
-        class="mt-2" />
+      v-model="settings.theme"
+      :items="[{ value: 'light', label: t('light') }, { value: 'dark', label: t('dark') }]"
+      item-title="label"
+      item-value="value"
+      :label="t('theme')"
+      hide-details
+      class="mt-2"
+    />
   </v-card-text>
   <v-card-actions>
-    <v-spacer/>
-    <v-btn text @click="close">{{ t('cancel') }}</v-btn>
+    <v-spacer />
+    <v-btn @click="close">
+      {{ t('cancel') }}
+    </v-btn>
   </v-card-actions>
 </template>
 

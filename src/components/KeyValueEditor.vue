@@ -1,11 +1,17 @@
 <template>
   <div>
-    <v-row v-for="row in local" :key="row.id" dense align="center" class="mb-1">
+    <v-row
+      v-for="row in local"
+      :key="row.id"
+      dense
+      align="center"
+      class="mb-1"
+    >
       <v-col cols="auto">
         <v-checkbox-btn
           :model-value="row.enabled"
-          @update:model-value="(v) => update(row.id, 'enabled', v ?? false)"
           density="compact"
+          @update:model-value="(v) => update(row.id, 'enabled', v ?? false)"
         />
       </v-col>
       <v-col>
@@ -33,10 +39,18 @@
         </v-text-field>
       </v-col>
       <v-col cols="auto">
-        <v-btn icon="mdi-delete" variant="text" @click="remove(row.id)" />
+        <v-btn
+          icon="mdi-delete"
+          @click="remove(row.id)"
+        />
       </v-col>
     </v-row>
-    <v-btn variant="text" prepend-icon="mdi-plus" @click="add">Add</v-btn>
+    <v-btn
+      prepend-icon="mdi-plus"
+      @click="add"
+    >
+      Add
+    </v-btn>
   </div>
 </template>
 

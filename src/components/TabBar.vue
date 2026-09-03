@@ -1,5 +1,8 @@
 <template>
-  <div v-show="tabs.tabs.length" class="tab-strip">
+  <div
+    v-show="tabs.tabs.length"
+    class="tab-strip"
+  >
     <div
       v-for="tab in tabs.tabs"
       :key="tab.id"
@@ -14,16 +17,16 @@
         icon="mdi-close"
         size="x-small"
         class="tab-close"
-        @click.stop="close(tab)"
         title="Close"
+        @click.stop="close(tab)"
       />
     </div>
     <v-btn
       icon="mdi-plus"
-      variant="text"
       class="new-tab"
       :title="t('newTab')"
-      @click="newTab" />
+      @click="newTab"
+    />
     <div class="tab-spacer" />
   </div>
 </template>

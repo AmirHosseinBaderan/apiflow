@@ -1,9 +1,17 @@
 <template>
-  <v-sheet color="surface-variant" class="json-code-view ma-1" elevation="1">
+  <v-sheet
+    color="surface-variant"
+    class="json-code-view ma-1"
+    elevation="1"
+  >
     <pre
       class="ma-0 pa-3"
       style="overflow: auto"
-    ><code><span v-for="(token, i) in tokens" :key="`${token.type}-${i}`" :class="`token-${token.type}`">{{ token.text }}</span></code></pre>
+    ><code><span
+      v-for="(token, i) in tokens"
+      :key="`${token.type}-${i}`"
+      :class="`token-${token.type}`"
+    >{{ token.text }}</span></code></pre>
   </v-sheet>
 </template>
 

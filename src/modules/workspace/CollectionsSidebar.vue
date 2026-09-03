@@ -1,24 +1,37 @@
 <template>
-  <v-navigation-drawer permanent width="320">
+  <v-navigation-drawer
+    permanent
+    width="320"
+  >
     <v-list-subheader>Collections</v-list-subheader>
 
     <div class="pa-2 border-b">
       <v-text-field
         v-model="newItemName"
         label="New request / folder name"
-        hide-details />
-      <v-row dense class="mt-1">
+        hide-details
+      />
+      <v-row
+        dense
+        class="mt-1"
+      >
         <v-col cols="6">
-          <v-btn variant="tonal" prepend-icon="mdi-plus" block @click="newRequest" >Request</v-btn
+          <v-btn
+            prepend-icon="mdi-plus"
+            block
+            @click="newRequest"
           >
+            Request
+          </v-btn>
         </v-col>
         <v-col cols="6">
           <v-btn
-            variant="tonal"
             prepend-icon="mdi-folder-plus"
             block
-            @click="newFolder" >Folder</v-btn
+            @click="newFolder"
           >
+            Folder
+          </v-btn>
         </v-col>
       </v-row>
     </div>
@@ -36,7 +49,11 @@
       @update:activated="onActivate($event as string | string[])"
     >
       <template #prepend="{ item }">
-        <v-icon v-if="!item.isAction" :icon="iconFor(item.kind)" size="small" />
+        <v-icon
+          v-if="!item.isAction"
+          :icon="iconFor(item.kind)"
+          size="small"
+        />
       </template>
       <template #title="{ item }">
         <span
@@ -54,9 +71,9 @@
           <template #activator="{ props: act }">
             <v-btn
               v-bind="act"
-              variant="text"
               icon="mdi-dots-vertical"
-              @click.stop />
+              @click.stop
+            />
           </template>
           <v-list density="compact">
             <v-list-item

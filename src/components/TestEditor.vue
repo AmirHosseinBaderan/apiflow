@@ -1,17 +1,32 @@
 <template>
   <div>
-    <v-row v-for="t in local" :key="t.id" dense class="mb-1" align="center">
-      <v-col cols="3"
-        ><v-text-field v-model="t.name" placeholder="name" hide-details /></v-col>
+    <v-row
+      v-for="t in local"
+      :key="t.id"
+      dense
+      class="mb-1"
+      align="center"
+    >
+      <v-col cols="3">
+        <v-text-field
+          v-model="t.name"
+          placeholder="name"
+          hide-details
+        />
+      </v-col>
       <v-col cols="3">
         <v-select
           v-model="t.kind.type"
           :items="kinds"
           label="kind"
           hide-details
-          @update:model-value="onKindChange(t.id, $event)" />
+          @update:model-value="onKindChange(t.id, $event)"
+        />
       </v-col>
-      <v-col v-if="t.kind.type === 'script'" cols="12">
+      <v-col
+        v-if="t.kind.type === 'script'"
+        cols="12"
+      >
         <CodeEditor
           v-model="t.kind.source"
           lang="js"
@@ -23,13 +38,22 @@
         <v-text-field
           v-model="t.expression"
           placeholder="expression / path / value"
-          hide-details />
+          hide-details
+        />
       </v-col>
       <v-col cols="auto">
-        <v-btn icon="mdi-delete" variant="text" @click="remove(t.id)" />
+        <v-btn
+          icon="mdi-delete"
+          @click="remove(t.id)"
+        />
       </v-col>
     </v-row>
-    <v-btn variant="text" prepend-icon="mdi-plus" @click="add">Add test</v-btn>
+    <v-btn
+      prepend-icon="mdi-plus"
+      @click="add"
+    >
+      Add test
+    </v-btn>
   </div>
 </template>
 

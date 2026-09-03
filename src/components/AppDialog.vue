@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="open" width="700" persistent>
+  <v-dialog
+    v-model="open"
+    width="700"
+    persistent
+  >
     <template v-if="spec">
       <v-card>
         <v-card-title>
@@ -8,14 +12,18 @@
             <v-spacer />
             <v-btn
               icon="mdi-close"
-              variant="text"
               density="comfortable"
               title="Close"
-              @click="close" />
+              @click="close"
+            />
           </div>
         </v-card-title>
         <v-card-text>
-          <component :is="spec.component" v-bind="componentProps" @close="close" />
+          <component
+            :is="spec.component"
+            v-bind="componentProps"
+            @close="close"
+          />
         </v-card-text>
       </v-card>
     </template>

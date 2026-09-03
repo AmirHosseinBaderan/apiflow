@@ -1,6 +1,15 @@
 <template>
   <div class="jce">
-    <pre ref="mirror" class="jce__mirror" :style="editorStyle" aria-hidden="true"><span v-for="(t, i) in tokens" :key="i" :class="`jce__tok--${t.type}`">{{ t.text }}</span></pre>
+    <pre
+      ref="mirror"
+      class="jce__mirror"
+      :style="editorStyle"
+      aria-hidden="true"
+    ><span
+v-for="(t, i) in tokens"
+                                                                           :key="i"
+:class="`jce__tok--${t.type}`"
+>{{ t.text }}</span></pre>
     <textarea
       ref="area"
       :value="text"

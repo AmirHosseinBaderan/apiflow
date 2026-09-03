@@ -1,8 +1,16 @@
 <template>
   <v-card>
-    <v-tabs v-model="tab" color="primary" density="comfortable">
-      <v-tab value="body">Body</v-tab>
-      <v-tab value="headers">Headers</v-tab>
+    <v-tabs
+      v-model="tab"
+      color="primary"
+      density="comfortable"
+    >
+      <v-tab value="body">
+        Body
+      </v-tab>
+      <v-tab value="headers">
+        Headers
+      </v-tab>
     </v-tabs>
     <v-card-text>
       <v-tabs-window v-model="tab">
@@ -15,7 +23,10 @@
               <tr><th>Name</th><th>Value</th></tr>
             </thead>
             <tbody>
-              <tr v-for="[k, v] in response?.headers ?? []" :key="k">
+              <tr
+                v-for="[k, v] in response?.headers ?? []"
+                :key="k"
+              >
                 <td>{{ k }}</td><td>{{ v }}</td>
               </tr>
             </tbody>

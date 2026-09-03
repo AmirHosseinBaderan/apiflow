@@ -9,7 +9,9 @@
   >
     {{ item.text }}
     <template #actions>
-      <v-btn variant="text" @click="dismiss(item.id)">Close</v-btn>
+      <v-btn @click="dismiss(item.id)">
+        Close
+      </v-btn>
     </template>
   </v-snackbar>
 </template>

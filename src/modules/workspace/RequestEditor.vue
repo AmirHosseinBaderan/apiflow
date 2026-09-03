@@ -12,7 +12,8 @@
                   label="Method"
                   hide-details
                   style="min-width: 130px"
-                  @update:model-value="commit" />
+                  @update:model-value="commit"
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -22,7 +23,8 @@
                   prepend-inner-icon="mdi-link-variant"
                   hide-details
                   style="min-width: 130px"
-                  @update:model-value="commit" >
+                  @update:model-value="commit"
+                >
                   <template #append>
                     <VariablePicker
                       v-if="variableNames.length"
@@ -33,10 +35,19 @@
                 </v-text-field>
               </v-col>
               <v-col cols="auto">
-                <v-btn color="primary" prepend-icon="mdi-send" :loading="running" @click="run">
+                <v-btn
+                  color="primary"
+                  prepend-icon="mdi-send"
+                  :loading="running"
+                  @click="run"
+                >
                   Send
                 </v-btn>
-                <v-btn class="ml-2" variant="tonal" prepend-icon="mdi-content-save" @click="save">
+                <v-btn
+                  class="ml-2"
+                  prepend-icon="mdi-content-save"
+                  @click="save"
+                >
                   Save
                 </v-btn>
               </v-col>
@@ -56,9 +67,16 @@
             variant="plain"
             class="text-h6"
             style="max-width: 480px"
-            @update:model-value="onNameChange" />
+            @update:model-value="onNameChange"
+          />
           <v-spacer />
-          <v-chip v-if="props.request.method" size="small" color="primary" label class="mt-3">
+          <v-chip
+            v-if="props.request.method"
+            size="small"
+            color="primary"
+            label
+            class="mt-3"
+          >
             {{ props.request.method }}
           </v-chip>
         </div>
@@ -69,28 +87,57 @@
           hide-details
           variant="outlined"
           class="mt-1"
-          @update:model-value="onDescChange" />
+          @update:model-value="onDescChange"
+        />
       </v-col>
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
-          <v-tabs v-model="reqTab" color="primary" density="comfortable">
-            <v-tab value="params"> Params </v-tab>
-            <v-tab value="headers"> Headers </v-tab>
-            <v-tab value="body"> Body </v-tab>
-            <v-tab value="auth"> Auth </v-tab>
-            <v-tab value="pre"> Pre-req </v-tab>
-            <v-tab value="tests"> Tests </v-tab>
-            <v-tab value="extract"> Extract </v-tab>
-            <v-tab value="variables"> Variables </v-tab>
-            <v-tab value="settings"> Settings </v-tab>
+          <v-tabs
+            v-model="reqTab"
+            color="primary"
+            density="comfortable"
+          >
+            <v-tab value="params">
+              Params
+            </v-tab>
+            <v-tab value="headers">
+              Headers
+            </v-tab>
+            <v-tab value="body">
+              Body
+            </v-tab>
+            <v-tab value="auth">
+              Auth
+            </v-tab>
+            <v-tab value="pre">
+              Pre-req
+            </v-tab>
+            <v-tab value="tests">
+              Tests
+            </v-tab>
+            <v-tab value="extract">
+              Extract
+            </v-tab>
+            <v-tab value="variables">
+              Variables
+            </v-tab>
+            <v-tab value="settings">
+              Settings
+            </v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="reqTab">
               <v-tabs-window-item value="params">
-                <div v-if="pathParamsLocal.length" class="text-caption text-medium-emphasis mb-1">
+                <div
+                  v-if="pathParamsLocal.length"
+                  class="text-caption text-medium-emphasis mb-1"
+                >
                   Path params
                 </div>
                 <KeyValueEditor
@@ -99,7 +146,9 @@
                   :variables="variableNames"
                   @update:model-value="onPathParamChange"
                 />
-                <div class="text-caption text-medium-emphasis mb-1 mt-2">Query params</div>
+                <div class="text-caption text-medium-emphasis mb-1 mt-2">
+                  Query params
+                </div>
                 <KeyValueEditor
                   v-model="queryParamsLocal"
                   :variables="variableNames"
@@ -120,7 +169,8 @@
                   label="Body type"
                   hide-details
                   class="mb-3"
-                  @update:model-value="onBodyTypeChange" />
+                  @update:model-value="onBodyTypeChange"
+                />
                 <JsonEditor
                   v-if="bodyType === 'json'"
                   v-model="bodyContent"
@@ -133,7 +183,8 @@
                   v-model="bodyContent"
                   :rows="8"
                   hide-details
-                  @update:model-value="onBodyContentChange" />
+                  @update:model-value="onBodyContentChange"
+                />
                 <KeyValueEditor
                   v-if="bodyType === 'form'"
                   :model-value="formFields"
@@ -155,37 +206,40 @@
                       <v-text-field
                         v-model="f.key"
                         placeholder="key"
-                        hide-details />
+                        hide-details
+                      />
                     </v-col>
                     <v-col>
                       <v-text-field
                         v-if="f.value.kind === 'text'"
                         v-model="f.value.text"
                         placeholder="text"
-                        hide-details />
+                        hide-details
+                      />
                       <v-file-input
                         v-else
                         :model-value="undefined"
                         placeholder="file"
                         hide-details
                         prepend-icon=""
-                        @update:model-value="onMultipartFile(i, $event)" />
+                        @update:model-value="onMultipartFile(i, $event)"
+                      />
                     </v-col>
                     <v-col cols="auto">
                       <v-btn
                         icon="mdi-swap-horizontal"
-                        variant="text"
-                        @click="toggleMultipartKind(i)" />
+                        @click="toggleMultipartKind(i)"
+                      />
                       <v-btn
                         icon="mdi-delete"
-                        variant="text"
-                        @click="removeMultipart(i)" />
+                        @click="removeMultipart(i)"
+                      />
                     </v-col>
                   </v-row>
                   <v-btn
-                    variant="text"
                     prepend-icon="mdi-plus"
-                    @click="addMultipartText" >
+                    @click="addMultipartText"
+                  >
                     Add field
                   </v-btn>
                 </div>
@@ -193,7 +247,8 @@
                   <v-file-input
                     label="Select file"
                     hide-details
-                    @update:model-value="onBinaryFile" />
+                    @update:model-value="onBinaryFile"
+                  />
                 </div>
               </v-tabs-window-item>
               <v-tabs-window-item value="auth">
@@ -203,48 +258,63 @@
                   label="Auth type"
                   hide-details
                   class="mb-3"
-                  @update:model-value="onAuthChange" />
+                  @update:model-value="onAuthChange"
+                />
                 <v-text-field
                   v-if="authType === 'bearer'"
                   v-model="bearerToken"
                   label="Token"
                   hide-details
-                  @update:model-value="onAuthChange" />
+                  @update:model-value="onAuthChange"
+                />
                 <template v-if="authType === 'basic'">
                   <v-text-field
                     v-model="basicUser"
                     label="Username"
                     hide-details
-                    @update:model-value="onAuthChange" />
+                    @update:model-value="onAuthChange"
+                  />
                   <v-text-field
                     v-model="basicPass"
                     label="Password"
                     type="password"
                     hide-details
-                    @update:model-value="onAuthChange" />
+                    @update:model-value="onAuthChange"
+                  />
                 </template>
                 <template v-if="authType === 'apiKey'">
                   <v-text-field
                     v-model="apiKeyName"
                     label="Header / Query name"
                     hide-details
-                    @update:model-value="onAuthChange" />
+                    @update:model-value="onAuthChange"
+                  />
                   <v-text-field
                     v-model="apiKeyValue"
                     label="Value"
                     hide-details
-                    @update:model-value="onAuthChange" />
+                    @update:model-value="onAuthChange"
+                  />
                   <v-select
                     v-model="apiKeyIn"
                     :items="['header', 'query']"
                     label="Add to"
                     hide-details
-                    @update:model-value="onAuthChange" />
+                    @update:model-value="onAuthChange"
+                  />
                 </template>
               </v-tabs-window-item>
               <v-tabs-window-item value="pre">
-                <TestEditor :model-value="request.preRequest" @update:model-value="onPreChange" />
-                <v-alert class="mt-2" type="info" variant="tonal" density="compact">
+                <TestEditor
+                  :model-value="request.preRequest"
+                  @update:model-value="onPreChange"
+                />
+                <v-alert
+                  class="mt-2"
+                  type="info"
+                  variant="tonal"
+                  density="compact"
+                >
                   Pre-request scripts run before the HTTP call. Use
                   <code>pm.variables.set('k','v')</code> for runtime variables or
                   <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
@@ -275,16 +345,23 @@
                   type="number"
                   label="Timeout (ms)"
                   hide-details
-                  @update:model-value="onTimeoutChange" />
+                  @update:model-value="onTimeoutChange"
+                />
                 <v-divider class="my-3" />
-                <RetryPolicyEditor :model-value="retryLocal" @update:model-value="onRetryChange" />
+                <RetryPolicyEditor
+                  :model-value="retryLocal"
+                  @update:model-value="onRetryChange"
+                />
               </v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <ResponsePanel
           :response="lastResult?.response"
           :tests="lastResult?.tests"

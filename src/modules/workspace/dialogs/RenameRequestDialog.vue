@@ -5,11 +5,20 @@
       label="New request name"
       autofocus
       hide-details
-      @keyup.enter="save" />
+      @keyup.enter="save"
+    />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn text @click="close">Cancel</v-btn>
-      <v-btn color="primary" :disabled="!name.trim()" @click="save">Save</v-btn>
+      <v-btn @click="close">
+        Cancel
+      </v-btn>
+      <v-btn
+        color="primary"
+        :disabled="!name.trim()"
+        @click="save"
+      >
+        Save
+      </v-btn>
     </v-card-actions>
   </div>
 </template>

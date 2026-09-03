@@ -5,11 +5,20 @@
       label="Collection name"
       autofocus
       hide-details
-      @keyup.enter="create" />
+      @keyup.enter="create"
+    />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn text @click="close">Cancel</v-btn>
-      <v-btn color="primary" :disabled="!name.trim()" @click="create">Create</v-btn>
+      <v-btn @click="close">
+        Cancel
+      </v-btn>
+      <v-btn
+        color="primary"
+        :disabled="!name.trim()"
+        @click="create"
+      >
+        Create
+      </v-btn>
     </v-card-actions>
   </div>
 </template>
