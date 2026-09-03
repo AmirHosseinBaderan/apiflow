@@ -1,0 +1,1868 @@
+{
+  "id": "col_mtm171zv_3ur8db1k",
+  "name": "Test open api",
+  "folders": [
+    {
+      "id": "fld_mtm171zv_ks2be15m",
+      "name": "health",
+      "parentId": null,
+      "requestIds": [
+        "cacfddfb-7ab2-4461-a628-2adf9936955c"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_pk8ei3x1",
+      "name": "auth",
+      "parentId": null,
+      "requestIds": [
+        "0646e489-9567-4b36-9c74-9a0cd106a641",
+        "4a5a4a89-5072-485b-933d-f19001bafe66"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_tmnodsz4",
+      "name": "profile",
+      "parentId": null,
+      "requestIds": [
+        "2b260c33-d22f-433b-847a-deb4eea61f9d",
+        "df50dd5a-91d8-4668-803b-da3410aee6dc"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_z1i2rpd1",
+      "name": "dashboard",
+      "parentId": null,
+      "requestIds": [
+        "b63001d5-ddcf-4480-9ecf-c034d46ceea7"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_edma6mr1",
+      "name": "analytics",
+      "parentId": null,
+      "requestIds": [
+        "487ebf9a-0952-4245-add5-37fb1b48d190"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_emucrkib",
+      "name": "academy",
+      "parentId": null,
+      "requestIds": [
+        "50d4240c-b515-4d30-a63b-3445ed3190d1",
+        "b562b117-f4c5-451a-9d49-33067932b513",
+        "d4e12db8-fde4-475b-b037-8da97e2fd910",
+        "4a287560-fefe-430d-9d45-81c489214516",
+        "77704047-035e-4815-b196-ecc1f63839cc",
+        "ec2ef5f7-522c-44d8-ae96-391b6a84718b"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_1vb1q36f",
+      "name": "teacher",
+      "parentId": null,
+      "requestIds": [
+        "8dea7502-157e-4917-80df-2d22f010d6f2",
+        "331d8cc1-4539-4573-b3b1-e723521e73cd",
+        "ef17b9c2-e855-4b1f-8135-2f2245a4ec70",
+        "f9f0affe-54fc-4eb4-ad53-88332cf1c2c3"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_2pbfz00n",
+      "name": "class",
+      "parentId": null,
+      "requestIds": [
+        "e2ecc329-9739-4a9b-82a7-a73b9fdab1f7",
+        "4167f051-08a4-4009-a362-89d52ae4618b",
+        "297f7562-d8ea-4c36-9ad0-c1953159a159",
+        "441336d8-c4ea-495e-a2af-84fd6945effd",
+        "5d1b9a99-7ead-485b-b142-a7241ce78382",
+        "4522c230-1c8e-4de2-90a7-7990ef4ac9ab",
+        "cb2eeaef-5bc8-4014-a351-a1302c8a2217"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_egsxladv",
+      "name": "attendance",
+      "parentId": null,
+      "requestIds": [
+        "8d325c74-211e-49c4-97e2-409fa716c748",
+        "f141da19-b082-433f-b22b-c75ecf4e08a1"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_7lix7ksy",
+      "name": "session",
+      "parentId": null,
+      "requestIds": [
+        "d794e798-3785-4a38-a3f4-f8e48a95b0de",
+        "55a5ecaf-183b-4829-b0f5-5d87053e61b5",
+        "dcbdecd8-0c77-415b-93e5-e080b66952da",
+        "7bd32a67-0078-4c7b-9e94-6af43efc82ad"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_out5s01o",
+      "name": "billing",
+      "parentId": null,
+      "requestIds": [
+        "f68bbe57-efe3-423a-983c-1b7b5ca4f62f",
+        "2a5b1791-227c-4b26-a92a-9dab6cac2f56",
+        "942ec986-ab00-4e4b-86a4-af0a1a3280eb",
+        "ba5e820f-9f72-4589-9c61-70fc8cdaab8f",
+        "fae6e456-b7ea-4ab1-9d68-892c7633425e",
+        "a5db0096-1f7b-4480-949f-17efda9dbce6",
+        "0aebdbf3-c0a5-45b8-89fe-a8916c22ced5"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_hg67ddoz",
+      "name": "notification",
+      "parentId": null,
+      "requestIds": [
+        "49e20927-0001-4468-a6a8-4f2ec6a453c4",
+        "8a27ecc5-c0ea-4ee5-88d7-1faeff07d55e"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_ewtyfqvy",
+      "name": "audit",
+      "parentId": null,
+      "requestIds": [
+        "207bf9ac-16be-4416-a13d-d59aae6544a1"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_nyu75h2h",
+      "name": "student",
+      "parentId": null,
+      "requestIds": [
+        "c06e4f7d-1a51-430e-b6a5-759af0fc49e2",
+        "213a529d-a6d6-4e71-8102-00995eb8cfe5",
+        "da6e616d-8dbe-46ff-8916-ab14e3d4e3e6",
+        "facd3f90-02ce-44aa-ba05-0080e0069f52"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_xhgalusi",
+      "name": "teacher-panel",
+      "parentId": null,
+      "requestIds": [
+        "d3b7c1f6-2ff0-4efb-af02-0fed2b89b0a0",
+        "0f905383-fdb6-4477-9d9f-34ba4e49334d",
+        "407e9c1b-b35a-4647-a985-8d62557b1429",
+        "c171b4fe-74ce-4f12-8764-2f2772f55de6",
+        "f8ef9c34-16c0-4fe3-a9b5-13f0d7022bb2"
+      ],
+      "childFolderIds": []
+    },
+    {
+      "id": "fld_mtm171zv_t6mvh4d3",
+      "name": "student-panel",
+      "parentId": null,
+      "requestIds": [
+        "9d2fc706-88d5-49ab-bc29-543db4f7cd2d",
+        "463df207-3b18-4de6-b92f-3b8f1ad2c820",
+        "c54b2365-1e27-4ce7-b331-952a32aa1e6d",
+        "faf2ceee-2c10-44f9-aa85-4124d0ce2f95",
+        "53b0f1d7-c389-41f6-ae5b-dbbf24d65383"
+      ],
+      "childFolderIds": []
+    }
+  ],
+  "requests": [
+    {
+      "id": "cacfddfb-7ab2-4461-a628-2adf9936955c",
+      "name": "Deep health check",
+      "method": "GET",
+      "url": "http://localhost:8080/healthz",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Deep health check"
+    },
+    {
+      "id": "0646e489-9567-4b36-9c74-9a0cd106a641",
+      "name": "Send a login code",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/send-otp",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_a5qa0g9h",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"phone\": \"09121234567\",\n  \"platform\": \"academy\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [
+        {
+          "id": "tst_mtm1f93f_agl25wgh",
+          "name": "Status is 200",
+          "kind": {
+            "type": "script",
+            "source": "return response.status === 200"
+          },
+          "expression": "200"
+        }
+      ],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Send a login code"
+    },
+    {
+      "id": "4a5a4a89-5072-485b-933d-f19001bafe66",
+      "name": "Exchange a login code for an access token",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/login-otp",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_pmnvmq2d",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"phone\": \"09121234567\",\n  \"code\": \"1111\",\n  \"platform\": \"academy\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Exchange a login code for an access token"
+    },
+    {
+      "id": "2b260c33-d22f-433b-847a-deb4eea61f9d",
+      "name": "Get the signed-in user's profile",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/get-profile",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Get the signed-in user's profile"
+    },
+    {
+      "id": "df50dd5a-91d8-4668-803b-da3410aee6dc",
+      "name": "Update the signed-in user's profile",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/set-profile",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_vx5foo7k",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"first_name\": \"مریم\",\n  \"last_name\": \"رضایی\",\n  \"user_type\": 1\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Update the signed-in user's profile"
+    },
+    {
+      "id": "b63001d5-ddcf-4480-9ecf-c034d46ceea7",
+      "name": "The console's landing-page figures in one call",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/dashboard",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The console's landing-page figures in one call"
+    },
+    {
+      "id": "487ebf9a-0952-4245-add5-37fb1b48d190",
+      "name": "Headline counts for the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/analytics",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Headline counts for the academy"
+    },
+    {
+      "id": "50d4240c-b515-4d30-a63b-3445ed3190d1",
+      "name": "Get the caller's academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/get-academy",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Get the caller's academy"
+    },
+    {
+      "id": "b562b117-f4c5-451a-9d49-33067932b513",
+      "name": "Create the caller's academy",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/create-academy",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_1z9s93m5",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Create the caller's academy"
+    },
+    {
+      "id": "d4e12db8-fde4-475b-b037-8da97e2fd910",
+      "name": "Edit the caller's academy",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/update-academy",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_ywc3jd6d",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Edit the caller's academy"
+    },
+    {
+      "id": "4a287560-fefe-430d-9d45-81c489214516",
+      "name": "Upload the academy's logo",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/upload-logo",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_jkkuk703",
+          "key": "Content-Type",
+          "value": "multipart/form-data",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"file\": \"\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Upload the academy's logo"
+    },
+    {
+      "id": "77704047-035e-4815-b196-ecc1f63839cc",
+      "name": "Remove the academy's logo",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-logo",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Remove the academy's logo"
+    },
+    {
+      "id": "ec2ef5f7-522c-44d8-ae96-391b6a84718b",
+      "name": "Serve an academy's logo",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/logo/{academy_id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Serve an academy's logo"
+    },
+    {
+      "id": "8dea7502-157e-4917-80df-2d22f010d6f2",
+      "name": "List the academy's teachers",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/teacher-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the academy's teachers"
+    },
+    {
+      "id": "331d8cc1-4539-4573-b3b1-e723521e73cd",
+      "name": "Get one teacher of the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/teacher-by-id/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Get one teacher of the academy"
+    },
+    {
+      "id": "ef17b9c2-e855-4b1f-8135-2f2245a4ec70",
+      "name": "Create or update a teacher",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/upsert-teacher",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_aohckqan",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"first_name\": \"سارا\",\n  \"last_name\": \"احمدی\",\n  \"phone\": \"09121112233\",\n  \"status\": \"active\",\n  \"languages\": [\n    \"english\",\n    \"german\"\n  ],\n  \"note\": \"ترجیح می‌دهد کلاس‌های صبح تدریس کند\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Create or update a teacher"
+    },
+    {
+      "id": "f9f0affe-54fc-4eb4-ad53-88332cf1c2c3",
+      "name": "Delete a teacher",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-teacher/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Delete a teacher"
+    },
+    {
+      "id": "e2ecc329-9739-4a9b-82a7-a73b9fdab1f7",
+      "name": "List the academy's classes",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/class-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the academy's classes"
+    },
+    {
+      "id": "4167f051-08a4-4009-a362-89d52ae4618b",
+      "name": "The classes meeting on one day",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/class-day-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The classes meeting on one day"
+    },
+    {
+      "id": "297f7562-d8ea-4c36-9ad0-c1953159a159",
+      "name": "Open a new class",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/create-class",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_xvq3vl92",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"title\": \"مکالمه انگلیسی سطح متوسط\",\n  \"level\": \"B1\",\n  \"capacity\": 12,\n  \"teacher_id\": \"2b8c9d10-1e2f-4a3b-9c4d-5e6f7a8b9c0d\",\n  \"schedule\": {\n    \"weekdays\": [\n      \"saturday\",\n      \"monday\",\n      \"wednesday\"\n    ],\n    \"start_time\": \"14:00\",\n    \"end_time\": \"15:30\",\n    \"term_start\": \"2026-09-01\",\n    \"term_end\": \"2026-12-01\"\n  }\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Open a new class"
+    },
+    {
+      "id": "441336d8-c4ea-495e-a2af-84fd6945effd",
+      "name": "Edit an existing class",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/update-class",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_hw1dviil",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"title\": \"مکالمه انگلیسی سطح پیشرفته\",\n  \"capacity\": 15\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Edit an existing class"
+    },
+    {
+      "id": "5d1b9a99-7ead-485b-b142-a7241ce78382",
+      "name": "Delete a class",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-class/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Delete a class"
+    },
+    {
+      "id": "4522c230-1c8e-4de2-90a7-7990ef4ac9ab",
+      "name": "Enrol students into a class",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/enroll-students",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_pe4rns50",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"student_ids\": [\n    \"4c5d6e70-8f9a-4b1c-2d3e-4f5a6b7c8d9e\"\n  ]\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Enrol students into a class"
+    },
+    {
+      "id": "cb2eeaef-5bc8-4014-a351-a1302c8a2217",
+      "name": "Remove students from a class",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/unenroll-students",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_ud39bm7j",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"student_ids\": [\n    \"4c5d6e70-8f9a-4b1c-2d3e-4f5a6b7c8d9e\"\n  ]\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Remove students from a class"
+    },
+    {
+      "id": "8d325c74-211e-49c4-97e2-409fa716c748",
+      "name": "List recorded attendance across the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/attendance-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List recorded attendance across the academy"
+    },
+    {
+      "id": "f141da19-b082-433f-b22b-c75ecf4e08a1",
+      "name": "Attendance totals per student",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/attendance-summary",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Attendance totals per student"
+    },
+    {
+      "id": "d794e798-3785-4a38-a3f4-f8e48a95b0de",
+      "name": "List the recorded sessions across the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/session-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the recorded sessions across the academy"
+    },
+    {
+      "id": "55a5ecaf-183b-4829-b0f5-5d87053e61b5",
+      "name": "Call off one occurrence of a class",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/cancel-session",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_gcuem8qu",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"date\": \"2026-09-07\",\n  \"reason\": \"تعطیلی رسمی\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Call off one occurrence of a class"
+    },
+    {
+      "id": "dcbdecd8-0c77-415b-93e5-e080b66952da",
+      "name": "Put a cancelled occurrence back on",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/reopen-session",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_70p9ey60",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"date\": \"2026-09-07\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Put a cancelled occurrence back on"
+    },
+    {
+      "id": "7bd32a67-0078-4c7b-9e94-6af43efc82ad",
+      "name": "Add a makeup occurrence outside the weekly pattern",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/schedule-makeup",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_ohl8qo93",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"date\": \"2026-09-11\",\n  \"note\": \"جبرانی جلسه‌ی تعطیل‌شده‌ی هفتم مهر\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Add a makeup occurrence outside the weekly pattern"
+    },
+    {
+      "id": "f68bbe57-efe3-423a-983c-1b7b5ca4f62f",
+      "name": "List the academy's invoices",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/invoice-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the academy's invoices"
+    },
+    {
+      "id": "2a5b1791-227c-4b26-a92a-9dab6cac2f56",
+      "name": "Get one invoice with its payments",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/invoice-by-id/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Get one invoice with its payments"
+    },
+    {
+      "id": "942ec986-ab00-4e4b-86a4-af0a1a3280eb",
+      "name": "Create or update an invoice",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/upsert-invoice",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_ws7nx9dc",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"student_id\": \"4c5d6e70-8f9a-4b1c-2d3e-4f5a6b7c8d9e\",\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"title\": \"شهریه ترم پاییز\",\n  \"amount_minor\": 45000000,\n  \"due_date\": \"2026-09-15\",\n  \"issued_at\": \"2026-09-01T08:00:00Z\",\n  \"note\": \"پرداخت دو قسطی توافق شد\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Create or update an invoice"
+    },
+    {
+      "id": "ba5e820f-9f72-4589-9c61-70fc8cdaab8f",
+      "name": "Delete an invoice",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-invoice/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Delete an invoice"
+    },
+    {
+      "id": "fae6e456-b7ea-4ab1-9d68-892c7633425e",
+      "name": "Record a payment against an invoice",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/record-payment",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_8wpewnf7",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"invoice_id\": \"c1d2e3f4-5a6b-4c7d-8e9f-0a1b2c3d4e5f\",\n  \"amount_minor\": 20000000,\n  \"method\": \"card\",\n  \"paid_at\": \"2026-09-03T11:20:00Z\",\n  \"reference\": \"TRX-8891207\",\n  \"note\": \"قسط اول\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Record a payment against an invoice"
+    },
+    {
+      "id": "a5db0096-1f7b-4480-949f-17efda9dbce6",
+      "name": "Reverse a recorded payment",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-payment/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Reverse a recorded payment"
+    },
+    {
+      "id": "0aebdbf3-c0a5-45b8-89fe-a8916c22ced5",
+      "name": "Billed, collected, and outstanding over a date range",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/revenue-summary",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Billed, collected, and outstanding over a date range"
+    },
+    {
+      "id": "49e20927-0001-4468-a6a8-4f2ec6a453c4",
+      "name": "Queue a message to a group of people",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/send-announcement",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_lgl03pqg",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Queue a message to a group of people"
+    },
+    {
+      "id": "8a27ecc5-c0ea-4ee5-88d7-1faeff07d55e",
+      "name": "List the messages the academy has queued",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/notification-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the messages the academy has queued"
+    },
+    {
+      "id": "207bf9ac-16be-4416-a13d-d59aae6544a1",
+      "name": "List the recorded changes in the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/audit-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the recorded changes in the academy"
+    },
+    {
+      "id": "c06e4f7d-1a51-430e-b6a5-759af0fc49e2",
+      "name": "List the academy's students",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/student-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "List the academy's students"
+    },
+    {
+      "id": "213a529d-a6d6-4e71-8102-00995eb8cfe5",
+      "name": "Get one student of the academy",
+      "method": "GET",
+      "url": "http://localhost:8080/api/academy/student-by-id/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Get one student of the academy"
+    },
+    {
+      "id": "da6e616d-8dbe-46ff-8916-ab14e3d4e3e6",
+      "name": "Create or update a student",
+      "method": "POST",
+      "url": "http://localhost:8080/api/academy/upsert-student",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_vxexwl79",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"first_name\": \"امیر\",\n  \"last_name\": \"کریمی\",\n  \"phone\": \"09124445566\",\n  \"status\": \"active\",\n  \"level\": \"B1\",\n  \"note\": \"از مهر به کلاس مکالمه منتقل شود\"\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Create or update a student"
+    },
+    {
+      "id": "facd3f90-02ce-44aa-ba05-0080e0069f52",
+      "name": "Delete a student",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/academy/delete-student/{id}",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Delete a student"
+    },
+    {
+      "id": "d3b7c1f6-2ff0-4efb-af02-0fed2b89b0a0",
+      "name": "The signed-in teacher's own view",
+      "method": "GET",
+      "url": "http://localhost:8080/api/teacher/me",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in teacher's own view"
+    },
+    {
+      "id": "0f905383-fdb6-4477-9d9f-34ba4e49334d",
+      "name": "The signed-in teacher's classes",
+      "method": "GET",
+      "url": "http://localhost:8080/api/teacher/class-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in teacher's classes"
+    },
+    {
+      "id": "407e9c1b-b35a-4647-a985-8d62557b1429",
+      "name": "The students in the signed-in teacher's classes",
+      "method": "GET",
+      "url": "http://localhost:8080/api/teacher/student-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The students in the signed-in teacher's classes"
+    },
+    {
+      "id": "c171b4fe-74ce-4f12-8764-2f2772f55de6",
+      "name": "The register for one of the teacher's classes on one day",
+      "method": "GET",
+      "url": "http://localhost:8080/api/teacher/attendance-sheet",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The register for one of the teacher's classes on one day"
+    },
+    {
+      "id": "f8ef9c34-16c0-4fe3-a9b5-13f0d7022bb2",
+      "name": "Record the register for one session",
+      "method": "POST",
+      "url": "http://localhost:8080/api/teacher/mark-attendance",
+      "headers": [
+        {
+          "id": "kv_mtm171zv_xh2d1qhu",
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "json",
+        "content": "{\n  \"class_id\": \"9a0b1c2d-3e4f-4a5b-6c7d-8e9f0a1b2c3d\",\n  \"date\": \"2026-09-05\",\n  \"note\": \"جلسه با ۱۵ دقیقه تأخیر شروع شد\",\n  \"marks\": [\n    {\n      \"student_id\": \"4c5d6e70-8f9a-4b1c-2d3e-4f5a6b7c8d9e\",\n      \"status\": \"late\",\n      \"note\": \"با تأخیر رسید\"\n    }\n  ]\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "Record the register for one session"
+    },
+    {
+      "id": "9d2fc706-88d5-49ab-bc29-543db4f7cd2d",
+      "name": "The signed-in student's own view",
+      "method": "GET",
+      "url": "http://localhost:8080/api/student/me",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in student's own view"
+    },
+    {
+      "id": "463df207-3b18-4de6-b92f-3b8f1ad2c820",
+      "name": "The signed-in student's classes",
+      "method": "GET",
+      "url": "http://localhost:8080/api/student/class-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in student's classes"
+    },
+    {
+      "id": "c54b2365-1e27-4ce7-b331-952a32aa1e6d",
+      "name": "The teachers of the signed-in student's classes",
+      "method": "GET",
+      "url": "http://localhost:8080/api/student/teacher-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The teachers of the signed-in student's classes"
+    },
+    {
+      "id": "faf2ceee-2c10-44f9-aa85-4124d0ce2f95",
+      "name": "The signed-in student's own attendance",
+      "method": "GET",
+      "url": "http://localhost:8080/api/student/attendance-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in student's own attendance"
+    },
+    {
+      "id": "53b0f1d7-c389-41f6-ae5b-dbbf24d65383",
+      "name": "The signed-in student's own invoices",
+      "method": "GET",
+      "url": "http://localhost:8080/api/student/invoice-list",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": [],
+      "description": "The signed-in student's own invoices"
+    }
+  ],
+  "variables": [],
+  "workflows": [],
+  "createdAt": "2026-09-03T21:22:42.523Z",
+  "updatedAt": "2026-09-03T21:29:34.208Z"
+}

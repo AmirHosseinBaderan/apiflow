@@ -1,0 +1,8 @@
+{
+  "setupComplete": true,
+  "multiUser": false,
+  "forceLogin": false,
+  "appName": "API Flow",
+  "defaultTheme": "dark",
+  "defaultLocale": "en"
+}

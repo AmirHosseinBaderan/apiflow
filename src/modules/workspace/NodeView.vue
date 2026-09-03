@@ -201,7 +201,7 @@
         </v-col>
 
         <v-col
-          v-if="node?.kind === 'collection'"
+          v-if="isCollectionView"
           cols="12"
         >
           <v-card
@@ -224,6 +224,7 @@
                 </v-btn>
               </div>
               <v-table
+                v-if="mutableVariables.length"
                 density="compact"
                 class="variables-table bg-transparent"
               >
@@ -303,16 +304,16 @@
                       />
                     </td>
                   </tr>
-                  <tr v-if="!mutableVariables.length">
-                    <td
-                      colspan="5"
-                      class="text-medium-emphasis text-caption"
-                    >
-                      {{ t('noVariables') }}
-                    </td>
-                  </tr>
                 </tbody>
               </v-table>
+              <v-alert
+                v-else
+                type="info"
+                variant="tonal"
+                density="compact"
+              >
+                {{ t('noVariables') }}
+              </v-alert>
             </v-card-text>
             <v-card-actions class="pa-4 pt-0">
               <v-spacer />
@@ -329,7 +330,7 @@
         </v-col>
 
         <v-col
-          v-if="node?.kind === 'collection' && savedWorkflows.length"
+          v-if="isCollectionView"
           cols="12"
         >
           <v-card
@@ -352,6 +353,7 @@
                 </v-btn>
               </div>
               <v-list
+                v-if="savedWorkflows.length"
                 density="compact"
                 class="bg-transparent pa-0"
               >
@@ -387,34 +389,8 @@
                   </template>
                 </v-list-item>
               </v-list>
-            </v-card-text>
-          </v-card>
-        </v-col>
-
-        <v-col
-          v-if="node?.kind === 'collection' && !savedWorkflows.length"
-          cols="12"
-        >
-          <v-card
-            variant="flat"
-            class="workflows-card"
-          >
-            <v-card-text>
-              <div class="d-flex align-center justify-space-between mb-3">
-                <div class="text-subtitle-2 font-weight-medium">
-                  {{ t('workflows') }}
-                </div>
-                <v-btn
-                  rounded="lg"
-                  prepend-icon="mdi-plus"
-                  variant="outlined"
-                  size="small"
-                  @click="addWorkflow"
-                >
-                  {{ t('addWorkflow') }}
-                </v-btn>
-              </div>
               <v-alert
+                v-else
                 type="info"
                 variant="tonal"
                 density="compact"
@@ -504,6 +480,7 @@ const activeCollection = computed(() => store.activeCollection);
 const folderId = computed(() => route.params.folderId as string | undefined);
 const node = computed(() => store.activeTreeNode(folderId.value ?? null));
 const savedWorkflows = computed(() => activeCollection.value?.workflows ?? []);
+const isCollectionView = computed(() => node.value?.kind === 'collection');
 
 const mutableVariables = ref<EditableVar[]>([]);
 

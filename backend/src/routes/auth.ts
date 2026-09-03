@@ -24,15 +24,20 @@ authRouter.post('/setup', async (req: { body: Record<string, unknown> }, res: Re
       multiUser?: boolean;
       forceLogin?: boolean;
     };
-    if (!username || !password) {
-      res.status(400).json({ error: 'Username and password are required' });
+
+    const isMultiUser = Boolean(multiUser);
+    if (isMultiUser && (!username || !password)) {
+      res.status(400).json({ error: 'Username and password are required for multi-user mode' });
       return;
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const finalUsername: string = isMultiUser ? username! : (username || 'admin');
+    const finalPassword: string = isMultiUser ? password! : (password || 'admin');
+
+    const passwordHash = await bcrypt.hash(finalPassword, 10);
     const user = {
       id: crypto.randomUUID(),
-      username,
+      username: finalUsername,
       passwordHash,
       role: 'admin' as const,
       createdAt: new Date().toISOString(),
@@ -40,12 +45,12 @@ authRouter.post('/setup', async (req: { body: Record<string, unknown> }, res: Re
     saveUser(user);
 
     settings.setupComplete = true;
-    settings.multiUser = Boolean(multiUser);
+    settings.multiUser = isMultiUser;
     settings.forceLogin = Boolean(forceLogin);
     saveSettings(settings);
 
-    const token = generateToken({ username, role: 'admin' });
-    res.json({ token, user: { username, role: 'admin' } });
+    const token = generateToken({ username: finalUsername, role: 'admin' });
+    res.json({ token, user: { username: finalUsername, role: 'admin' } });
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
   }
