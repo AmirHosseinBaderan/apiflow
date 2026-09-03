@@ -75,7 +75,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocaleStore } from '../i18n/store';
-import { authLogin } from '@/api/calls/auth';
+import { authLogin } from '../api/calls/auth';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const router = useRouter();
