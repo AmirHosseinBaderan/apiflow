@@ -61,23 +61,25 @@ export class TestEngine {
     setRuntimeVariable(name: string, value: string): void;
     setCollectionVariable(name: string, value: string): void;
   }) {
+    const local = new Map<string, string>();
+    for (const v of ctx.variables.collection) local.set(v.key, v.value);
+    for (const v of ctx.variables.request) local.set(v.key, v.value);
+    for (const v of ctx.variables.runtime) local.set(v.key, v.value);
+
     return {
       variables: {
         set: (name: string, value: unknown) => {
           const str = stringifyValue(value);
+          local.set(name, str);
           ctx.setRuntimeVariable(name, str);
           ctx.setCollectionVariable(name, str);
         },
         setCollection: (name: string, value: unknown) => {
-          ctx.setCollectionVariable(name, stringifyValue(value));
+          const str = stringifyValue(value);
+          local.set(name, str);
+          ctx.setCollectionVariable(name, str);
         },
-        get: (name: string): unknown => {
-          const raw =
-            ctx.variables.runtime.find((v) => v.key === name)?.value ??
-            ctx.variables.request.find((v) => v.key === name)?.value ??
-            ctx.variables.collection.find((v) => v.key === name)?.value;
-          return parseValue(raw);
-        },
+        get: (name: string): unknown => parseValue(local.get(name)),
       },
     };
   }

@@ -138,4 +138,62 @@ describe('TestEngine', () => {
     };
     expect(engine.runPostRequest(step, ok(), c).status).toBe('passed');
   });
+
+  it('pm.variables.set stringifies JSON objects and get parses them back', () => {
+    const c = ctx();
+    const mutations = c as unknown as { __runtimeMutations: Map<string, string> };
+    const step: TestStep = {
+      id: 't8',
+      name: 'json var round-trip',
+      kind: {
+        type: 'script',
+        source: `
+          pm.variables.set('user', { id: 1, name: 'a' });
+          pm.variables.set('tag', 'prod');
+          const u = pm.variables.get('user');
+          return typeof u === 'object' && u.id === 1 && u.name === 'a' && pm.variables.get('tag') === 'prod';
+        `,
+      },
+      expression: 'script',
+    };
+    expect(engine.runPostRequest(step, ok(), c).status).toBe('passed');
+    expect(mutations.__runtimeMutations.get('user')).toBe(JSON.stringify({ id: 1, name: 'a' }));
+    expect(mutations.__runtimeMutations.get('tag')).toBe('prod');
+  });
+
+  it('pm.variables.get returns plain text for non-JSON values', () => {
+    const c = ctx({
+      variables: {
+        collection: [{ key: 'base', value: 'c', enabled: true, secret: false }],
+        request: [],
+        runtime: [],
+      },
+    });
+    const step: TestStep = {
+      id: 't9',
+      name: 'plain text',
+      kind: {
+        type: 'script',
+        source: `return pm.variables.get('base') === 'c'`,
+      },
+      expression: 'script',
+    };
+    expect(engine.runPostRequest(step, ok(), c).status).toBe('passed');
+  });
+
+  it('pre-request scripts round-trip JSON objects through pm.variables', () => {
+    const c = ctx();
+    const step: TestStep = {
+      id: 't10',
+      name: 'pre json',
+      kind: {
+        type: 'script',
+        source: `pm.variables.set('cfg', { env: 'dev' }); return pm.variables.get('cfg').env === 'dev'`,
+      },
+      expression: 'script',
+    };
+    expect(engine.runPreRequest(step, c).status).toBe('passed');
+    const mutations = c as unknown as { __runtimeMutations: Map<string, string> };
+    expect(mutations.__runtimeMutations.get('cfg')).toBe(JSON.stringify({ env: 'dev' }));
+  });
 });
