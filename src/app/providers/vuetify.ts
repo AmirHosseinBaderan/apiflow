@@ -6,7 +6,6 @@ import {VTreeview} from 'vuetify/labs/VTreeview';
 export const vuetify = createVuetify({
     components: {VTreeview},
     defaults: {
-        VBtn: {rounded: 'lg'},
         VTextField: {variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg'},
         VSelect: {variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg'},
         VTextarea: {variant: 'outlined', density: 'comfortable', hideDetails: 'auto', rounded: 'lg'},
