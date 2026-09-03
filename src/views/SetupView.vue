@@ -131,10 +131,13 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocaleStore } from '../i18n/store';
 import { useSettingsStore } from '../stores/useSettingsStore';
+import { authSetup, type SetupRequest } from '../api/calls/auth';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const router = useRouter();
 const locale = useLocaleStore();
 const settings = useSettingsStore();
+const auth = useAuthStore();
 const t = (key: string) => locale.t(key);
 
 const appName = ref('API Flow');
@@ -177,23 +180,14 @@ async function handleSetup() {
       body.username = adminUsername.value;
       body.password = adminPassword.value;
     }
-    const res = await fetch('/api/auth/setup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      error.value = data.error || 'Setup failed';
-      return;
-    }
-    localStorage.setItem('apiflow.auth.token', data.token);
-    localStorage.setItem('apiflow.auth.user', JSON.stringify(data.user));
+    const data = await authSetup(body as unknown as SetupRequest);
+    auth.setAuth(data.token, data.user);
     if (theme.value) settings.setTheme(theme.value);
     if (localeVal.value) locale.setLocale(localeVal.value);
     router.push('/');
   } catch (e) {
-    error.value = (e as Error).message;
+    const apiError = e as { message?: string };
+    error.value = apiError.message || 'Setup failed';
   } finally {
     loading.value = false;
   }
