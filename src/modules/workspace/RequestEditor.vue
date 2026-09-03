@@ -142,6 +142,7 @@
                 <KeyValueEditor
                   v-if="pathParamsLocal.length"
                   v-model="pathParamsLocal"
+                  :variables="variableNames"
                   @update:model-value="onPathParamChange"
                 />
                 <div class="text-caption text-medium-emphasis mb-1 mt-2">
@@ -149,12 +150,14 @@
                 </div>
                 <KeyValueEditor
                   v-model="queryParamsLocal"
+                  :variables="variableNames"
                   @update:model-value="onParamChange"
                 />
               </v-tabs-window-item>
               <v-tabs-window-item value="headers">
                 <KeyValueEditor
                   v-model="headersLocal"
+                  :variables="variableNames"
                   @update:model-value="onHeaderChange"
                 />
               </v-tabs-window-item>
@@ -519,6 +522,12 @@ function emitUpdate(partial: Partial<RequestDefinition>) {
 
 function commit() {
   emitUpdate({ method: localMethod.value, url: localUrl.value });
+}
+
+function insertUrlVar(name: string) {
+  const token = `{{${name}}}`;
+  localUrl.value = `${localUrl.value}${token}`;
+  commit();
 }
 
 function onNameChange() {
