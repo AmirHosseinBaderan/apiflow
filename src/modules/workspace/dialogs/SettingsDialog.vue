@@ -21,7 +21,10 @@
   </v-card-text>
   <v-card-actions>
     <v-spacer />
-    <v-btn @click="close">
+    <v-btn
+      rounded="lg"
+      @click="close"
+    >
       {{ t('cancel') }}
     </v-btn>
   </v-card-actions>

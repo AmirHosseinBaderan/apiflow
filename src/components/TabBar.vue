@@ -22,6 +22,7 @@
       />
     </div>
     <v-btn
+      rounded="lg"
       icon="mdi-plus"
       class="new-tab"
       :title="t('newTab')"

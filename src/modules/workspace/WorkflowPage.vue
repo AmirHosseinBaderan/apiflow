@@ -127,6 +127,7 @@
                       </v-col>
                       <v-col cols="1">
                         <v-btn
+                          rounded="lg"
                           icon="mdi-delete"
                           color="error"
                           @click="removeStepHeader(i, hi)"
@@ -134,6 +135,7 @@
                       </v-col>
                     </v-row>
                     <v-btn
+                      rounded="lg"
                       prepend-icon="mdi-plus"
                       @click="addStepHeader(i)"
                     >
@@ -143,14 +145,17 @@
                   <v-divider class="my-1" />
                   <div class="d-flex justify-end">
                     <v-btn
+                      rounded="lg"
                       icon="mdi-chevron-up"
                       @click="moveUp(i)"
                     />
                     <v-btn
+                      rounded="lg"
                       icon="mdi-chevron-down"
                       @click="moveDown(i)"
                     />
                     <v-btn
+                      rounded="lg"
                       icon="mdi-delete"
                       color="error"
                       @click="removeStep(i)"
@@ -162,6 +167,7 @@
 
             <div class="d-flex align-center mt-2">
               <v-btn
+                rounded="lg"
                 color="primary"
                 prepend-icon="mdi-plus"
                 @click="addStep"
@@ -169,7 +175,10 @@
                 Add step
               </v-btn>
               <v-spacer />
-              <v-btn @click="save">
+              <v-btn
+                rounded="lg"
+                @click="save"
+              >
                 {{ t('saveWorkflow') }}
               </v-btn>
             </div>
@@ -191,6 +200,7 @@
             />
             <v-spacer />
             <v-btn
+              rounded="lg"
               color="primary"
               prepend-icon="mdi-play"
               :loading="running"

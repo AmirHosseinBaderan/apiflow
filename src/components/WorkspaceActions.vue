@@ -1,18 +1,21 @@
 <template>
   <div class="workspace-actions d-flex flex-wrap gap-2 align-center">
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-folder-plus"
       @click="openNew"
     >
       {{ t('newCollection') }}
     </v-btn>
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-import"
       @click="openImport"
     >
       {{ t('import') }}
     </v-btn>
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-export"
       :disabled="!activeCollection"
       @click="onExport"
@@ -20,6 +23,7 @@
       {{ t('export') }}
     </v-btn>
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-code-json"
       @click="openOpenApi"
     >
@@ -27,11 +31,13 @@
     </v-btn>
     <v-spacer />
     <v-btn
+      rounded="lg"
       icon="mdi-cog"
       :title="t('settings')"
       @click="openSettings"
     />
     <v-btn
+      rounded="lg"
       icon="mdi-help"
       :title="t('shortcuts')"
       @click="openShortcuts"

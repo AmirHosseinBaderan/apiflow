@@ -34,6 +34,7 @@
           <v-spacer />
           <v-btn
             v-if="node?.kind === 'folder'"
+            rounded="lg"
             color="primary"
             :text="t('backToCollection')"
             @click="gotoCollection"
@@ -61,6 +62,7 @@
               {{ t('updated') }} {{ formatDateValue(activeCollection?.updatedAt) }}
             </div>
             <v-btn
+              rounded="lg"
               class="mt-2"
               color="primary"
               prepend-icon="mdi-pencil"
@@ -122,6 +124,7 @@
                   </v-col>
                   <v-col cols="auto">
                     <v-btn
+                      rounded="lg"
                       icon="mdi-delete"
                       color="error"
                       @click="removeCollectionVar(i)"
@@ -131,6 +134,7 @@
               </v-list-item>
             </v-list>
             <v-btn
+              rounded="lg"
               prepend-icon="mdi-plus"
               @click="addCollectionVar"
             >
@@ -140,6 +144,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
+              rounded="lg"
               color="primary"
               @click="saveCollectionVariables"
             >
@@ -180,6 +185,7 @@
                     {{ wf.steps.length }} {{ t('steps') }}
                   </v-chip>
                   <v-btn
+                    rounded="lg"
                     icon="mdi-delete"
                     color="error"
                     @click.stop="deleteWorkflow(wf)"
@@ -191,6 +197,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
+              rounded="lg"
               color="primary"
               prepend-icon="mdi-plus"
               @click="addWorkflow"
@@ -271,6 +278,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn
+              rounded="lg"
               color="primary"
               @click="clearRuntime"
             >

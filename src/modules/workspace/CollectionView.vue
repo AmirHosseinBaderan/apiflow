@@ -92,12 +92,14 @@
                       cols-sm="auto"
                     >
                       <v-btn
+                        rounded="lg"
                         icon="mdi-delete"
                         @click="removeMapping(idx, mi)"
                       />
                     </v-col>
                   </v-row>
                   <v-btn
+                    rounded="lg"
                     prepend-icon="mdi-plus"
                     @click="addMapping(idx)"
                   >
@@ -108,6 +110,7 @@
             </template>
 
             <v-btn
+              rounded="lg"
               class="mt-3"
               color="primary"
               :disabled="workflowRequestIds.length < 2"

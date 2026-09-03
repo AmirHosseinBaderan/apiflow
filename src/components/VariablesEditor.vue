@@ -4,6 +4,7 @@
       <span>Variables</span>
       <v-spacer />
       <v-btn
+        rounded="lg"
         prepend-icon="mdi-plus"
         @click="add"
       >
@@ -37,6 +38,7 @@
         </v-col>
         <v-col cols="auto">
           <v-btn
+            rounded="lg"
             icon="mdi-delete"
             @click="remove(v.key)"
           />

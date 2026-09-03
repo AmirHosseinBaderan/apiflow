@@ -26,6 +26,7 @@
     </v-list>
     <v-divider class="my-2" />
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-folder-plus"
       block
       @click="pickNewCollection"
@@ -34,7 +35,10 @@
     </v-btn>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn @click="close">
+      <v-btn
+        rounded="lg"
+        @click="close"
+      >
         Cancel
       </v-btn>
     </v-card-actions>

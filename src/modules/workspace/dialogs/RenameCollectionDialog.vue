@@ -9,10 +9,14 @@
     />
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn @click="close">
+      <v-btn
+        rounded="lg"
+        @click="close"
+      >
         {{ t('cancel') }}
       </v-btn>
       <v-btn
+        rounded="lg"
         color="primary"
         :disabled="!name.trim()"
         @click="save"

@@ -15,10 +15,14 @@
   </v-card-text>
   <v-card-actions>
     <v-spacer />
-    <v-btn @click="close">
+    <v-btn
+      rounded="lg"
+      @click="close"
+    >
       Cancel
     </v-btn>
     <v-btn
+      rounded="lg"
       color="primary"
       :disabled="!name.trim()"
       @click="create"

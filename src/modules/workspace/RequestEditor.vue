@@ -36,6 +36,7 @@
               </v-col>
               <v-col cols="auto">
                 <v-btn
+                  rounded="lg"
                   color="primary"
                   prepend-icon="mdi-send"
                   :loading="running"
@@ -44,6 +45,7 @@
                   Send
                 </v-btn>
                 <v-btn
+                  rounded="lg"
                   class="ml-2"
                   prepend-icon="mdi-content-save"
                   @click="save"
@@ -227,16 +229,19 @@
                     </v-col>
                     <v-col cols="auto">
                       <v-btn
+                        rounded="lg"
                         icon="mdi-swap-horizontal"
                         @click="toggleMultipartKind(i)"
                       />
                       <v-btn
+                        rounded="lg"
                         icon="mdi-delete"
                         @click="removeMultipart(i)"
                       />
                     </v-col>
                   </v-row>
                   <v-btn
+                    rounded="lg"
                     prepend-icon="mdi-plus"
                     @click="addMultipartText"
                   >

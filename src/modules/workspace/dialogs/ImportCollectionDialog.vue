@@ -17,10 +17,14 @@
     </v-alert>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
-      <v-btn @click="close">
+      <v-btn
+        rounded="lg"
+        @click="close"
+      >
         Cancel
       </v-btn>
       <v-btn
+        rounded="lg"
         color="primary"
         :disabled="!text.trim()"
         @click="importCollection"

@@ -17,6 +17,7 @@
       >
         <v-col cols="6">
           <v-btn
+            rounded="lg"
             prepend-icon="mdi-plus"
             block
             @click="newRequest"
@@ -26,6 +27,7 @@
         </v-col>
         <v-col cols="6">
           <v-btn
+            rounded="lg"
             prepend-icon="mdi-folder-plus"
             block
             @click="newFolder"
@@ -70,6 +72,7 @@
         <v-menu>
           <template #activator="{ props: act }">
             <v-btn
+              rounded="lg"
               v-bind="act"
               icon="mdi-dots-vertical"
               @click.stop

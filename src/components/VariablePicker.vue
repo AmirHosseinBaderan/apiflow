@@ -2,6 +2,7 @@
   <v-menu offset-y>
     <template #activator="{ props: menuProps }">
       <v-btn
+        rounded="lg"
         v-bind="menuProps"
         icon="mdi-variable"
         :title="t('insertVariable')"

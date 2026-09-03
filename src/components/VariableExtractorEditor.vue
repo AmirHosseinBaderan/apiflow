@@ -23,12 +23,14 @@
       </v-col>
       <v-col cols="auto">
         <v-btn
+          rounded="lg"
           icon="mdi-delete"
           @click="remove(v.id)"
         />
       </v-col>
     </v-row>
     <v-btn
+      rounded="lg"
       prepend-icon="mdi-plus"
       @click="add"
     >

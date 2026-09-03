@@ -16,6 +16,7 @@
         sm="auto"
       >
         <v-btn
+          rounded="lg"
           color="primary"
           :disabled="!url"
           @click="fromUrl"
@@ -27,7 +28,10 @@
         cols="12"
         sm="auto"
       >
-        <v-btn @click="triggerFile">
+        <v-btn
+          rounded="lg"
+          @click="triggerFile"
+        >
           From File
         </v-btn>
         <input
