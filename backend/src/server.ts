@@ -6,6 +6,7 @@ import { authRouter } from './routes/auth.js';
 import { settingsRouter } from './routes/settings.js';
 import { adminRouter } from './routes/admin.js';
 import { collectionsRouter } from './routes/collections.js';
+import { requestsRouter } from './routes/requests.js';
 import { filesRouter } from './routes/files.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,6 +41,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/collections', collectionsRouter);
+collectionsRouter.use('/:id', requestsRouter);
 app.use('/api/files', filesRouter);
 
 const staticDir = join(__dirname, '../../dist');
