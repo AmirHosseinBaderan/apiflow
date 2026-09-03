@@ -1,8 +1,12 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
-import multer from 'multer';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { authRouter } from './routes/auth.js';
+import { settingsRouter } from './routes/settings.js';
+import { adminRouter } from './routes/admin.js';
+import { collectionsRouter } from './routes/collections.js';
+import { filesRouter } from './routes/files.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -11,24 +15,8 @@ const port = Number(process.env.PORT ?? 3001);
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const uploads = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
-
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ ok: true, service: 'api-flow-backend' });
-});
-
-app.post('/files', uploads.single('file'), (req: Request, res: Response) => {
-  if (!req.file) {
-    res.status(400).json({ error: 'Missing file' });
-    return;
-  }
-  const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  res.json({
-    id,
-    name: req.file.originalname,
-    size: req.file.size,
-    contentType: req.file.mimetype,
-  });
 });
 
 app.get('/proxy/openapi', async (req: Request, res: Response) => {
@@ -48,9 +36,15 @@ app.get('/proxy/openapi', async (req: Request, res: Response) => {
   }
 });
 
+app.use('/api/auth', authRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/collections', collectionsRouter);
+app.use('/api/files', filesRouter);
+
 const staticDir = join(__dirname, '../../dist');
 app.use(express.static(staticDir));
-app.get(/^(?!\/api|\/health|\/files|\/proxy).*/, (_req: Request, res: Response) => {
+app.get('*', (_req: Request, res: Response) => {
   res.sendFile(join(staticDir, 'index.html'));
 });
 
