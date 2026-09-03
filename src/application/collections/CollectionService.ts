@@ -196,6 +196,26 @@ export class CollectionService {
     return updated;
   }
 
+  async getRequest(collectionId: string, requestId: string): Promise<RequestDefinition | undefined> {
+    return this.repo.getRequest(collectionId, requestId);
+  }
+
+  async saveRequest(collectionId: string, request: RequestDefinition): Promise<void> {
+    await this.repo.saveRequest(collectionId, request);
+  }
+
+  async deleteRequestById(collectionId: string, requestId: string): Promise<void> {
+    await this.repo.deleteRequest(collectionId, requestId);
+  }
+
+  async updateVariablesDirect(collectionId: string, variables: Collection['variables']): Promise<void> {
+    await this.repo.updateVariables(collectionId, variables);
+  }
+
+  async updateWorkflowsDirect(collectionId: string, workflows: Collection['workflows']): Promise<void> {
+    await this.repo.updateWorkflows(collectionId, workflows);
+  }
+
   private async require(id: string): Promise<Collection> {
     const c = await this.repo.get(id);
     if (!c) throw new AppError({ code: 'ValidationError', message: `Collection ${id} not found` });
