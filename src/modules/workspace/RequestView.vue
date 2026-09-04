@@ -7,7 +7,7 @@
           variant="tonal"
           density="compact"
         >
-          No request selected. Pick a request from the sidebar to edit it.
+          {{ t('selectRequest') }}
         </v-alert>
       </v-col>
     </v-row>

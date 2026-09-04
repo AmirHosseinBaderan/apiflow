@@ -10,6 +10,8 @@
 import { useTheme } from 'vuetify';
 import { watch, onMounted } from 'vue';
 import { useSettingsStore } from '@stores/useSettingsStore';
+import { useTabStore } from '@stores/useTabStore';
+import { useCollectionStore } from '@stores/useCollectionStore';
 import AppNotifier from '@components/AppNotifier.vue';
 import AppDialog from '@components/AppDialog.vue';
 import { useLocaleStore } from '../i18n/store';
@@ -20,6 +22,8 @@ import {settingsMiddleware} from "../middleware/settingsMiddleware";
 const theme = useTheme();
 const settings = useSettingsStore();
 const locale = useLocaleStore();
+const tabs = useTabStore();
+const collections = useCollectionStore();
 
 useKeyboard();
 
@@ -36,6 +40,8 @@ function applyLocale() {
 onMounted(async () => {
   applyTheme();
   applyLocale();
+  tabs.restore();
+  collections.restoreActiveState();
   await Promise.all([authMiddleware.init(), settingsMiddleware.init()]);
   const serverSettings = settingsMiddleware.settings;
   if (serverSettings?.defaultTheme) settings.setTheme(serverSettings.defaultTheme);

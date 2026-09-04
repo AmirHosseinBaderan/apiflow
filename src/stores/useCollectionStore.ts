@@ -16,6 +16,25 @@ export interface CollectionTreeNode {
 }
 
 const UNSORTED_KEY = 'apiflow.unsorted.v1';
+const ACTIVE_STATE_KEY = 'apiflow.activeState';
+
+function loadActiveState(): { collectionId: string | null; requestId: string | null } {
+  try {
+    const raw = localStorage.getItem(ACTIVE_STATE_KEY);
+    if (!raw) return { collectionId: null, requestId: null };
+    return JSON.parse(raw) as { collectionId: string | null; requestId: string | null };
+  } catch {
+    return { collectionId: null, requestId: null };
+  }
+}
+
+function persistActiveState(collectionId: string | null, requestId: string | null) {
+  try {
+    localStorage.setItem(ACTIVE_STATE_KEY, JSON.stringify({ collectionId, requestId }));
+  } catch {
+    // ignore storage errors
+  }
+}
 
 function loadUnsorted(): RequestDefinition[] {
   try {
@@ -185,6 +204,14 @@ export const useCollectionStore = defineStore('collections', {
     bindService(service: CollectionService) {
       this.service = service;
     },
+    restoreActiveState() {
+      const state = loadActiveState();
+      this.activeCollectionId = state.collectionId;
+      this.activeRequestId = state.requestId;
+    },
+    persistActiveState() {
+      persistActiveState(this.activeCollectionId, this.activeRequestId);
+    },
     async refresh() {
       if (!this.service) return;
       this.loading = true;
@@ -330,9 +357,11 @@ export const useCollectionStore = defineStore('collections', {
     selectCollection(id: string) {
       this.activeCollectionId = id;
       this.activeRequestId = null;
+      this.persistActiveState();
     },
     selectRequest(id: string) {
       this.activeRequestId = id;
+      this.persistActiveState();
     },
     async loadRequest(collectionId: string, requestId: string): Promise<RequestDefinition | null> {
       if (!this.service) return null;

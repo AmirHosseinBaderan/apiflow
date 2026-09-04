@@ -15,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useTabStore } from '@stores/useTabStore';
 import CollectionsSidebar from '@modules/workspace/CollectionsSidebar.vue';
@@ -24,12 +25,31 @@ import TabBar from '@components/TabBar.vue';
 
 const store = useCollectionStore();
 const tabs = useTabStore();
+const route = useRoute();
 
 const activeCollection = computed(() => store.activeCollection);
 const showTabs = computed(() => tabs.tabs.length > 0);
 
+function syncTabFromRoute() {
+  const params = route.params as Record<string, string | undefined>;
+  const name = route.name as string | undefined;
+  if (!name) return;
+  const title = params.collectionId
+    ? store.collections.find((c) => c.id === params.collectionId)?.name ?? 'Collection'
+    : 'Home';
+  tabs.openRoute(name, params, title);
+}
+
 onMounted(async () => {
   await store.refresh();
-  tabs.open({ title: 'Home', kind: 'home', meta: {}, route: { name: 'home' } });
+  tabs.restore();
+  syncTabFromRoute();
 });
+
+watch(
+  () => route.name,
+  () => {
+    syncTabFromRoute();
+  },
+);
 </script>

@@ -26,14 +26,14 @@
         to="/admin"
         prepend-icon="mdi-account-group"
       >
-        Admin
+        {{ t('admin') }}
       </v-btn>
       <v-btn
         variant="text"
         prepend-icon="mdi-logout"
         @click="logout"
       >
-        Logout
+        {{ t('logout') }}
       </v-btn>
     </template>
   </v-app-bar>
