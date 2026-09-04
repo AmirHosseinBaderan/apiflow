@@ -35,6 +35,17 @@ export interface LoginResponse {
   user: { username: string; role: 'admin' | 'user' };
 }
 
+export interface UpdateProfileRequest {
+  username?: string;
+  password?: string;
+  currentPassword?: string;
+}
+
+export interface UpdateProfileResponse {
+  username: string;
+  role: 'admin' | 'user';
+}
+
 export const authCheck = () => request<CheckResponse>(api, 'GET', authUrls.check);
 
 export const authSetup = (data: SetupRequest) =>
@@ -42,3 +53,6 @@ export const authSetup = (data: SetupRequest) =>
 
 export const authLogin = (data: LoginRequest) =>
   request<LoginResponse>(api, 'POST', authUrls.login, data);
+
+export const updateProfile = (data: UpdateProfileRequest) =>
+  request<UpdateProfileResponse>(api, 'PUT', authUrls.profile, data);
