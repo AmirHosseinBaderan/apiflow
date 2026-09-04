@@ -2,14 +2,14 @@
   <div class="pa-2">
     <v-switch
       v-model="local.enabled"
-      label="Enable retry"
+      :label="t('enableRetry')"
       hide-details
     />
     <v-row dense>
       <v-col cols="6">
         <v-text-field
           v-model.number="local.maxAttempts"
-          label="Max attempts"
+          :label="t('maxAttempts')"
           type="number"
           hide-details
         />
@@ -17,7 +17,7 @@
       <v-col cols="6">
         <v-text-field
           v-model.number="local.initialDelayMs"
-          label="Initial delay (ms)"
+          :label="t('initialDelay')"
           type="number"
           hide-details
         />
@@ -26,13 +26,13 @@
     <v-select
       v-model="local.backoff"
       :items="['fixed','exponential']"
-      label="Backoff"
+      :label="t('backoff')"
       hide-details
     />
     <v-combobox
       v-model="local.retryOn"
       :items="['networkError','timeout','status5xx','statusCode']"
-      label="Retry on"
+      :label="t('retryOn')"
       multiple
       chips
       hide-details
@@ -42,7 +42,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useLocaleStore } from '@i18n/store';
 import type { RetryPolicyWithCodes, RetryCondition } from '@domain/request/RequestDefinition';
+
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 interface WritableRetry {
   enabled: boolean;

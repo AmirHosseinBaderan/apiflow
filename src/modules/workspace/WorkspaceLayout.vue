@@ -2,7 +2,7 @@
   <v-layout>
     <WorkspaceHeader :active-collection="activeCollection" />
     <CollectionsSidebar />
-    <v-main>
+    <v-main class="overflow-y-auto">
       <TabBar v-if="showTabs" />
       <v-container
         fluid

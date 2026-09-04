@@ -637,7 +637,7 @@ async function addNewRequest() {
   if (!cid) return;
   const name = 'New Request';
   const req = await store.createRequest(name);
-  notify('Request created', 'success');
+  notify(t('requestCreated'), 'success');
   if (req) {
     tabs.openRoute('request', { collectionId: cid, requestId: req.id }, name);
     router.push({ name: 'request', params: { collectionId: cid, requestId: req.id } });
@@ -650,7 +650,7 @@ async function addNewFolder() {
   const name = 'New Folder';
   await store.createFolder(name);
   const folderId = store.activeCollection?.folders.find((f) => f.name === name)?.id ?? null;
-  notify('Folder created', 'success');
+  notify(t('folderCreated'), 'success');
   if (folderId) {
     tabs.openRoute('node', { collectionId: cid, folderId: folderId }, name);
     router.push({ name: 'node', params: { collectionId: cid, folderId: folderId } });
@@ -666,7 +666,7 @@ async function addSubfolder() {
   if (!cid || !fid) return;
   const name = 'New Subfolder';
   await store.createFolder(name, fid);
-  notify('Subfolder created', 'success');
+  notify(t('subfolderCreated'), 'success');
   tabs.openRoute('node', { collectionId: cid, folderId: fid }, name);
   router.push({ name: 'node', params: { collectionId: cid, folderId: fid } });
 }

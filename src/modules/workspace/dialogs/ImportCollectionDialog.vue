@@ -3,7 +3,7 @@
     <v-textarea
       v-model="text"
       rows="10"
-      placeholder="Paste collection JSON here"
+      :placeholder="t('pasteCollectionJson')"
       hide-details
       @update:model-value="err = null"
     />
@@ -43,11 +43,14 @@ import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
 import { CollectionImporter } from '@application/imports/CollectionExchange';
 import { collectionRepository } from '@application/collections/collectionRepositoryPort';
+import { useLocaleStore } from '@i18n/store';
 
 const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const text = ref('');
 const err = ref<string | null>(null);
@@ -63,7 +66,7 @@ async function importCollection() {
     await store.refresh();
     store.selectCollection(c.id);
     router.replace({ name: 'collection', params: { collectionId: c.id } });
-    notify('Collection imported', 'success');
+    notify(t('importCollection'), 'success');
     close();
   } catch (e) {
     err.value = (e as Error).message;

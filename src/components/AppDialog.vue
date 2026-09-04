@@ -14,7 +14,7 @@
               rounded="lg"
               icon="mdi-close"
               density="comfortable"
-              title="Close"
+              :title="t('close')"
               @click="close"
             />
           </div>
@@ -34,8 +34,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useLocaleStore } from '@i18n/store';
 
 const store = useDialogStore();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const spec = computed(() => store.current);
 const open = computed({

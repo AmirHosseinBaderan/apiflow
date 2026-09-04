@@ -246,7 +246,7 @@
                     variant="text"
                     @click="addMultipartText"
                   >
-                     {{ t('addField') }}
+                    {{ t('addField') }}
                   </v-btn>
                 </div>
                 <div v-if="bodyType === 'binary'">
@@ -321,7 +321,7 @@
                   variant="tonal"
                   density="compact"
                 >
-                  Pre-request scripts run before the HTTP call. Use
+                  {{ t('preRequestScripts') }}
                   <code>pm.variables.set('k','v')</code> for runtime variables or
                   <code>pm.variables.setCollection('k','v')</code> to persist a collection variable.
                   Read any with <code>pm.variables.get('k')</code>.
@@ -422,7 +422,13 @@ const store = useCollectionStore();
 const execution = useExecutionStore();
 const { notify } = useNotifier();
 const locale = useLocaleStore();
-const t = (key: string) => locale.t(key);
+function t(key: string, ...args: unknown[]): string {
+  let text = locale.t(key);
+  if (args.length > 0 && typeof args[0] === 'string') {
+    text = text.replace('{0}', args[0]);
+  }
+  return text;
+}
 
 const variableNames = computed((): VariableDef[] => {
   const c = store.activeCollection;
@@ -754,12 +760,12 @@ const lastResult = computed(() => {
 async function run() {
   const collection = store.activeCollection;
   if (!isValidUrl(props.request.url)) {
-    notify('Provide a valid URL (e.g. https://example.com/path).', 'error');
+    notify(t('invalidUrl'), 'error');
     return;
   }
   const dups = duplicateHeaderKeys(props.request.headers);
   if (dups.length) {
-    notify(`Duplicate header keys: ${dups.join(', ')}`, 'warning');
+    notify(t('duplicateHeaderKeys', dups.join(', ')), 'warning');
     return;
   }
   await execution.run(props.request, collection?.variables ?? []);

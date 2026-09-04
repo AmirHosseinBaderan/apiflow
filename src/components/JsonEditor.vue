@@ -4,7 +4,7 @@
       ref="editor"
       v-model="raw"
       lang="json"
-      placeholder="Enter valid JSON"
+      :placeholder="t('enterValidJson')"
       :rows="rows"
       :variables="pickedVariableNames"
       :class="{ 'jce--invalid': valid === false }"
@@ -16,7 +16,7 @@
         prepend-icon="mdi-format-align-left"
         @click="format"
       >
-        Format
+        {{ t('format') }}
       </v-btn>
       <v-spacer />
       <VariablePicker
@@ -28,13 +28,13 @@
         v-if="valid === false"
         color="error"
         size="small"
-        text="Invalid JSON"
+        :text="t('invalidJson')"
       />
       <v-chip
         v-else-if="valid === true"
         color="success"
         size="small"
-        text="Valid"
+        :text="t('validJson')"
       />
     </div>
   </div>
@@ -42,9 +42,13 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
+import { useLocaleStore } from '@i18n/store';
 import type { VariableDef } from '@components/VariablePicker.vue';
 import VariablePicker from '@components/VariablePicker.vue';
 import CodeEditor from '@components/CodeEditor.vue';
+
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const props = defineProps<{ modelValue: string; rows?: number; variables?: VariableDef[] }>();
 const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>();
@@ -82,9 +86,9 @@ function normalizeJson(src: string) {
     s = s.replace(/,\s*([}\]])/g, '$1');
     s = s.replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3');
     s = s.replace(/:\s*([A-Za-z_$][\w$ .]*)\s*([,}\]])/g, (_m, p1: string, p2: string) => {
-      const t = p1.trim();
-      if (/^(true|false|null)$/.test(t)) return `: ${t}${p2}`;
-      return `: "${t}"${p2}`;
+      const token = p1.trim();
+      if (/^(true|false|null)$/.test(token)) return `: ${token}${p2}`;
+      return `: "${token}"${p2}`;
     });
     return { ok: true as const, value: JSON.parse(s) };
   } catch {

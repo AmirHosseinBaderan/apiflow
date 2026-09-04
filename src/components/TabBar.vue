@@ -23,7 +23,7 @@
         icon="mdi-close"
         size="x-small"
         class="tab-close"
-        title="Close"
+        :title="t('close')"
         @click.stop="close(tab)"
       />
     </div>

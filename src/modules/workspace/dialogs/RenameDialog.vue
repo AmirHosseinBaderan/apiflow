@@ -61,10 +61,10 @@ async function save() {
   if (!n) return;
   try {
     await props.onSave(n);
-    notify('Renamed successfully', 'success');
+    notify(t('renamedSuccessfully'), 'success');
     close();
   } catch {
-    notify('Rename failed', 'error');
+    notify(t('renameFailed'), 'error');
   }
 }
 </script>
