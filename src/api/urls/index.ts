@@ -4,6 +4,7 @@ export const authUrls = {
   check: '/api/auth/check',
   setup: '/api/auth/setup',
   login: '/api/auth/login',
+  profile: '/api/auth/profile',
 };
 
 export const settingsUrls = {
