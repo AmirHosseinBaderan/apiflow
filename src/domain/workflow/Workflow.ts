@@ -87,10 +87,10 @@ export function buildStepFromRequest(
     next: { type: 'next' },
     variableMappings: [],
     overrides: overrides ?? {
-      pathParams: request.pathParams,
-      queryParams: request.queryParams,
-      headers: request.headers,
-      body: request.body.type === 'json' ? request.body.content : undefined,
+      pathParams: request.pathParams ?? [],
+      queryParams: request.queryParams ?? [],
+      headers: request.headers ?? [],
+      body: request.body?.type === 'json' ? request.body?.content : undefined,
     },
   };
 }
