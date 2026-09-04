@@ -9,7 +9,7 @@
               :items="availableRequests"
               item-title="name"
               item-value="id"
-              label="Pick requests to chain (in order)"
+              :label="t('collection')"
               multiple
               chips
           />
@@ -17,14 +17,14 @@
           <v-select
               v-model="conditionType"
               :items="['always', 'statusEquals', 'variableEquals']"
-              label="Condition for first step"
+              :label="t('conditionForFirstStep')"
               hide-details
               class="mt-2"
           />
           <v-text-field
               v-if="conditionType !== 'always'"
               v-model="conditionValue"
-              :label="conditionType === 'statusEquals' ? 'Expected status' : 'Variable value'"
+              :label="conditionType === 'statusEquals' ? t('expectedStatus') : t('variableValue')"
               hide-details
               class="mt-1"
           />
@@ -35,14 +35,14 @@
               class="mt-3"
           >
             <div class="text-subtitle-2">
-              Step {{ idx + 1 }}: {{ requestNameById(reqId) ?? reqId }}
+              {{ t('step') }} {{ idx + 1 }}: {{ requestNameById(reqId) ?? reqId }}
             </div>
             <v-card
                 variant="outlined"
                 class="pa-2"
             >
               <div class="text-caption mb-1">
-                Parameters (map a variable into a request variable)
+                {{ t('parameters') }} ({{ t('mapVariableToRequestVariable') }})
               </div>
               <v-row
                   v-for="(m, mi) in stepMappings[idx] ?? []"
@@ -51,27 +51,27 @@
                   align="center"
               >
                 <v-col cols="4">
-                  <v-text-field
-                      v-model="m.fromVar"
-                      label="From variable"
-                      placeholder="collection/runtime variable"
-                      hide-details
-                  />
+                   <v-text-field
+                       v-model="m.fromVar"
+                       :label="t('fromVariable')"
+                       :placeholder="t('collectionRuntimeVariable')"
+                       hide-details
+                   />
                 </v-col>
                 <v-col cols="4">
-                  <v-text-field
-                      v-model="m.toVar"
-                      label="To variable"
-                      hide-details
-                  />
+                   <v-text-field
+                       v-model="m.toVar"
+                       :label="t('toVariable')"
+                       hide-details
+                   />
                 </v-col>
                 <v-col cols="3">
-                  <v-select
-                      v-model="m.transform"
-                      :items="[null, 'trim', 'lower', 'upper', 'number']"
-                      label="Transform"
-                      hide-details
-                  />
+                   <v-select
+                       v-model="m.transform"
+                       :items="[null, 'trim', 'lower', 'upper', 'number']"
+                       :label="t('transform')"
+                       hide-details
+                   />
                 </v-col>
                 <v-col
                     cols="1"
@@ -91,7 +91,7 @@
                   size="small"
                   @click="addMapping(idx)"
               >
-                Add parameter
+                {{ t('addParameter') }}
               </v-btn>
             </v-card>
           </div>
@@ -103,7 +103,7 @@
               :disabled="workflowRequestIds.length < 2"
               @click="runWorkflow"
           >
-            Run workflow
+            {{ t('runWorkflow') }}
           </v-btn>
         </v-card-text>
       </v-card>
@@ -114,13 +114,13 @@
           v-if="lastWorkflow"
           variant="tonal"
       >
-        <v-card-title>Workflow result</v-card-title>
+        <v-card-title>{{ t('workflowResult') }}</v-card-title>
         <v-card-text>
           <v-alert
               :type="lastWorkflow.ok ? 'success' : 'error'"
               variant="tonal"
           >
-            {{ lastWorkflow.ok ? 'Workflow passed' : 'Workflow failed' }}
+            {{ lastWorkflow.ok ? t('workflowPassed') : t('workflowFailed') }}
           </v-alert>
           <v-list
               v-for="s in lastWorkflow.steps"
@@ -141,24 +141,24 @@
                 {{ s.error }}
               </v-list-item-subtitle>
             </v-list-item>
-            <v-list-item
-                v-if="s.requestBody !== undefined"
-                class="pl-8"
-            >
-              <v-list-item-title class="text-caption">
-                Request JSON
-              </v-list-item-title>
-              <JsonCodeView :value="s.requestBody"/>
-            </v-list-item>
-            <v-list-item
-                v-if="s.responseBody !== undefined"
-                class="pl-8"
-            >
-              <v-list-item-title class="text-caption">
-                Response
-              </v-list-item-title>
-              <JsonCodeView :value="parseBody(s.responseContentType, s.responseBody)"/>
-            </v-list-item>
+              <v-list-item
+                  v-if="s.requestBody !== undefined"
+                  class="pl-8"
+              >
+                <v-list-item-title class="text-caption">
+                  {{ t('requestBody') }}
+                </v-list-item-title>
+                <JsonCodeView :value="s.requestBody"/>
+              </v-list-item>
+              <v-list-item
+                  v-if="s.responseBody !== undefined"
+                  class="pl-8"
+              >
+                <v-list-item-title class="text-caption">
+                  {{ t('responseBody') }}
+                </v-list-item-title>
+                <JsonCodeView :value="parseBody(s.responseContentType, s.responseBody)"/>
+              </v-list-item>
           </v-list>
         </v-card-text>
       </v-card>
@@ -170,6 +170,7 @@
 import {computed, ref, watch} from 'vue';
 import {useCollectionStore} from '@stores/useCollectionStore';
 import {useNotifier} from '@composables/useNotifier';
+import {useLocaleStore} from '@i18n/store';
 import {httpClient} from '@application/requests/httpClientPort';
 import {RequestExecutionService} from '@application/requests/RequestExecutionService';
 import {WorkflowEngine} from '@application/workflows/WorkflowEngine';
@@ -183,6 +184,8 @@ import JsonCodeView from '@components/JsonCodeView.vue';
 
 const store = useCollectionStore();
 const {notify} = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const activeCollection = computed(() => store.activeCollection);
 const availableRequests = computed(() => activeCollection.value?.requests ?? []);
@@ -249,15 +252,15 @@ async function runWorkflow() {
     initialBundle: {collection: collection.variables, request: [], runtime: []},
   });
   notify(
-      lastWorkflow.value.ok ? 'Workflow passed' : 'Workflow failed',
+      lastWorkflow.value.ok ? t('workflowPassed') : t('workflowFailed'),
       lastWorkflow.value.ok ? 'success' : 'error',
   );
 }
 
 function parseBody(contentType: string | undefined, body: string): unknown {
   if (!body) return body;
-  const t = (contentType ?? '').toLowerCase();
-  if (t.includes('json')) {
+  const ct = (contentType ?? '').toLowerCase();
+  if (ct.includes('json')) {
     try {
       return JSON.parse(body);
     } catch {

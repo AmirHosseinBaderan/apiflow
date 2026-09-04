@@ -70,19 +70,19 @@
                     v-else-if="condType(i) === 'variableEquals'"
                     class="d-flex mt-1"
                   >
-                    <v-text-field
-                      :model-value="condName(i)"
-                      label="Variable name"
-                      hide-details
-                      @update:model-value="(e: string) => setCondName(i, e)"
-                    />
-                    <v-text-field
-                      :model-value="condValue(i)"
-                      label="Equals"
-                      hide-details
-                      class="ml-2"
-                      @update:model-value="(e: string) => setCondValue(i, e)"
-                    />
+                     <v-text-field
+                       :model-value="condName(i)"
+                       :label="t('variableName')"
+                       hide-details
+                       @update:model-value="(e: string) => setCondName(i, e)"
+                     />
+                     <v-text-field
+                       :model-value="condValue(i)"
+                       :label="t('equals')"
+                       hide-details
+                       class="ml-2"
+                       @update:model-value="(e: string) => setCondValue(i, e)"
+                     />
                   </div>
 
                   <div class="mt-2">
@@ -94,7 +94,7 @@
                       :color="validStepBody(i) === false ? 'error' : undefined"
                       :rows="5"
                       hide-details
-                      placeholder="Enter valid JSON"
+                       :placeholder="t('enterValidJson')"
                       @update:model-value="(e: string) => setStepBody(i, e)"
                     />
                   </div>
@@ -109,22 +109,22 @@
                       dense
                       align="center"
                     >
-                      <v-col cols="4">
-                        <v-text-field
-                          :model-value="h.key"
-                          label="Name"
-                          hide-details
-                          @update:model-value="(e: string) => setStepHeaderField(i, hi, 'key', e)"
-                        />
-                      </v-col>
-                      <v-col cols="7">
-                        <v-text-field
-                          :model-value="h.value"
-                          label="Value"
-                          hide-details
-                          @update:model-value="(e: string) => setStepHeaderField(i, hi, 'value', e)"
-                        />
-                      </v-col>
+                       <v-col cols="4">
+                         <v-text-field
+                           :model-value="h.key"
+                           :label="t('name')"
+                           hide-details
+                           @update:model-value="(e: string) => setStepHeaderField(i, hi, 'key', e)"
+                         />
+                       </v-col>
+                       <v-col cols="7">
+                         <v-text-field
+                           :model-value="h.value"
+                           :label="t('value')"
+                           hide-details
+                           @update:model-value="(e: string) => setStepHeaderField(i, hi, 'value', e)"
+                         />
+                       </v-col>
                       <v-col cols="1">
                         <v-btn
                           rounded="lg"
@@ -523,7 +523,7 @@ function addStep() {
   const requests = collection.value?.requests ?? [];
   const first = requests[0];
   if (!first) {
-    notify('No requests in collection', 'warning');
+    notify(t('noRequestsInCollection'), 'warning');
     return;
   }
   const step = { ...buildStepFromRequest(first), id: createId('s') } as MutableStep;
@@ -564,7 +564,7 @@ function finalizeSteps(steps: WorkflowStep[]): WorkflowStep[] {
 
 async function save() {
   if (!local.value || !local.value.name) {
-    notify('Give the workflow a title', 'warning');
+    notify(t('giveWorkflowTitle'), 'warning');
     return;
   }
   const wf: Workflow = {
@@ -577,7 +577,7 @@ async function save() {
     ...(collection.value?.workflows.filter((w) => w.id !== wf.id) ?? []),
     wf,
   ]);
-  notify('Workflow saved', 'success');
+  notify(t('workflowSaved'), 'success');
   local.value = JSON.parse(JSON.stringify(wf)) as MutableWorkflow;
 }
 

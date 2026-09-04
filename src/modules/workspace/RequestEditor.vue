@@ -9,7 +9,7 @@
                 <v-select
                   v-model="localMethod"
                   :items="methods"
-                  label="Method"
+                  :label="t('method')"
                   hide-details
                   style="min-width: 130px"
                   @update:model-value="commit"
@@ -42,7 +42,7 @@
                   :loading="running"
                   @click="run"
                 >
-                  Send
+                  {{ t('send') }}
                 </v-btn>
                 <v-btn
                   rounded="lg"
@@ -50,7 +50,7 @@
                   prepend-icon="mdi-content-save"
                   @click="save"
                 >
-                  Save
+                  {{ t('save') }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -64,7 +64,7 @@
         <div class="d-flex align-start">
           <v-text-field
             v-model="nameLocal"
-            label="Request name"
+            :label="t('requestName')"
             hide-details
             variant="plain"
             class="text-h6"
@@ -84,8 +84,8 @@
         </div>
         <v-text-field
           v-model="descLocal"
-          label="Description"
-          placeholder="What does this request do?"
+          :label="t('requestDescription')"
+          :placeholder="t('requestDescriptionPlaceholder')"
           hide-details
           variant="outlined"
           class="mt-1"
@@ -106,31 +106,31 @@
             density="comfortable"
           >
             <v-tab value="params">
-              Params
+              {{ t('params') }}
             </v-tab>
             <v-tab value="headers">
-              Headers
+              {{ t('headers') }}
             </v-tab>
             <v-tab value="body">
-              Body
+              {{ t('body') }}
             </v-tab>
             <v-tab value="auth">
-              Auth
+              {{ t('auth') }}
             </v-tab>
             <v-tab value="pre">
-              Pre-req
+              {{ t('preRequest') }}
             </v-tab>
             <v-tab value="tests">
-              Tests
+              {{ t('tests') }}
             </v-tab>
             <v-tab value="extract">
-              Extract
+              {{ t('extract') }}
             </v-tab>
             <v-tab value="variables">
-              Variables
+              {{ t('variables') }}
             </v-tab>
             <v-tab value="settings">
-              Settings
+              {{ t('settings') }}
             </v-tab>
           </v-tabs>
           <v-card-text>
@@ -140,7 +140,7 @@
                   v-if="pathParamsLocal.length"
                   class="text-caption text-medium-emphasis mb-1"
                 >
-                  Path params
+                  {{ t('pathParams') }}
                 </div>
                 <KeyValueEditor
                   v-if="pathParamsLocal.length"
@@ -149,7 +149,7 @@
                   @update:model-value="onPathParamChange"
                 />
                 <div class="text-caption text-medium-emphasis mb-1 mt-2">
-                  Query params
+                  {{ t('queryParams') }}
                 </div>
                 <KeyValueEditor
                   v-model="queryParamsLocal"
@@ -168,7 +168,7 @@
                 <v-select
                   v-model="bodyType"
                   :items="bodyTypes"
-                  label="Body type"
+                  :label="t('bodyType')"
                   hide-details
                   class="mb-3"
                   @update:model-value="onBodyTypeChange"
@@ -246,12 +246,12 @@
                     variant="text"
                     @click="addMultipartText"
                   >
-                    Add field
+                     {{ t('addField') }}
                   </v-btn>
                 </div>
                 <div v-if="bodyType === 'binary'">
                   <v-file-input
-                    label="Select file"
+                    :label="t('selectFile')"
                     hide-details
                     @update:model-value="onBinaryFile"
                   />
@@ -261,7 +261,7 @@
                 <v-select
                   v-model="authType"
                   :items="['none', 'bearer', 'basic', 'apiKey']"
-                  label="Auth type"
+                  :label="t('authType')"
                   hide-details
                   class="mb-3"
                   @update:model-value="onAuthChange"
@@ -269,20 +269,20 @@
                 <v-text-field
                   v-if="authType === 'bearer'"
                   v-model="bearerToken"
-                  label="Token"
+                  :label="t('token')"
                   hide-details
                   @update:model-value="onAuthChange"
                 />
                 <template v-if="authType === 'basic'">
                   <v-text-field
                     v-model="basicUser"
-                    label="Username"
+                    :label="t('username')"
                     hide-details
                     @update:model-value="onAuthChange"
                   />
                   <v-text-field
                     v-model="basicPass"
-                    label="Password"
+                    :label="t('password')"
                     type="password"
                     hide-details
                     @update:model-value="onAuthChange"
@@ -291,20 +291,20 @@
                 <template v-if="authType === 'apiKey'">
                   <v-text-field
                     v-model="apiKeyName"
-                    label="Header / Query name"
+                    :label="t('headerQueryName')"
                     hide-details
                     @update:model-value="onAuthChange"
                   />
                   <v-text-field
                     v-model="apiKeyValue"
-                    label="Value"
+                    :label="t('value')"
                     hide-details
                     @update:model-value="onAuthChange"
                   />
                   <v-select
                     v-model="apiKeyIn"
                     :items="['header', 'query']"
-                    label="Add to"
+                    :label="t('addTo')"
                     hide-details
                     @update:model-value="onAuthChange"
                   />
@@ -349,7 +349,7 @@
                 <v-text-field
                   v-model.number="timeoutLocal"
                   type="number"
-                  label="Timeout (ms)"
+                  :label="t('timeout')"
                   hide-details
                   @update:model-value="onTimeoutChange"
                 />
@@ -405,6 +405,7 @@ import type { VariableEntry } from '@domain/variable/VariableScope';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useExecutionStore } from '@stores/useExecutionStore';
 import { useNotifier } from '@composables/useNotifier';
+import { useLocaleStore } from '@i18n/store';
 
 const props = defineProps<{
   request: RequestDefinition;
@@ -420,6 +421,8 @@ const emit = defineEmits<{
 const store = useCollectionStore();
 const execution = useExecutionStore();
 const { notify } = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const variableNames = computed((): VariableDef[] => {
   const c = store.activeCollection;

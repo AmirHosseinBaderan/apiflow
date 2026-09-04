@@ -6,8 +6,8 @@
     <div class="pa-3 sidebar-header">
       <v-text-field
         v-model="newItemName"
-        label="Quick create"
-        placeholder="Request or folder name..."
+        :label="t('quickCreate')"
+        :placeholder="t('requestOrFolderName')"
         hide-details
         density="compact"
         class="mb-2"
@@ -24,7 +24,7 @@
             density="comfortable"
             @click="newRequest"
           >
-            Request
+            {{ t('request') }}
           </v-btn>
         </v-col>
         <v-col cols="6">
@@ -35,7 +35,7 @@
             density="comfortable"
             @click="newFolder"
           >
-            Folder
+            {{ t('folder') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -89,37 +89,37 @@
             <v-list-item
               v-if="item.kind === 'collection'"
               prepend-icon="mdi-content-duplicate"
-              title="Duplicate"
+              :title="t('duplicate')"
               @click="duplicateCollection(item.id)"
             />
             <v-list-item
               v-if="item.kind === 'collection'"
               prepend-icon="mdi-delete"
-              title="Delete"
+              :title="t('delete')"
               @click="removeCollection(item.id)"
             />
             <v-list-item
               v-if="item.kind === 'folder'"
               prepend-icon="mdi-folder-plus"
-              title="Add subfolder"
+              :title="t('addSubfolder')"
               @click="addFolderWithParent(item.id)"
             />
             <v-list-item
               v-if="item.kind === 'folder'"
               prepend-icon="mdi-folder-remove"
-              title="Delete folder"
+              :title="t('deleteFolder')"
               @click="deleteFolder(item.id)"
             />
             <v-list-item
               v-if="item.kind === 'request'"
               prepend-icon="mdi-pencil"
-              title="Rename"
+              :title="t('rename')"
               @click="renameRequest(item.id, item.name)"
             />
             <v-list-item
               v-if="item.kind === 'request'"
               prepend-icon="mdi-trash-can"
-              title="Delete"
+              :title="t('delete')"
               @click="deleteRequest(item.id)"
             />
           </v-list>
@@ -155,7 +155,7 @@ const dialog = useDialogStore();
 const locale = useLocaleStore();
 const { notify } = useNotifier();
 
-  const t = (key: string) => locale.t(key);
+const t = (key: string) => locale.t(key);
 
 const tree = computed(() => store.tree);
 const activeCollectionId = computed(() => store.activeCollectionId);
