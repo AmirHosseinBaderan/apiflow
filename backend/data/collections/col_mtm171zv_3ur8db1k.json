@@ -1871,16 +1871,49 @@
   ],
   "workflows": [
     {
-      "id": "wf_mtnhs3h8_sm1lumdw",
-      "name": "test",
-      "steps": []
-    },
-    {
       "id": "wf_mtnhwmns_t47fw4uu",
       "name": "test 2",
       "steps": []
+    },
+    {
+      "id": "wf_mtnhs3h8_sm1lumdw",
+      "name": "test auth",
+      "steps": [
+        {
+          "id": "s_mtnjmik4_bjonk8fi",
+          "requestId": "0646e489-9567-4b36-9c74-9a0cd106a641",
+          "condition": {
+            "type": "always"
+          },
+          "next": {
+            "type": "next"
+          },
+          "variableMappings": [],
+          "overrides": {
+            "pathParams": [],
+            "queryParams": [],
+            "headers": []
+          }
+        },
+        {
+          "id": "s_mtnjtty8_qcnd22m5",
+          "requestId": "cacfddfb-7ab2-4461-a628-2adf9936955c",
+          "condition": {
+            "type": "always"
+          },
+          "next": {
+            "type": "end"
+          },
+          "variableMappings": [],
+          "overrides": {
+            "pathParams": [],
+            "queryParams": [],
+            "headers": []
+          }
+        }
+      ]
     }
   ],
   "createdAt": "2026-09-03T21:22:42.523Z",
-  "updatedAt": "2026-09-04T21:58:15.752Z"
+  "updatedAt": "2026-09-04T23:01:28.676Z"
 }

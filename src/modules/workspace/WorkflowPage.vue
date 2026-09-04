@@ -393,13 +393,14 @@ function stepBody(i: number): string {
   if (!step) return '';
   if (step.overrides?.body !== undefined) return step.overrides.body;
   const req = store.requestById(step.requestId);
-  return req?.body?.type === 'json' ? req.body.content ?? '' : '';
+  if (!req?.body) return '';
+  return req.body.type === 'json' ? req.body.content ?? '' : '';
 }
 
 function setStepBody(i: number, value: string) {
   const step = local.value!.steps[i]!;
   const req = store.requestById(step.requestId);
-  const baseHeaders = req ? [...req.headers] : [];
+  const baseHeaders = Array.isArray(req?.headers) ? [...req.headers] : [];
   const overrides: StepOverrides = {
     pathParams: step.overrides?.pathParams,
     queryParams: step.overrides?.queryParams,
@@ -413,7 +414,8 @@ function setStepBody(i: number, value: string) {
 function stepHeaders(i: number): KeyValue[] {
   const step = local.value?.steps[i];
   if (!step) return [];
-  return [...(step.overrides?.headers ?? store.requestById(step.requestId)?.headers ?? [])];
+  const reqHeaders = store.requestById(step.requestId)?.headers;
+  return [...(step.overrides?.headers ?? (Array.isArray(reqHeaders) ? reqHeaders : []))];
 }
 
 function setStepHeaders(i: number, headers: KeyValue[]) {
