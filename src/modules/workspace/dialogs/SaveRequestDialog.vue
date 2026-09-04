@@ -1,58 +1,49 @@
 <template>
-  <v-dialog
-    :model-value="dialog.open"
-    max-width="480"
-    @update:model-value="onClose"
-  >
-    <v-card>
-      <v-card-title class="text-h6">
-        {{ t('saveToCollection') }}
-      </v-card-title>
-      <v-card-text>
-        <v-select
-          v-model="selectedCollectionId"
-          :items="collectionItems"
-          :label="t('collection')"
-          item-title="name"
-          item-value="id"
-          hide-details
-          class="mb-3"
+  <div>
+    <v-select
+      v-model="selectedCollectionId"
+      :items="collectionItems"
+      :label="t('collection')"
+      item-title="name"
+      item-value="id"
+      hide-details
+      class="mb-3"
+    />
+    <v-select
+      v-model="selectedFolderId"
+      :items="folderItems"
+      :label="t('saveToFolder')"
+      item-title="name"
+      item-value="id"
+      hide-details
+    >
+      <template #prepend-item>
+        <v-list-item
+          value=""
+          :title="t('rootFolder')"
+          @click="selectedFolderId = ''"
         />
-        <v-select
-          v-model="selectedFolderId"
-          :items="folderItems"
-          :label="t('saveToFolder')"
-          item-title="name"
-          item-value="id"
-          hide-details
-        >
-          <template #prepend-item>
-            <v-list-item
-              value=""
-              :title="t('rootFolder')"
-              @click="selectedFolderId = ''"
-            />
-          </template>
-        </v-select>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          variant="text"
-          @click="onClose"
-        >
-          {{ t('cancel') }}
-        </v-btn>
-        <v-btn
-          color="primary"
-          :disabled="!selectedCollectionId"
-          @click="onSave"
-        >
-          {{ t('save') }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+      </template>
+    </v-select>
+    <v-card-actions class="pa-0 mt-4">
+      <v-spacer />
+      <v-btn
+        rounded="lg"
+        variant="text"
+        @click="onClose"
+      >
+        {{ t('cancel') }}
+      </v-btn>
+      <v-btn
+        rounded="lg"
+        color="primary"
+        :disabled="!selectedCollectionId"
+        @click="onSave"
+      >
+        {{ t('save') }}
+      </v-btn>
+    </v-card-actions>
+  </div>
 </template>
 
 <script setup lang="ts">

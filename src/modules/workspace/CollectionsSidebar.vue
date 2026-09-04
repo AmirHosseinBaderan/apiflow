@@ -146,12 +146,16 @@ import { useCollectionStore, type CollectionTreeNode } from '@stores/useCollecti
 import { useDialogStore } from '@stores/useDialogStore';
 import { useTabStore } from '@stores/useTabStore';
 import { useNotifier } from '@composables/useNotifier';
+import { useLocaleStore } from '@i18n/store';
 
 const store = useCollectionStore();
 const tabs = useTabStore();
 const router = useRouter();
 const dialog = useDialogStore();
+const locale = useLocaleStore();
 const { notify } = useNotifier();
+
+  const t = (key: string) => locale.t(key);
 
 const tree = computed(() => store.tree);
 const activeCollectionId = computed(() => store.activeCollectionId);
@@ -224,7 +228,7 @@ function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
   if (store.activeCollectionId) return store.activeCollectionId;
   dialog.openDialog({
     component: defineAsyncComponent(() => import('./dialogs/CollectionPickerDialog.vue')),
-    title: 'Pick a collection',
+    title: t('pickCollection'),
     props: { itemType, name: newItemName.value },
   });
   return null;
@@ -233,7 +237,7 @@ function requireActiveOrPick(itemType: 'request' | 'folder'): string | null {
 async function newRequest() {
   const name = newItemName.value.trim() || 'New Request';
   const req = await store.createUnsortedRequest(name);
-  notify('Request created', 'success');
+  notify(t('requestCreated'), 'success');
   if (req) {
     tabs.openRoute('request', { collectionId: '__unsorted__', requestId: req.id }, name);
     router.push({ name: 'request', params: { collectionId: '__unsorted__', requestId: req.id } });
@@ -247,7 +251,7 @@ async function newFolder() {
   if (!cid) return;
   await store.createFolder(name);
   const folderId = store.activeCollection?.folders.find((f) => f.name === name)?.id ?? null;
-  notify('Folder created', 'success');
+  notify(t('folderCreated'), 'success');
   if (folderId) {
     tabs.openRoute('node', { collectionId: cid, folderId: folderId }, name);
     router.push({ name: 'node', params: { collectionId: cid, folderId: folderId } });
@@ -261,35 +265,42 @@ async function newFolder() {
 async function addFolderWithParent(parentId: string) {
   if (!opened.value.includes(parentId)) opened.value.push(parentId);
   await store.createFolder('New Folder', parentId);
-  notify('Subfolder created', 'success');
+  notify(t('subfolderCreated'), 'success');
 }
 
 async function deleteFolder(id: string) {
   await store.deleteFolder(id);
-  notify('Folder deleted', 'success');
+  notify(t('folderDeleted'), 'success');
 }
 
 function renameRequest(id: string, currentName: string) {
   dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/RenameRequestDialog.vue')),
-    title: 'Rename Request',
-    props: { id, currentName },
+    component: defineAsyncComponent(() => import('./dialogs/RenameDialog.vue')),
+    title: t('renameRequest'),
+    props: {
+      label: t('name'),
+      currentName,
+      onSave: async (name: string) => {
+        const req = store.requestById(id);
+        if (req) await store.updateRequest({ ...req, name });
+      },
+    },
   });
 }
 
 async function deleteRequest(id: string) {
   await store.deleteRequest(id);
-  notify('Request deleted', 'success');
+  notify(t('requestDeleted'), 'success');
 }
 
 async function duplicateCollection(id: string) {
   await store.duplicateCollection(id);
-  notify('Collection duplicated', 'success');
+  notify(t('collectionDuplicated'), 'success');
 }
 
 async function removeCollection(id: string) {
   await store.deleteCollection(id);
-  notify('Collection deleted', 'success');
+  notify(t('collectionDeleted'), 'success');
 }
 </script>
 

@@ -2,7 +2,7 @@
   <div>
     <v-text-field
       v-model="name"
-      label="Folder name"
+      :label="t('folderName')"
       autofocus
       hide-details
       @keyup.enter="create"
@@ -13,7 +13,7 @@
         rounded="lg"
         @click="close"
       >
-        Cancel
+        {{ t('cancel') }}
       </v-btn>
       <v-btn
         rounded="lg"
@@ -21,7 +21,7 @@
         :disabled="!name.trim()"
         @click="create"
       >
-        Create
+        {{ t('add') }}
       </v-btn>
     </v-card-actions>
   </div>
@@ -33,11 +33,14 @@ import { useRouter } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
+import { useLocaleStore } from '@i18n/store';
 
 const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const name = ref('');
 
@@ -49,7 +52,7 @@ async function create() {
   const n = name.value.trim();
   if (!n) return;
   await store.createFolder(n);
-  notify('Folder created', 'success');
+  notify(t('folderCreated'), 'success');
   if (store.activeCollectionId) {
     const coll = store.activeCollection;
     const folderId = coll?.folders.find((f) => f.name === n)?.id ?? null;

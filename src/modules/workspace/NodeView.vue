@@ -540,17 +540,31 @@ function addWorkflow() {
 }
 
 async function deleteWorkflow(wf: Workflow) {
-  if (!confirm(`Delete workflow "${wf.name}"?`)) return;
-  await store.saveWorkflows(savedWorkflows.value.filter((w) => w.id !== wf.id));
+  dialog.openDialog({
+    component: defineAsyncComponent(() => import('@components/AppConfirmDialog.vue')),
+    title: t('deleteConfirm'),
+    props: {
+      text: t('deleteConfirm'),
+      onConfirm: async () => {
+        await store.saveWorkflows(savedWorkflows.value.filter((w) => w.id !== wf.id));
+      },
+    },
+  });
 }
 
 function renameCollection() {
   const cid = activeCollection.value?.id;
   if (!cid) return;
   dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/RenameCollectionDialog.vue')),
+    component: defineAsyncComponent(() => import('./dialogs/RenameDialog.vue')),
     title: t('renameCollection'),
-    props: { id: cid, currentName: activeCollection.value?.name },
+    props: {
+      label: t('newCollectionName'),
+      currentName: activeCollection.value?.name ?? '',
+      onSave: async (name: string) => {
+        await store.renameCollection(cid, name);
+      },
+    },
   });
 }
 
@@ -561,9 +575,15 @@ function renameFolder() {
   const folder = node.value;
   if (folder?.kind !== 'folder') return;
   dialog.openDialog({
-    component: defineAsyncComponent(() => import('./dialogs/RenameFolderDialog.vue')),
+    component: defineAsyncComponent(() => import('./dialogs/RenameDialog.vue')),
     title: t('renameFolder'),
-    props: { collectionId: cid, folderId: fid, currentName: folder.name },
+    props: {
+      label: t('newFolderName'),
+      currentName: folder.name,
+      onSave: async (name: string) => {
+        await store.renameFolder(cid, fid, name);
+      },
+    },
   });
 }
 

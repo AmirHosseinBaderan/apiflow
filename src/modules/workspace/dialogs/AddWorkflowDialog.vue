@@ -2,13 +2,13 @@
   <v-card-text>
     <v-text-field
       v-model="name"
-      label="Name"
+      :label="t('workflowName')"
       hide-details
       autofocus
     />
     <v-text-field
       v-model="description"
-      label="Description"
+      :label="t('workflowDescription')"
       hide-details
       class="mt-1"
     />
@@ -19,7 +19,7 @@
       rounded="lg"
       @click="close"
     >
-      Cancel
+      {{ t('cancel') }}
     </v-btn>
     <v-btn
       rounded="lg"
@@ -27,21 +27,24 @@
       :disabled="!name.trim()"
       @click="create"
     >
-      Add
+      {{ t('add') }}
     </v-btn>
   </v-card-actions>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
-import {useRouter} from 'vue-router';
-import {useCollectionStore} from '@stores/useCollectionStore';
-import {useDialogStore} from '@stores/useDialogStore';
-import {createId} from '@shared/id';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCollectionStore } from '@stores/useCollectionStore';
+import { useDialogStore } from '@stores/useDialogStore';
+import { useLocaleStore } from '@i18n/store';
+import { createId } from '@shared/id';
 
 const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const name = ref('');
 const description = ref('');
@@ -63,6 +66,6 @@ async function create() {
   };
   await store.saveWorkflows([...(store.activeCollection?.workflows ?? []), wf]);
   close();
-  router.push({name: 'workflow', params: {collectionId: cid, workflowId: wf.id}});
+  router.push({ name: 'workflow', params: { collectionId: cid, workflowId: wf.id } });
 }
 </script>

@@ -20,7 +20,7 @@
       </v-list-item>
       <v-list-item
         v-if="!collections.length"
-        title="No collections"
+        :title="t('noCollections')"
         value=""
       />
     </v-list>
@@ -31,7 +31,7 @@
       block
       @click="pickNewCollection"
     >
-      New Collection
+      {{ t('newCollection') }}
     </v-btn>
     <v-card-actions class="pa-0 mt-2">
       <v-spacer />
@@ -39,7 +39,7 @@
         rounded="lg"
         @click="close"
       >
-        Cancel
+        {{ t('cancel') }}
       </v-btn>
     </v-card-actions>
   </div>
@@ -51,12 +51,15 @@ import { useRouter } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
+import { useLocaleStore } from '@i18n/store';
 
 const props = defineProps<{ itemType: 'request' | 'folder'; name: string }>();
 const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const NewCollectionDialog = defineAsyncComponent(() => import('./NewCollectionDialog.vue'));
 
@@ -87,8 +90,8 @@ function pickNewCollection() {
   dialog.closeDialog();
   dialog.openDialog({
     component: NewCollectionDialog,
-    title: 'New Collection',
+    title: t('newCollection'),
   });
-  notify('Pick or create a collection, then use New Request/Folder again.', 'info');
+  notify(t('pickOrCreateCollection'), 'info');
 }
 </script>

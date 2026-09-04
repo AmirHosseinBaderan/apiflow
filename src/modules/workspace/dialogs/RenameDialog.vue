@@ -2,7 +2,7 @@
   <div>
     <v-text-field
       v-model="name"
-      :label="t('newFolderName')"
+      :label="label"
       autofocus
       hide-details
       @keyup.enter="save"
@@ -11,6 +11,7 @@
       <v-spacer />
       <v-btn
         rounded="lg"
+        variant="text"
         @click="close"
       >
         {{ t('cancel') }}
@@ -29,15 +30,18 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
 import { useLocaleStore } from '@i18n/store';
 
-const props = defineProps<{ collectionId: string; folderId: string; currentName: string }>();
-const store = useCollectionStore();
+const props = defineProps<{
+  label: string;
+  currentName: string;
+  onSave: (name: string) => Promise<void>;
+}>();
+
 const dialog = useDialogStore();
-const notifier = useNotifier();
+const { notify } = useNotifier();
 const locale = useLocaleStore();
 const t = (key: string) => locale.t(key);
 
@@ -55,8 +59,12 @@ function close() {
 async function save() {
   const n = name.value.trim();
   if (!n) return;
-  await store.renameFolder(props.collectionId, props.folderId, n);
-  notifier.notify('Folder renamed', 'success');
-  close();
+  try {
+    await props.onSave(n);
+    notify('Renamed successfully', 'success');
+    close();
+  } catch {
+    notify('Rename failed', 'error');
+  }
 }
 </script>

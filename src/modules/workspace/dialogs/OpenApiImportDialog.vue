@@ -2,7 +2,7 @@
   <div>
     <v-text-field
       v-model="url"
-      label="OpenAPI URL"
+      :label="t('openApiUrl')"
       placeholder="https://example.com/swagger.json"
       hide-details
       @keyup.enter="fromUrl"
@@ -21,7 +21,7 @@
           :disabled="!url"
           @click="fromUrl"
         >
-          Import from URL
+          {{ t('importFromUrl') }}
         </v-btn>
       </v-col>
       <v-col
@@ -32,7 +32,7 @@
           rounded="lg"
           @click="triggerFile"
         >
-          From File
+          {{ t('fromFile') }}
         </v-btn>
         <input
           ref="fileInput"
@@ -52,6 +52,7 @@ import { useRouter } from 'vue-router';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
 import { useNotifier } from '@composables/useNotifier';
+import { useLocaleStore } from '@i18n/store';
 import { ServicesKey } from '@app/providers/injectKeys';
 import { collectionRepository } from '@application/collections/collectionRepositoryPort';
 
@@ -59,6 +60,8 @@ const router = useRouter();
 const store = useCollectionStore();
 const dialog = useDialogStore();
 const { notify } = useNotifier();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 const services = inject(ServicesKey);
 
 const url = ref('');
@@ -76,7 +79,7 @@ async function importCollection(name: string, text: string) {
   await store.refresh();
   store.selectCollection(coll.id);
   router.replace({ name: 'collection', params: { collectionId: coll.id } });
-  notify(`Imported ${coll.requests.length} requests`, 'success');
+  notify(`${t('importCollection')} ${coll.requests.length} requests`, 'success');
   close();
 }
 
@@ -87,7 +90,7 @@ async function fromUrl() {
     const text = await res.text();
     await importCollection('Imported', text);
   } catch (e) {
-    notify(`OpenAPI import failed: ${(e as Error).message}`, 'error');
+    notify(`${t('openApiImportFailed')}: ${(e as Error).message}`, 'error');
   }
 }
 

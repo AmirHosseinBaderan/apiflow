@@ -42,11 +42,14 @@ import { useRoute } from 'vue-router';
 import RequestEditor from './RequestEditor.vue';
 import { useCollectionStore } from '@stores/useCollectionStore';
 import { useDialogStore } from '@stores/useDialogStore';
+import { useLocaleStore } from '@i18n/store';
 import type { RequestDefinition } from '@domain/request/RequestDefinition';
 import type { VariableEntry } from '@domain/variable/VariableScope';
 
 const store = useCollectionStore();
 const route = useRoute();
+const locale = useLocaleStore();
+const t = (key: string) => locale.t(key);
 
 const activeRequest = computed(() => store.activeRequest);
 const activeCollection = computed(() => store.activeCollection);
@@ -94,7 +97,7 @@ async function onSaveRequest() {
   const dialog = useDialogStore();
   dialog.openDialog({
     component: () => import('./dialogs/SaveRequestDialog.vue'),
-    title: 'Save request',
+    title: t('saveToCollection'),
     props: {
       requestId,
       onSave: async (cid: string, folderId: string | null) => {
