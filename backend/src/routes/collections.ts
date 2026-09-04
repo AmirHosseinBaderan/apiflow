@@ -21,8 +21,8 @@ collectionsRouter.get('/', (_req: Request, res: Response) => {
           url: r.url,
         }),
       );
-      const { workflows: _w, ...rest } = collection;
-      return { ...rest, requests };
+      const { workflows, ...rest } = collection;
+      return { ...rest, requests, workflows };
     })
     .filter(Boolean);
   res.json(collections);
@@ -43,8 +43,8 @@ collectionsRouter.get('/:id', (req: Request, res: Response) => {
       url: r.url,
     }),
   );
-  const { requests: _r, workflows: _w, ...rest } = collection;
-  res.json({ ...rest, requests: summaries });
+  const { requests: _r, workflows, ...rest } = collection;
+  res.json({ ...rest, requests: summaries, workflows });
 });
 
 collectionsRouter.post('/', (req: { body: Record<string, unknown> }, res: Response) => {
