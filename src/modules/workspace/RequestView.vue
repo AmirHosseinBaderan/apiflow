@@ -50,6 +50,7 @@ const route = useRoute();
 
 const activeRequest = computed(() => store.activeRequest);
 const activeCollection = computed(() => store.activeCollection);
+const activeRequestId = computed(() => store.activeRequestId);
 const isUnsorted = computed(() => {
   if (!store.activeRequestId) return false;
   return store.isRequestUnsorted(store.activeRequestId);
@@ -65,11 +66,16 @@ watch(
     if (store.isRequestUnsorted(requestId)) return;
     const cid = collectionId.value || store.ownerCollectionId(requestId);
     if (!cid) return;
-    const cached = store.requestCache.get(requestId);
+    const cached = store.requestCache[requestId];
     if (!cached) {
-      await store.loadRequest(cid, requestId);
+      try {
+        await store.loadRequest(cid, requestId);
+      } catch (e) {
+        console.error('Failed to load request:', e);
+      }
     }
   },
+  { immediate: true },
 );
 
 function onUpdateRequest(r: RequestDefinition) {

@@ -40,7 +40,10 @@ app.get('/proxy/openapi', async (req: Request, res: Response) => {
 app.use('/api/auth', authRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/admin', adminRouter);
-app.use('/api/collections/:id/requests', requestsRouter);
+app.use('/api/collections/:id/requests', (req, _res, next) => {
+  _res.locals.collectionId = req.params.id;
+  next();
+}, requestsRouter);
 app.use('/api/collections', collectionsRouter);
 app.use('/api/files', filesRouter);
 

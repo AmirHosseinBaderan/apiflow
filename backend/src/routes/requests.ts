@@ -24,7 +24,7 @@ export const requestsRouter = Router();
 requestsRouter.use(authMiddleware);
 
 requestsRouter.get('/:requestId', (req: Request, res: Response) => {
-  const collection = loadCollection(req.params.id);
+  const collection = loadCollection(res.locals.collectionId as string);
   if (!collection) {
     res.status(404).json({ error: 'Collection not found' });
     return;
@@ -39,7 +39,7 @@ requestsRouter.get('/:requestId', (req: Request, res: Response) => {
 });
 
 requestsRouter.put('/:requestId', (req: Request, res: Response) => {
-  const collection = loadCollection(req.params.id);
+  const collection = loadCollection(res.locals.collectionId as string);
   if (!collection) {
     res.status(404).json({ error: 'Collection not found' });
     return;
@@ -49,13 +49,13 @@ requestsRouter.put('/:requestId', (req: Request, res: Response) => {
     r.id === req.params.requestId ? { ...r, ...body, id: req.params.requestId } : r,
   );
   const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
-  saveCollection(req.params.id, updated);
+  saveCollection(res.locals.collectionId as string, updated);
   const updatedRequest = requests.find((r) => r.id === req.params.requestId);
   res.json(updatedRequest);
 });
 
 requestsRouter.post('/', (req: Request, res: Response) => {
-  const collection = loadCollection(req.params.id);
+  const collection = loadCollection(res.locals.collectionId as string);
   if (!collection) {
     res.status(404).json({ error: 'Collection not found' });
     return;
@@ -79,12 +79,12 @@ requestsRouter.post('/', (req: Request, res: Response) => {
   };
   const requests = [...(collection as { requests: RequestItem[] }).requests, newRequest];
   const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
-  saveCollection(req.params.id, updated);
+  saveCollection(res.locals.collectionId as string, updated);
   res.status(201).json(newRequest);
 });
 
 requestsRouter.delete('/:requestId', (req: Request, res: Response) => {
-  const collection = loadCollection(req.params.id);
+  const collection = loadCollection(res.locals.collectionId as string);
   if (!collection) {
     res.status(404).json({ error: 'Collection not found' });
     return;
@@ -93,6 +93,6 @@ requestsRouter.delete('/:requestId', (req: Request, res: Response) => {
     (r) => r.id !== req.params.requestId,
   );
   const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
-  saveCollection(req.params.id, updated);
+  saveCollection(res.locals.collectionId as string, updated);
   res.status(204).send();
 });

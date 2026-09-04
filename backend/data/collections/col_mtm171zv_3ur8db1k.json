@@ -1859,10 +1859,37 @@
       "postRequest": [],
       "variableExtractions": [],
       "description": "The signed-in student's own invoices"
+    },
+    {
+      "id": "req_1788517677510_sul9h9",
+      "name": "Test req",
+      "method": "GET",
+      "url": "",
+      "headers": [],
+      "queryParams": [],
+      "pathParams": [],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "timeoutMs": 30000,
+      "retry": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "initialDelayMs": 500,
+        "backoff": "fixed",
+        "retryOn": [],
+        "retryStatusCodes": []
+      },
+      "preRequest": [],
+      "postRequest": [],
+      "variableExtractions": []
     }
   ],
   "variables": [],
   "workflows": [],
   "createdAt": "2026-09-03T21:22:42.523Z",
-  "updatedAt": "2026-09-03T21:29:34.208Z"
+  "updatedAt": "2026-09-04T12:05:19.003Z"
 }

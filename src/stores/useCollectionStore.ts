@@ -93,7 +93,8 @@ export const useCollectionStore = defineStore('collections', {
     error: null as string | null,
     service: null as CollectionService | null,
     unsortedRequests: [] as RequestDefinition[],
-    requestCache: new Map<string, RequestDefinition>(),
+    requestCache: {} as Record<string, RequestDefinition>,
+    requestCacheVersion: 0,
     requestLoading: false,
   }),
 
@@ -107,7 +108,7 @@ export const useCollectionStore = defineStore('collections', {
         const u = this.unsortedRequests.find((r) => r.id === this.activeRequestId);
         if (u) return u;
       }
-      const cached = this.requestCache.get(this.activeRequestId);
+      const cached = this.requestCache[this.activeRequestId];
       if (cached) return cached;
       const c = this.activeCollection;
       if (!c) return null;
@@ -294,14 +295,16 @@ export const useCollectionStore = defineStore('collections', {
       const cid = this.ownerCollectionId(request.id);
       if (!cid || !this.service) return;
       await this.service.saveRequest(cid, request);
-      this.requestCache.set(request.id, request);
+      this.requestCache[request.id] = request;
+      this.requestCacheVersion++;
     },
     async deleteRequest(requestId: string) {
       const cid = this.ownerCollectionId(requestId);
       if (cid && this.service) {
         await this.service.deleteRequestById(cid, requestId);
       }
-      this.requestCache.delete(requestId);
+      delete this.requestCache[requestId];
+      this.requestCacheVersion++;
       this.unsortedRequests = this.unsortedRequests.filter((r) => r.id !== requestId);
       persistUnsorted(this.unsortedRequests);
       if (this.activeRequestId === requestId) this.activeRequestId = null;
@@ -333,13 +336,14 @@ export const useCollectionStore = defineStore('collections', {
     },
     async loadRequest(collectionId: string, requestId: string): Promise<RequestDefinition | null> {
       if (!this.service) return null;
-      const cached = this.requestCache.get(requestId);
+      const cached = this.requestCache[requestId];
       if (cached) return cached;
       this.requestLoading = true;
       try {
         const req = await this.service.getRequest(collectionId, requestId);
         if (req) {
-          this.requestCache.set(requestId, req);
+          this.requestCache[requestId] = req;
+          this.requestCacheVersion++;
           return req;
         }
         return null;
