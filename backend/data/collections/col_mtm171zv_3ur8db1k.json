@@ -1869,7 +1869,18 @@
       "secret": false
     }
   ],
-  "workflows": [],
+  "workflows": [
+    {
+      "id": "wf_mtnhs3h8_sm1lumdw",
+      "name": "test",
+      "steps": []
+    },
+    {
+      "id": "wf_mtnhwmns_t47fw4uu",
+      "name": "test 2",
+      "steps": []
+    }
+  ],
   "createdAt": "2026-09-03T21:22:42.523Z",
-  "updatedAt": "2026-09-04T15:20:15.015Z"
+  "updatedAt": "2026-09-04T21:58:15.752Z"
 }
