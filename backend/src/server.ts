@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -46,6 +46,16 @@ app.use('/api/collections/:id/requests', (req, _res, next) => {
 }, requestsRouter);
 app.use('/api/collections', collectionsRouter);
 app.use('/api/files', filesRouter);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.error(`${req.method} ${req.originalUrl}`, req.body ?? '');
+  next();
+});
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error', message: err.message });
+});
 
 const staticDir = join(__dirname, '../../dist');
 app.use(express.static(staticDir));

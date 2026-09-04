@@ -35,7 +35,7 @@ collectionsRouter.get('/:id', (req: Request, res: Response) => {
     return;
   }
   const collection = raw as Record<string, unknown>;
-  const summaries = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).map(
+  const requests = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).map(
     (r) => ({
       id: r.id,
       name: r.name,
@@ -44,15 +44,19 @@ collectionsRouter.get('/:id', (req: Request, res: Response) => {
     }),
   );
   const { requests: _r, workflows, ...rest } = collection;
-  res.json({ ...rest, requests: summaries, workflows });
+  res.json({ ...rest, requests, workflows });
 });
 
 collectionsRouter.post('/', (req: { body: Record<string, unknown> }, res: Response) => {
   const data = req.body;
   const id = (data.id as string) || `col_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const withId = { ...data, id };
-  saveCollection(id, withId);
-  res.status(201).json(withId);
+  try {
+    saveCollection(id, withId);
+    res.status(201).json(withId);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to create collection', message: (e as Error).message });
+  }
 });
 
 collectionsRouter.put('/:id', (req: Request, res: Response) => {
@@ -64,8 +68,12 @@ collectionsRouter.put('/:id', (req: Request, res: Response) => {
   }
   const body = req.body as Record<string, unknown>;
   const updated = { ...(raw as Record<string, unknown>), ...body, id };
-  saveCollection(id, updated);
-  res.json(updated);
+  try {
+    saveCollection(id, updated);
+    res.json(updated);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to update collection', message: (e as Error).message });
+  }
 });
 
 collectionsRouter.delete('/:id', (_req: Request, res: Response) => {
@@ -80,9 +88,13 @@ collectionsRouter.put('/:id/variables', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
-  const updated = { ...(raw as Record<string, unknown>), variables: req.body, updatedAt: new Date().toISOString() };
-  saveCollection(id, updated);
-  res.json(updated.variables);
+  try {
+    const updated = { ...(raw as Record<string, unknown>), variables: req.body, updatedAt: new Date().toISOString() };
+    saveCollection(id, updated);
+    res.json(updated.variables);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to save variables', message: (e as Error).message });
+  }
 });
 
 collectionsRouter.put('/:id/workflows', (req: Request, res: Response) => {
@@ -92,9 +104,13 @@ collectionsRouter.put('/:id/workflows', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
-  const updated = { ...(raw as Record<string, unknown>), workflows: req.body, updatedAt: new Date().toISOString() };
-  saveCollection(id, updated);
-  res.json(updated.workflows);
+  try {
+    const updated = { ...(raw as Record<string, unknown>), workflows: req.body, updatedAt: new Date().toISOString() };
+    saveCollection(id, updated);
+    res.json(updated.workflows);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to save workflows', message: (e as Error).message });
+  }
 });
 
 collectionsRouter.put('/:id/folders/:folderId', (req: Request, res: Response) => {
@@ -113,9 +129,13 @@ collectionsRouter.put('/:id/folders/:folderId', (req: Request, res: Response) =>
   const folders = (collection.folders as Array<{ id?: string; name?: string; parentId?: string | null; requestIds?: string[]; childFolderIds?: string[] }> || []).map((f) =>
     f.id === req.params.folderId ? { ...f, name } : f,
   );
-  const updated = { ...collection, folders, updatedAt: new Date().toISOString() };
-  saveCollection(id, updated);
-  res.json(folders.find((f) => f.id === req.params.folderId));
+  try {
+    const updated = { ...collection, folders, updatedAt: new Date().toISOString() };
+    saveCollection(id, updated);
+    res.json(folders.find((f) => f.id === req.params.folderId));
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to update folder', message: (e as Error).message });
+  }
 });
 
 collectionsRouter.delete('/:id/folders/:folderId', (req: Request, res: Response) => {
@@ -133,7 +153,11 @@ collectionsRouter.delete('/:id/folders/:folderId', (req: Request, res: Response)
   const requests = (collection.requests as Array<{ id?: string; name?: string; method?: string; url?: string }> || []).filter(
     (r) => !(collection.folders as Array<{ id?: string; requestIds?: string[] }> || []).some((f) => f.requestIds?.includes(r.id || '')),
   );
-  const updated = { ...collection, folders, requests, updatedAt: new Date().toISOString() };
-  saveCollection(id, updated);
-  res.status(204).send();
+  try {
+    const updated = { ...collection, folders, requests, updatedAt: new Date().toISOString() };
+    saveCollection(id, updated);
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to delete folder', message: (e as Error).message });
+  }
 });

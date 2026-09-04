@@ -66,7 +66,12 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Settings): void {
   ensureDirs();
-  fs.writeFileSync(getConfigPath(), JSON.stringify(settings, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(getConfigPath(), JSON.stringify(settings, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save settings:', e);
+    throw e;
+  }
 }
 
 export function listUserFiles(): string[] {
@@ -88,12 +93,24 @@ export function loadUser(username: string): { id: string; username: string; pass
 
 export function saveUser(user: { id: string; username: string; passwordHash: string; role: 'admin' | 'user'; createdAt: string }): void {
   ensureDirs();
-  fs.writeFileSync(path.join(getUsersDir(), `${user.username}.json`), JSON.stringify(user, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(path.join(getUsersDir(), `${user.username}.json`), JSON.stringify(user, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save user:', e);
+    throw e;
+  }
 }
 
 export function deleteUserFile(username: string): void {
   const p = path.join(getUsersDir(), `${username}.json`);
-  if (fs.existsSync(p)) fs.unlinkSync(p);
+  if (fs.existsSync(p)) {
+    try {
+      fs.unlinkSync(p);
+    } catch (e) {
+      console.error(`Failed to delete user file ${username}:`, e);
+      throw e;
+    }
+  }
 }
 
 export function listCollections(): string[] {
@@ -115,19 +132,36 @@ export function loadCollection(id: string): unknown | null {
 
 export function saveCollection(id: string, data: unknown): void {
   ensureDirs();
-  fs.writeFileSync(path.join(getCollectionsDir(), `${id}.json`), JSON.stringify(data, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(path.join(getCollectionsDir(), `${id}.json`), JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    console.error(`Failed to save collection ${id}:`, e);
+    throw e;
+  }
 }
 
 export function deleteCollectionFile(id: string): void {
   const p = path.join(getCollectionsDir(), `${id}.json`);
-  if (fs.existsSync(p)) fs.unlinkSync(p);
+  if (fs.existsSync(p)) {
+    try {
+      fs.unlinkSync(p);
+    } catch (e) {
+      console.error(`Failed to delete collection ${id}:`, e);
+      throw e;
+    }
+  }
 }
 
 export function saveUploadedFile(id: string, buffer: Buffer, contentType: string): string {
   ensureDirs();
   const ext = getExtension(contentType);
   const filePath = path.join(getFilesDir(), `${id}${ext}`);
-  fs.writeFileSync(filePath, buffer);
+  try {
+    fs.writeFileSync(filePath, buffer);
+  } catch (e) {
+    console.error(`Failed to save uploaded file ${id}:`, e);
+    throw e;
+  }
   return filePath;
 }
 
@@ -141,16 +175,27 @@ export function getUploadedFilePath(id: string): string | null {
 
 export function deleteUploadedFile(id: string): void {
   const p = getUploadedFilePath(id);
-  if (p && fs.existsSync(p)) fs.unlinkSync(p);
+  if (p && fs.existsSync(p)) {
+    try {
+      fs.unlinkSync(p);
+    } catch (e) {
+      console.error(`Failed to delete uploaded file ${id}:`, e);
+      throw e;
+    }
+  }
 }
 
 export function getFileStats(id: string): { name: string; size: number; contentType: string } | null {
   const p = getUploadedFilePath(id);
   if (!p) return null;
-  const stat = fs.statSync(p);
-  const ext = path.extname(p);
-  const contentType = extToContentType(ext);
-  return { name: path.basename(p), size: stat.size, contentType };
+  try {
+    const stat = fs.statSync(p);
+    const ext = path.extname(p);
+    const contentType = extToContentType(ext);
+    return { name: path.basename(p), size: stat.size, contentType };
+  } catch {
+    return null;
+  }
 }
 
 function getExtension(contentType: string): string {

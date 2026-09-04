@@ -29,7 +29,11 @@ requestsRouter.get('/:requestId', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
-  const requests = (collection as { requests: RequestItem[] }).requests;
+  const requests = (collection as { requests?: RequestItem[] }).requests;
+  if (!requests) {
+    res.status(500).json({ error: 'Collection data is corrupted: missing requests' });
+    return;
+  }
   const request = requests.find((r) => r.id === req.params.requestId);
   if (!request) {
     res.status(404).json({ error: 'Request not found' });
@@ -44,13 +48,16 @@ requestsRouter.put('/:requestId', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
+  const requests = (collection as { requests?: RequestItem[] }).requests;
+  if (!requests) {
+    res.status(500).json({ error: 'Collection data is corrupted: missing requests' });
+    return;
+  }
   const body = req.body as Partial<RequestItem>;
-  const requests = (collection as { requests: RequestItem[] }).requests.map((r) =>
-    r.id === req.params.requestId ? { ...r, ...body, id: req.params.requestId } : r,
-  );
-  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  const updatedRequests = requests.map((r) => (r.id === req.params.requestId ? { ...r, ...body, id: req.params.requestId } : r));
+  const updated = { ...(collection as Record<string, unknown>), requests: updatedRequests, updatedAt: new Date().toISOString() };
   saveCollection(res.locals.collectionId as string, updated);
-  const updatedRequest = requests.find((r) => r.id === req.params.requestId);
+  const updatedRequest = updatedRequests.find((r) => r.id === req.params.requestId);
   res.json(updatedRequest);
 });
 
@@ -58,6 +65,11 @@ requestsRouter.post('/', (req: Request, res: Response) => {
   const collection = loadCollection(res.locals.collectionId as string);
   if (!collection) {
     res.status(404).json({ error: 'Collection not found' });
+    return;
+  }
+  const requests = (collection as { requests?: RequestItem[] }).requests;
+  if (!requests) {
+    res.status(500).json({ error: 'Collection data is corrupted: missing requests' });
     return;
   }
   const body = req.body as Partial<RequestItem>;
@@ -77,8 +89,8 @@ requestsRouter.post('/', (req: Request, res: Response) => {
     postRequest: body.postRequest || [],
     variableExtractions: body.variableExtractions || [],
   };
-  const requests = [...(collection as { requests: RequestItem[] }).requests, newRequest];
-  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  const updatedRequests = [...requests, newRequest];
+  const updated = { ...(collection as Record<string, unknown>), requests: updatedRequests, updatedAt: new Date().toISOString() };
   saveCollection(res.locals.collectionId as string, updated);
   res.status(201).json(newRequest);
 });
@@ -89,10 +101,13 @@ requestsRouter.delete('/:requestId', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Collection not found' });
     return;
   }
-  const requests = (collection as { requests: RequestItem[] }).requests.filter(
-    (r) => r.id !== req.params.requestId,
-  );
-  const updated = { ...(collection as Record<string, unknown>), requests, updatedAt: new Date().toISOString() };
+  const requests = (collection as { requests?: RequestItem[] }).requests;
+  if (!requests) {
+    res.status(500).json({ error: 'Collection data is corrupted: missing requests' });
+    return;
+  }
+  const updatedRequests = requests.filter((r) => r.id !== req.params.requestId);
+  const updated = { ...(collection as Record<string, unknown>), requests: updatedRequests, updatedAt: new Date().toISOString() };
   saveCollection(res.locals.collectionId as string, updated);
   res.status(204).send();
 });
