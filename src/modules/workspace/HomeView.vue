@@ -19,9 +19,6 @@
           <h1 class="text-h4 font-weight-regular mb-2">
             {{ t('appTitle') }}
           </h1>
-          <p class="text-body-2 text-medium-emphasis">
-            {{ t('selectCollection') }}
-          </p>
         </div>
 
         <v-row
@@ -215,7 +212,10 @@ function openConfiguration() {
     return;
   }
   if (auth.isAdmin) {
-    router.push({ name: 'admin' });
+    dialog.openDialog({
+      component: defineAsyncComponent(() => import('@modules/workspace/dialogs/SettingsDialog.vue')),
+      title: t.value('settings'),
+    });
   } else {
     dialog.openDialog({
       component: defineAsyncComponent(() => import('@modules/workspace/dialogs/SettingsDialog.vue')),

@@ -245,17 +245,7 @@
         "retryOn": [],
         "retryStatusCodes": []
       },
-      "preRequest": [
-        {
-          "id": "tst_mtm1f93f_agl25wgh",
-          "name": "Status is 200",
-          "kind": {
-            "type": "script",
-            "source": "return response.status === 200"
-          },
-          "expression": "200"
-        }
-      ],
+      "preRequest": [],
       "postRequest": [],
       "variableExtractions": [],
       "description": "Send a login code"
@@ -292,7 +282,17 @@
         "retryStatusCodes": []
       },
       "preRequest": [],
-      "postRequest": [],
+      "postRequest": [
+        {
+          "id": "tst_mtmz6pvg_a5u4e2zk",
+          "name": "Status is 200",
+          "kind": {
+            "type": "script",
+            "source": "if(response.status == 200){\npm.variables.setCollection(\"access_token\",response.body.access_token)\n}\n\nreturn response.status === 200"
+          },
+          "expression": "200"
+        }
+      ],
       "variableExtractions": [],
       "description": "Exchange a login code for an access token"
     },
@@ -1859,37 +1859,17 @@
       "postRequest": [],
       "variableExtractions": [],
       "description": "The signed-in student's own invoices"
-    },
-    {
-      "id": "req_1788517677510_sul9h9",
-      "name": "Test req",
-      "method": "GET",
-      "url": "",
-      "headers": [],
-      "queryParams": [],
-      "pathParams": [],
-      "body": {
-        "type": "none"
-      },
-      "auth": {
-        "type": "none"
-      },
-      "timeoutMs": 30000,
-      "retry": {
-        "enabled": false,
-        "maxAttempts": 1,
-        "initialDelayMs": 500,
-        "backoff": "fixed",
-        "retryOn": [],
-        "retryStatusCodes": []
-      },
-      "preRequest": [],
-      "postRequest": [],
-      "variableExtractions": []
     }
   ],
-  "variables": [],
+  "variables": [
+    {
+      "key": "access_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3IiwicGxhdGZvcm0iOiJhY2FkZW15IiwidXNlcl90eXBlIjoxLCJzdWIiOiIzZjFjMmE0ZS01YjZkLTRlOGYtOWEwYi0xYzJkM2U0ZjVhNmIiLCJleHAiOjE4MjQ1Mjc3NjMsImlhdCI6MTc4ODUyNzc2M30.OPG_e5uaOUzhpVI0Z7sPpvM6lt5hBybQLsrr9GO_eoI",
+      "enabled": true,
+      "secret": false
+    }
+  ],
   "workflows": [],
   "createdAt": "2026-09-03T21:22:42.523Z",
-  "updatedAt": "2026-09-04T12:05:19.003Z"
+  "updatedAt": "2026-09-04T15:20:15.015Z"
 }
