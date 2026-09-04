@@ -83,8 +83,6 @@ import { useDialogStore } from '@stores/useDialogStore';
 import { useSettingsStore } from '@stores/useSettingsStore';
 import { useNotifier } from '@composables/useNotifier';
 import { useLocaleStore } from '@i18n/store';
-import { getSettings, updateSettings } from '../../api/calls/settings';
-import type { SettingsResponse } from '../../api/calls/settings';
 
 const dialog = useDialogStore();
 const settingsStore = useSettingsStore();
@@ -93,7 +91,6 @@ const locale = useLocaleStore();
 const t = (key: string) => locale.t(key);
 
 const saving = ref(false);
-const serverSettings = ref<SettingsResponse | null>(null);
 const localSettings = ref({
   appName: '',
   multiUser: false,
@@ -104,13 +101,13 @@ const localSettings = ref({
 
 onMounted(async () => {
   try {
-    serverSettings.value = await getSettings();
+    const serverSettings = await settingsStore.fetch();
     localSettings.value = {
-      appName: serverSettings.value.appName,
-      multiUser: serverSettings.value.multiUser,
-      forceLogin: serverSettings.value.forceLogin,
-      defaultTheme: serverSettings.value.defaultTheme,
-      defaultLocale: serverSettings.value.defaultLocale,
+      appName: serverSettings.appName,
+      multiUser: serverSettings.multiUser,
+      forceLogin: serverSettings.forceLogin,
+      defaultTheme: serverSettings.defaultTheme,
+      defaultLocale: serverSettings.defaultLocale,
     };
   } catch {
     notify(t('loadSettingsFailed'), 'error');
@@ -118,13 +115,14 @@ onMounted(async () => {
 });
 
 function cancel() {
-  if (serverSettings.value) {
+  const serverSettings = settingsStore.serverSettings;
+  if (serverSettings) {
     localSettings.value = {
-      appName: serverSettings.value.appName,
-      multiUser: serverSettings.value.multiUser,
-      forceLogin: serverSettings.value.forceLogin,
-      defaultTheme: serverSettings.value.defaultTheme,
-      defaultLocale: serverSettings.value.defaultLocale,
+      appName: serverSettings.appName,
+      multiUser: serverSettings.multiUser,
+      forceLogin: serverSettings.forceLogin,
+      defaultTheme: serverSettings.defaultTheme,
+      defaultLocale: serverSettings.defaultLocale,
     };
   }
   dialog.closeDialog();
@@ -133,15 +131,13 @@ function cancel() {
 async function save() {
   saving.value = true;
   try {
-    await updateSettings({
+    await settingsStore.save({
       appName: localSettings.value.appName,
       multiUser: localSettings.value.multiUser,
       forceLogin: localSettings.value.forceLogin,
       defaultTheme: localSettings.value.defaultTheme,
       defaultLocale: localSettings.value.defaultLocale,
     });
-    settingsStore.setTheme(localSettings.value.defaultTheme);
-    settingsStore.setLocale(localSettings.value.defaultLocale);
     notify(t('settingsSaved'), 'success');
     dialog.closeDialog();
   } catch {

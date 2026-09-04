@@ -75,9 +75,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocaleStore } from '../i18n/store';
-import { authLogin } from '../api/calls/auth';
 import { useAuthStore } from '../stores/useAuthStore';
-import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = useRouter();
 const locale = useLocaleStore();
@@ -94,9 +92,7 @@ async function handleLogin() {
   loading.value = true;
   error.value = '';
   try {
-    const data = await authLogin({ username: username.value, password: password.value });
-    auth.setAuth(data.token, data.user);
-    authMiddleware.invalidate();
+    await auth.login(username.value, password.value);
     router.push('/');
   } catch (e: unknown) {
     const apiError = e as { message?: string };

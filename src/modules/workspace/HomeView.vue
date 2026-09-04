@@ -207,7 +207,6 @@ import { defineAsyncComponent } from 'vue';
 import { useLocaleStore } from '@i18n/store';
 import { useAuthStore } from '@stores/useAuthStore';
 import { useNotifier } from '@composables/useNotifier';
-import {updateProfile} from "../../api/calls/auth";
 
 const router = useRouter();
 const dialog = useDialogStore();
@@ -283,7 +282,7 @@ async function saveProfile() {
   if (!auth.user) return;
   savingProfile.value = true;
   try {
-    const updated = await updateProfile({
+    const updated = await auth.updateProfile({
       username: profileForm.value.username !== auth.user.username ? profileForm.value.username : undefined,
       password: profileForm.value.password || undefined,
       currentPassword: profileForm.value.currentPassword || undefined,
@@ -291,7 +290,7 @@ async function saveProfile() {
     auth.setAuth(auth.token!, updated);
     notify(t('profileUpdated'), 'success');
     dialog.closeDialog();
-  } catch (e) {
+  } catch {
     notify(t('profileUpdateFailed'), 'error');
   } finally {
     savingProfile.value = false;

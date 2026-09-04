@@ -131,9 +131,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocaleStore } from '../i18n/store';
 import { useSettingsStore } from '../stores/useSettingsStore';
-import { authSetup, type SetupRequest } from '../api/calls/auth';
 import { useAuthStore } from '../stores/useAuthStore';
-import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = useRouter();
 const locale = useLocaleStore();
@@ -170,20 +168,15 @@ async function handleSetup() {
   loading.value = true;
   error.value = '';
   try {
-    const body: Record<string, unknown> = {
+    const body = {
       appName: appName.value,
       defaultTheme: theme.value,
       defaultLocale: localeVal.value,
       multiUser: multiUser.value,
       forceLogin: forceLogin.value,
+      ...(multiUser.value ? { username: adminUsername.value, password: adminPassword.value } : {}),
     };
-    if (multiUser.value) {
-      body.username = adminUsername.value;
-      body.password = adminPassword.value;
-    }
-    const data = await authSetup(body as unknown as SetupRequest);
-    auth.setAuth(data.token, data.user);
-    authMiddleware.invalidate();
+    await auth.setup(body);
     if (theme.value) settings.setTheme(theme.value);
     if (localeVal.value) locale.setLocale(localeVal.value);
     router.push('/');
