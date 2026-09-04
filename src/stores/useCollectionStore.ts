@@ -353,6 +353,10 @@ export const useCollectionStore = defineStore('collections', {
     async saveWorkflows(workflows: Workflow[]) {
       if (!this.service || !this.activeCollectionId) return;
       await this.service.updateWorkflowsDirect(this.activeCollectionId, workflows);
+      const collection = this.activeCollection;
+      if (collection) {
+        this.replaceCollection({ ...collection, workflows, updatedAt: new Date().toISOString() });
+      }
     },
     selectCollection(id: string) {
       this.activeCollectionId = id;
