@@ -6,7 +6,7 @@ import {
   loadUser,
   saveUser,
 } from '../config.js';
-import { generateToken } from '../auth.js';
+import {generateToken, getAuth} from '../auth.js';
 
 export const authRouter = Router();
 
