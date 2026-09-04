@@ -20,122 +20,124 @@
     </v-btn>
   </v-app-bar>
 
-  <v-container
-    fluid
-    class="admin-view"
-  >
-    <v-row>
-      <v-col cols="12">
-        <v-card
-          variant="flat"
-          class="admin-card"
-          elevation="0"
-        >
-          <v-card-title class="d-flex align-center pa-6">
-            <div>
-              <div class="d-flex align-center gap-2">
-                <v-icon
-                  icon="mdi-account-group"
-                  size="24"
-                  color="primary"
-                />
-                <span class="text-h5 font-weight-regular">{{ t('userManagement') }}</span>
-              </div>
-              <div class="text-subtitle-2 text-medium-emphasis mt-1">
-                {{ t('manageUsersDesc') }}
-              </div>
-            </div>
-            <v-spacer />
-            <v-btn
-              rounded="lg"
-              color="primary"
-              variant="elevated"
-              prepend-icon="mdi-plus"
-              @click="openCreateDialog"
-            >
-              {{ t('addUser') }}
-            </v-btn>
-            <v-btn
-              rounded="lg"
-              variant="tonal"
-              prepend-icon="mdi-cog"
-              class="ml-2"
-              @click="openSettingsDialog"
-            >
-              {{ t('settings') }}
-            </v-btn>
-          </v-card-title>
-
-          <v-divider class="mx-6" />
-
-          <v-card-text class="pa-6">
-            <v-data-table
-              :headers="headers"
-              :items="store.users"
-              :loading="store.loading"
-              :items-per-page="10"
-              class="elevation-0"
-              density="comfortable"
-            >
-              <template #item.role="{ item }">
-                <v-chip
-                  :color="item.role === 'admin' ? 'primary' : 'surface-variant'"
-                  size="small"
-                  variant="tonal"
-                  rounded="lg"
-                >
-                  {{ item.role }}
-                </v-chip>
-              </template>
-              <template #item.createdAt="{ item }">
-                {{ formatDate(item.createdAt) }}
-              </template>
-              <template #item.actions="{ item }">
-                <div class="d-flex gap-2">
-                  <v-btn
-                    color="warning"
-                    icon="mdi-pencil"
-                    variant="tonal"
-                    size="small"
-                    rounded="lg"
-                    @click="openEditDialog(item)"
+  <v-main>
+    <v-container
+      fluid
+      class="admin-view"
+    >
+      <v-row>
+        <v-col cols="12">
+          <v-card
+            variant="flat"
+            class="admin-card"
+            elevation="0"
+          >
+            <v-card-title class="d-flex align-center pa-6">
+              <div>
+                <div class="d-flex align-center gap-2">
+                  <v-icon
+                    icon="mdi-account-group"
+                    size="24"
+                    color="primary"
                   />
-                  <v-btn
-                    color="error"
-                    icon="mdi-delete"
-                    variant="tonal"
-                    size="small"
-                    rounded="lg"
-                    @click="openDeleteDialog(item)"
-                  />
+                  <span class="text-h5 font-weight-regular">{{ t('userManagement') }}</span>
                 </div>
-              </template>
-              <template #no-data>
-                <v-alert
-                  type="info"
-                  variant="tonal"
-                  density="compact"
-                  class="ma-4"
-                >
-                  {{ t('noUsers') }}
-                </v-alert>
-              </template>
-            </v-data-table>
+                <div class="text-subtitle-2 text-medium-emphasis mt-1">
+                  {{ t('manageUsersDesc') }}
+                </div>
+              </div>
+              <v-spacer />
+              <v-btn
+                rounded="lg"
+                color="primary"
+                variant="elevated"
+                prepend-icon="mdi-plus"
+                @click="openCreateDialog"
+              >
+                {{ t('addUser') }}
+              </v-btn>
+              <v-btn
+                rounded="lg"
+                variant="tonal"
+                prepend-icon="mdi-cog"
+                class="ml-2"
+                @click="openSettingsDialog"
+              >
+                {{ t('settings') }}
+              </v-btn>
+            </v-card-title>
 
-            <v-alert
-              v-if="store.error"
-              type="error"
-              variant="tonal"
-              class="mt-4"
-              density="compact"
-            >
-              {{ store.error }}
-            </v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+            <v-divider class="mx-6" />
+
+            <v-card-text class="pa-6">
+              <v-data-table
+                :headers="headers"
+                :items="store.users"
+                :loading="store.loading"
+                :items-per-page="10"
+                class="elevation-0"
+                density="comfortable"
+              >
+                <template #item.role="{ item }">
+                  <v-chip
+                    :color="item.role === 'admin' ? 'primary' : 'surface-variant'"
+                    size="small"
+                    variant="tonal"
+                    rounded="lg"
+                  >
+                    {{ item.role }}
+                  </v-chip>
+                </template>
+                <template #item.createdAt="{ item }">
+                  {{ formatDate(item.createdAt) }}
+                </template>
+                <template #item.actions="{ item }">
+                  <div class="d-flex gap-2">
+                    <v-btn
+                      color="warning"
+                      icon="mdi-pencil"
+                      variant="tonal"
+                      size="small"
+                      rounded="lg"
+                      @click="openEditDialog(item)"
+                    />
+                    <v-btn
+                      color="error"
+                      icon="mdi-delete"
+                      variant="tonal"
+                      size="small"
+                      rounded="lg"
+                      @click="openDeleteDialog(item)"
+                    />
+                  </div>
+                </template>
+                <template #no-data>
+                  <v-alert
+                    type="info"
+                    variant="tonal"
+                    density="compact"
+                    class="ma-4"
+                  >
+                    {{ t('noUsers') }}
+                  </v-alert>
+                </template>
+              </v-data-table>
+
+              <v-alert
+                v-if="store.error"
+                type="error"
+                variant="tonal"
+                class="mt-4"
+                density="compact"
+              >
+                {{ store.error }}
+              </v-alert>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <script setup lang="ts">
@@ -194,10 +196,6 @@
 </script>
 
 <style scoped lang="scss">
-.admin-view {
-  padding-top: 24px;
-}
-
 .admin-card {
   border: 1px solid rgba(var(--v-border-color), 0.12);
   border-radius: 12px;
