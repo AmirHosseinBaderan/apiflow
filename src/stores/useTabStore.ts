@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import type { RouteLocationRaw } from 'vue-router';
 
+const TABS_KEY = 'apiflow.tabs';
+
 export type TabKind = 'home' | 'collection' | 'node' | 'request' | 'workflow';
 
 export interface TabMeta {
@@ -33,6 +35,25 @@ function tabKey(kind: TabKind, meta: TabMeta): string {
   }
 }
 
+function loadTabs(): { tabs: Tab[]; activeTabId: string | null } {
+  try {
+    const raw = localStorage.getItem(TABS_KEY);
+    if (!raw) return { tabs: [], activeTabId: null };
+    const parsed = JSON.parse(raw) as { tabs: Tab[]; activeTabId: string | null };
+    return parsed;
+  } catch {
+    return { tabs: [], activeTabId: null };
+  }
+}
+
+function saveTabs(tabs: Tab[], activeTabId: string | null) {
+  try {
+    localStorage.setItem(TABS_KEY, JSON.stringify({ tabs, activeTabId }));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 export const useTabStore = defineStore('tabs', {
   state: () => ({
     tabs: [] as Tab[],
@@ -46,20 +67,31 @@ export const useTabStore = defineStore('tabs', {
   },
 
   actions: {
+    restore() {
+      const state = loadTabs();
+      this.tabs = state.tabs;
+      this.activeTabId = state.activeTabId;
+    },
+    persist() {
+      saveTabs(this.tabs, this.activeTabId);
+    },
     open(tab: Omit<Tab, 'id'>): Tab {
       const key = tabKey(tab.kind, tab.meta);
       const existing = this.tabs.find((t) => t.id === key);
       if (existing) {
         this.activeTabId = existing.id;
+        this.persist();
         return existing;
       }
       const newTab: Tab = { ...tab, id: key };
       this.tabs = [...this.tabs, newTab];
       this.activeTabId = newTab.id;
+      this.persist();
       return newTab;
     },
     activate(id: string) {
       if (this.tabs.some((t) => t.id === id)) this.activeTabId = id;
+      this.persist();
     },
     remove(id: string) {
       const idx = this.tabs.findIndex((t) => t.id === id);
@@ -72,12 +104,14 @@ export const useTabStore = defineStore('tabs', {
       }
       this.tabs = remaining;
       this.activeTabId = nextActive;
+      this.persist();
     },
     next() {
       if (!this.tabs.length) return;
       const i = this.tabs.findIndex((t) => t.id === this.activeTabId);
       const next = this.tabs[(i + 1) % this.tabs.length];
       if (next) this.activeTabId = next.id;
+      this.persist();
     },
     prev() {
       if (!this.tabs.length) return;
@@ -85,10 +119,12 @@ export const useTabStore = defineStore('tabs', {
       const n = this.tabs.length;
       const next = this.tabs[(i - 1 + n) % n];
       if (next) this.activeTabId = next.id;
+      this.persist();
     },
     clear() {
       this.tabs = [];
       this.activeTabId = null;
+      this.persist();
     },
     openRoute(name: string, params: Record<string, string | undefined>, title: string): Tab {
       const collectionId = params.collectionId;
@@ -114,6 +150,7 @@ export const useTabStore = defineStore('tabs', {
       next.splice(fromIndex, 1);
       next.splice(toIndex, 0, tab);
       this.tabs = next;
+      this.persist();
     },
   },
 });
