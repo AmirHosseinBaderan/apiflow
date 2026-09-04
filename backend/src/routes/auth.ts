@@ -95,3 +95,51 @@ authRouter.get('/check', (_req: Request, res: Response) => {
     appName: settings.appName,
   });
 });
+
+authRouter.put('/profile', async (req: Request, res: Response) => {
+  const auth = getAuth(req);
+  if (!auth) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  const user = loadUser(auth.username);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  const { username, password, currentPassword } = req.body as {
+    username?: string;
+    password?: string;
+    currentPassword?: string;
+  };
+
+  if (password) {
+    if (!currentPassword) {
+      res.status(400).json({ error: 'Current password is required to change password' });
+      return;
+    }
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: 'Invalid current password' });
+      return;
+    }
+  }
+
+  const updated = { ...user };
+  if (username && username !== user.username) {
+    const existing = loadUser(username);
+    if (existing) {
+      res.status(409).json({ error: 'Username already taken' });
+      return;
+    }
+    updated.username = username;
+  }
+  if (password) {
+    updated.passwordHash = await bcrypt.hash(password, 10);
+  }
+  saveUser(updated);
+  const { passwordHash: _, ...rest } = updated;
+  res.json(rest);
+});
