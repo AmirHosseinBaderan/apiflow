@@ -510,9 +510,13 @@ function setCondName(i: number, name: string) {
   if (cond && cond.type === 'variableEquals') stepMutate(i, { condition: { ...cond, name } });
 }
 
-function onStepRequestChange(i: number, requestId: string | null) {
+async function onStepRequestChange(i: number, requestId: string | null) {
   const step = local.value!.steps[i]!;
-  const req = requestId ? store.requestById(requestId) : null;
+  let req = requestId ? store.requestById(requestId) : null;
+  if (req && !req.body && requestId) {
+    const full = await store.loadRequest(collection.value!.id, requestId);
+    if (full) req = full;
+  }
   local.value!.steps[i] = {
     ...step,
     requestId: requestId ?? step.requestId,
