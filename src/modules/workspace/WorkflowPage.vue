@@ -319,7 +319,7 @@ import type {
   StepOverrides,
   VariableMapping,
 } from '@domain/workflow/Workflow';
-import type { KeyValue } from '@domain/request/RequestDefinition';
+import type { KeyValue, RequestDefinition } from '@domain/request/RequestDefinition';
 import type { TestStatus } from '@domain/test/TestResult';
 import { createId } from '@shared/id';
 import { useLocaleStore } from '@i18n/store';
@@ -590,9 +590,14 @@ async function save() {
 async function runAll() {
   if (!local.value || !collection.value || local.value.steps.length < 1) return;
   ranAt.value = toShamsi(new Date());
+  const requestIds = Array.from(new Set(local.value.steps.map((s) => s.requestId)));
+  const fullRequests = await Promise.all(
+    requestIds.map((id) => store.loadRequest(collection.value!.id, id)),
+  );
+  const requests = fullRequests.filter((r): r is RequestDefinition => Boolean(r));
   const res = await execution.runWorkflow(
     local.value,
-    collection.value.requests,
+    requests,
     collection.value.variables,
     runTests.value,
   );

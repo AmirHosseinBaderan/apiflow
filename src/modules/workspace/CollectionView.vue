@@ -240,9 +240,15 @@ function buildCondition() {
 async function runWorkflow() {
   const collection = activeCollection.value;
   if (!collection || workflowRequestIds.value.length < 2) return;
-  const requests = workflowRequestIds.value
-      .map((id) => requestById(id))
-      .filter((r): r is RequestDefinition => Boolean(r));
+  const ids = workflowRequestIds.value;
+  const fullRequests = await Promise.all(
+    ids.map((id) => store.loadRequest(collection.id, id)),
+  );
+  const requests = fullRequests.filter((r): r is RequestDefinition => Boolean(r));
+  if (requests.length < 2) {
+    notify(t('noRequestsInCollection'), 'warning');
+    return;
+  }
   const cond = buildCondition();
   const baseSteps = buildLinearWorkflowFromRequests(requests);
   const steps = baseSteps.map((s, idx) => ({
