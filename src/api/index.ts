@@ -1,6 +1,4 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { useAuthStore } from '../stores/useAuthStore';
-import { useRouter } from 'vue-router';
 import { ApiException } from './types/response';
 
 const TOKEN_KEY = 'apiflow.auth.token';
@@ -35,12 +33,7 @@ export function createApiInstance(baseURL = '/'): AxiosInstance {
     (error) => {
       if (error.response?.status === 401) {
         localStorage.removeItem(TOKEN_KEY);
-        const authStore = useAuthStore();
-        authStore.logout();
-        const router = useRouter();
-        if (router.currentRoute.value.name !== 'login') {
-          router.push({ name: 'login' });
-        }
+        window.dispatchEvent(new CustomEvent('auth:logout'));
       }
       return Promise.reject(error);
     }

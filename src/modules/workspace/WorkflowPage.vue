@@ -393,7 +393,7 @@ function stepBody(i: number): string {
   if (!step) return '';
   if (step.overrides?.body !== undefined) return step.overrides.body;
   const req = store.requestById(step.requestId);
-  return req && req.body.type === 'json' ? req.body.content : '';
+  return req?.body?.type === 'json' ? req.body.content ?? '' : '';
 }
 
 function setStepBody(i: number, value: string) {

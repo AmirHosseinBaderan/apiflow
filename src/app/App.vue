@@ -12,6 +12,8 @@ import { watch, onMounted } from 'vue';
 import { useSettingsStore } from '@stores/useSettingsStore';
 import { useTabStore } from '@stores/useTabStore';
 import { useCollectionStore } from '@stores/useCollectionStore';
+import { useAuthStore } from '@stores/useAuthStore';
+import { useRouter } from 'vue-router';
 import AppNotifier from '@components/AppNotifier.vue';
 import AppDialog from '@components/AppDialog.vue';
 import { useLocaleStore } from '../i18n/store';
@@ -24,6 +26,8 @@ const settings = useSettingsStore();
 const locale = useLocaleStore();
 const tabs = useTabStore();
 const collections = useCollectionStore();
+const auth = useAuthStore();
+const router = useRouter();
 
 useKeyboard();
 
@@ -50,6 +54,11 @@ onMounted(async () => {
     const title = document.querySelector('title');
     if (title) title.textContent = serverSettings.appName;
   }
+
+  window.addEventListener('auth:logout', () => {
+    auth.logout();
+    router.replace({ name: 'login' });
+  });
 });
 
 watch(() => settings.theme, applyTheme);
