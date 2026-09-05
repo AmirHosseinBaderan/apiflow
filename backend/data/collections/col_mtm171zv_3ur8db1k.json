@@ -1935,12 +1935,20 @@
           "overrides": {
             "pathParams": [],
             "queryParams": [],
-            "headers": []
+            "headers": [
+              {
+                "id": "kv_mtnlv7ko_t7ws83tj",
+                "key": "access_token",
+                "value": "{{access_token}}",
+                "enabled": true
+              }
+            ],
+            "body": ""
           }
         }
       ]
     }
   ],
   "createdAt": "2026-09-03T21:22:42.523Z",
-  "updatedAt": "2026-09-04T23:39:48.452Z"
+  "updatedAt": "2026-09-04T23:49:17.073Z"
 }
