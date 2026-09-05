@@ -1,13 +1,11 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install root dependencies and build frontend
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-# Install backend dependencies and compile TypeScript
 WORKDIR /app/backend
 COPY backend/package.json backend/package-lock.json* ./
 RUN npm install --omit=dev
@@ -15,23 +13,28 @@ COPY backend/tsconfig.json ./
 COPY backend/src ./src
 RUN npx tsc -p tsconfig.json
 
-# Final runtime image
-FROM node:20-alpine
-WORKDIR /app
+FROM nginx:alpine
 
-# Copy built frontend
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy compiled backend and node_modules
-COPY --from=build /app/backend/dist ./backend/dist
-COPY --from=build /app/backend/node_modules ./backend/node_modules
-COPY --from=build /app/backend/package.json ./backend/package.json
+# Copy backend runtime
+COPY --from=build /app/backend/dist /app/backend/dist
+COPY --from=build /app/backend/node_modules /app/backend/node_modules
+COPY --from=build /app/backend/package.json /app/backend/package.json
+
+# Install node in nginx image to run backend
+RUN apk add --no-cache nodejs npm
 
 # Data directory for configs, users, collections, files
 VOLUME ["/data"]
 ENV DATA_DIR=/data
 ENV PORT=3001
+ENV JWT_SECRET=change-me-in-production
 
-EXPOSE 3001
+EXPOSE 80 3001
 
-CMD ["node", "backend/dist/server.js"]
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
