@@ -6,7 +6,7 @@ import {
   loadUser,
   saveUser,
 } from '../config.js';
-import {generateToken, getAuth} from '../auth.js';
+import {generateToken, getAuth, authMiddleware} from '../auth.js';
 
 export const authRouter = Router();
 
@@ -96,7 +96,7 @@ authRouter.get('/check', (_req: Request, res: Response) => {
   });
 });
 
-authRouter.put('/profile', async (req: Request, res: Response) => {
+authRouter.put('/profile', authMiddleware, async (req: Request, res: Response) => {
   const auth = getAuth(req);
   if (!auth) {
     res.status(401).json({ error: 'Unauthorized' });
