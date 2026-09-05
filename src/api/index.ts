@@ -8,9 +8,11 @@ const _headers = {
   accept: 'application/json',
 };
 
+const DEFAULT_BASE_URL = import.meta.env.VITE_API_URL || '/';
+
 let instance: AxiosInstance | null = null;
 
-export function createApiInstance(baseURL = '/'): AxiosInstance {
+export function createApiInstance(baseURL = DEFAULT_BASE_URL): AxiosInstance {
   if (instance) return instance;
 
   const config: AxiosRequestConfig = {
