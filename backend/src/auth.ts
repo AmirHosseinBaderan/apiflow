@@ -22,7 +22,7 @@ export function verifyToken(token: string): AuthPayload | null {
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) {
+  if (!header || !header.toLowerCase().startsWith('bearer ')) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
